@@ -1,0 +1,18 @@
+server:
+  port: 8084
+spring:
+  datasource:
+    username: root
+    password: 061028rjw
+    #url中database为对应的数据库名称，这里为classroom
+    url: jdbc:mysql://localhost:3306/classroom?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+
+#下面是配置sql日志输出，使其可以在idea中看到sql的运行情况并打印输出
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
