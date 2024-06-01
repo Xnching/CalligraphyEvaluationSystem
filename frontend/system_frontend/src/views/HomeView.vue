@@ -4,6 +4,7 @@
 <template>
   <div class="home" style="height:100%;">
    <el-container style="height: 100%; border: 1px solid #eee" >
+    <!--此处为侧边栏-->
 	  <el-aside width="200px" style="background-color: rgb(238, 241, 246); height: 100%; overflow: auto;">
         <Aside></Aside>
     </el-aside>
@@ -18,8 +19,12 @@
 
       <!-- 此处为主体部分 -->
 	    <el-main>
+        
+        <Tab></Tab>
         <!--当前页面的子路由将在<router-view/>中展示-->
-        <router-view/>   
+        <router-view/>  
+        
+         
       </el-main>
 
 
@@ -33,13 +38,14 @@
 // @ is an alias to /src
 import Aside from '@/components/Aside.vue'
 import Header from '@/components/Header.vue'
-
+import Tab from '@/components/Tab.vue'
 
 export default {
   //此处添加组件
   components:{
     Aside,
-    Header
+    Header,
+    Tab
   },
   data() {
     return {
@@ -48,6 +54,7 @@ export default {
         name: '王小虎',
         address: '上海市普陀区金沙江路 1518 弄'
       })),
+      //
       multipleSelection: []
     }
   },
@@ -71,7 +78,13 @@ export default {
 </script>
 
 <style>
+
+/*下面是隐藏滚动条*/ 
 .el-aside::-webkit-scrollbar {
   display: none;
 }
+.el-main::-webkit-scrollbar{
+  display: none;
+}
+
 </style>

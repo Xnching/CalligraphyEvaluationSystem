@@ -43,152 +43,152 @@ const routes = [
     children:[
       {
         path:'user',
-        name:'User',
+        name:'系统用户管理',
         component:User
       },
       {
         path:'userGroup',
-        name:'UserGroup',
+        name:'用户组管理',
         component:UserGroup
       },
       {
         path:'region',
-        name:'Region',
+        name:'区域管理',
         component:Region
       },
       {
         path:'school',
-        name:'School',
+        name:'学校管理',
         component:School
       },
       {
         path:'grade',
-        name:'Grade',
+        name:'年级管理',
         component:Grade
       },
       {
         path:'academicYear',
-        name:'AcademicYear',
+        name:'学年管理',
         component:AcademicYear
       },
       {
         path:'klass',
-        name:'Klass',
+        name:'班级管理',
         component:Klass
       },
       {
         path:'student',
-        name:'Student',
+        name:'学生管理',
         component:Student
       },
       {
         path:'teacher',
-        name:'Teacher',
+        name:'教师管理',
         component:Teacher
       },
       {
         path:'sampleWord',
-        name:'SampleWord',
+        name:'样本字管理',
         component:SampleWord
       },
       {
         path:'templateWord',
-        name:'TemplateWord',
+        name:'模板字管理',
         component:TemplateWord
       },
       {
         path:'copybook',
-        name:'Copybook',
+        name:'字帖管理',
         component:Copybook
       },
       {
         path:'template',
-        name:'Template',
+        name:'模板管理',
         component:Template
       },
       {
         path:'define',
-        name:'Define',
+        name:'定义管理',
         component:Define
       },
       {
         path:'releaseAnnouncement',
-        name:'ReleaseAnnouncement',
+        name:'发布公告',
         component:ReleaseAnnouncement
       },
       {
         path:'viewAnnouncement',
-        name:'ViewAnnouncement',
+        name:'查看公告',
         component:ViewAnnouncement
       },
       {
         path:'question',
-        name:'Question',
+        name:'常见问题与答案设置',
         component:Question
       },
       {
         path:'customerService',
-        name:'CustomerService',
+        name:'人工客服',
         component:CustomerService
       },
       {
         path:'feedback',
-        name:'Feedback',
+        name:'反馈管理',
         component:Feedback
       },
       {
         path:'competitionList',
-        name:'CompetitionList',
+        name:'竞赛列表',
         component:CompetitionList
       },
       {
         path:'reviewManagement',
-        name:'ReviewManagement',
+        name:'评阅管理',
         component:ReviewManagement
       },
       {
         path:'reviewWorks',
-        name:'ReviewWorks',
+        name:'作品评阅',
         component:ReviewWorks
       },
       {
         path:'reviewOutstanding',
-        name:'ReviewOutstanding',
+        name:'作业评审',
         component:ReviewOutstanding
       },
       {
         path:'homeworkSubmissions',
-        name:'HomeworkSubmissions',
+        name:'作业作品',
         component:HomeworkSubmissions
       },
       {
         path:'competitionSubmissions',
-        name:'CompetitionSubmissions',
+        name:'竞赛作品',
         component:CompetitionSubmissions
       },
       {
         path:'type',
-        name:'Type',
+        name:'类型管理',
         component:Type
       },
       {
         path:'addSource',
-        name:'AddSource',
+        name:'添加书法知识',
         component:AddSource
       },
       {
         path:'resourceManagement',
-        name:'ResourceManagement',
+        name:'资源管理',
         component:ResourceManagement
       },
       {
         path:'collection',
-        name:'Collection',
+        name:'合集管理',
         component:Collection
       },
       {
         path: '/home',
-        name: 'Home',
+        name: '主页',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
