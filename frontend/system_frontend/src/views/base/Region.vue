@@ -231,6 +231,7 @@
     methods:{
       //选中行就能选中前面的多选框
       handleRowClick(row) {
+        //此处实现父节点不会被选中
         if (!row.hasChildren1) { 
                 this.$refs.multipleTable.toggleRowSelection(row);
         }

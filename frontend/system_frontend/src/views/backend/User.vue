@@ -206,12 +206,6 @@ export default {
         this.tableData = this.showTable;
       }
     },
-    //再次开启新增用户表单时清除提示信息
-    dialogVisible1(newVal) {
-      if (newVal) { // 如果弹窗打开
-        this.$refs.ruleForm.clearValidate(); // 清除表单验证提示信息
-      }
-    }
   },
 
   methods: {
@@ -278,6 +272,9 @@ export default {
 
     //新增按钮跳出弹窗
     handleEdit1(){
+      if (this.$refs.ruleForm) {
+        this.$refs.ruleForm.resetFields(); // 清除表单验证并重置表单
+      }
       this.dialogVisible1 = true;
     },
 
