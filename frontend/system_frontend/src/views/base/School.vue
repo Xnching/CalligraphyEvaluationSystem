@@ -150,22 +150,22 @@
                 </select>
             </el-form-item>
 
-          <el-form-item label="详细地址"> 
+          <el-form-item label="详细地址："> 
             <el-input v-model="editForm.detailAddress"></el-input>
           </el-form-item>
-          <el-form-item label="学校类别">
+          <el-form-item label="学校类别：">
             <el-select v-model="editForm.schoolType" placeholder="请选择学校类别">
               <el-option label="用户组 A" value="groupA"></el-option>
               <el-option label="用户组 B" value="groupB"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="学校名称">
+          <el-form-item label="学校名称：">
             <el-input v-model="editForm.name"></el-input>
           </el-form-item>
-          <el-form-item label="校负责人">
+          <el-form-item label="校负责人：">
             <el-input v-model="editForm.leader"></el-input>
           </el-form-item>
-          <el-form-item label="联系方式">
+          <el-form-item label="联系方式：">
             <el-input v-model="editForm.leaderPhone"></el-input>
           </el-form-item>
           

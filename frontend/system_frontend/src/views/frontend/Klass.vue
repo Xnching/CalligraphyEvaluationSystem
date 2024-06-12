@@ -2,6 +2,8 @@
     <div>
       <!-- 下面为表格的筛选-->
       <div style="text-align: left;margin-left: 30px;margin-top: 25px">
+        
+        <label for="provinceSelect">请先选择到学校:</label> 
         <!--下面是学校选择器，从区域然后具体选到学校-->
         <select v-model="selectedProvince" @change="onProvinceChange" style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
             <option value="">请选择省份</option>
@@ -28,7 +30,7 @@
                 {{ schoolType.name }}
             </option>
         </select>
-        <select v-model="selectedSchool" v-if="schools.length" style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
+        <select v-model="selectedSchool" v-if="schools.length" @change="onSchoolChange" style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
             <option value="">请选择学校</option>
             <option v-for="school in schools" :key="school.id" :value="school.id">
                 {{ school.name }}
@@ -39,62 +41,51 @@
         
 
 
-      <div style="padding:10px; margin:10px; margin-bottom: -5px;margin-top: 5px;">
-        <el-input style="width:300px ;margin-left:-80px" 
-        suffix-icon="el-icon-search" 
-        placeholder="请输入"
-        v-model="inputVal"
-        @keyup.enter.native="Search_table()"
-        clearable>
+      <div style="display: flex; align-items: center; padding: 10px; margin: 10px; margin-bottom: -5px; margin-top: 5px;">
+        <el-input style="width: 300px;" 
+                  suffix-icon="el-icon-search" 
+                  placeholder="请输入"
+                  v-model="inputVal"
+                  @keyup.enter.native="Search_table()"
+                  clearable>
         </el-input>
-        <el-button style="margin-left:20px ;margin-right:535px" type="primary">搜索</el-button>
-        <el-button type="primary" @click="handleEdit1">新增<i class="el-icon-circle-plus"></i></el-button>
-      </div>       
+        <el-button style="margin-left: 20px;margin-right: 30px;" type="primary">搜索</el-button>
+        <!-- 显示学校名称 -->
+        <h1>{{ selectedSchool ? schools.find(s => s.id === selectedSchool).name : '' }}</h1> 
+        <el-button type="primary" @click="handleEdit1" style="margin-left: auto; margin-right: 120px;">新增班级<i class="el-icon-circle-plus"></i></el-button>
+      </div>    
 
       <el-table
         ref="multipleTable"
-        :data="tableData"
+        :data="filteredTableData" 
         stripe
         tooltip-effect="dark"
         style="width: 100%"
-        @selection-change="handleSelectionChange">
-        <el-table-column
-          type="selection"
-          width="55">
-        </el-table-column>
-        <el-table-column
-          prop="ID"
-          label="用户ID"
-          width="95">
-        </el-table-column>
+        v-if="selectedSchool" >
         <el-table-column
           prop="name"
-          label="用户姓名"
-          width="100">
+          label="班级名"
+          width="195">
         </el-table-column>
         <el-table-column
-          prop="loginName"
-          label="登录名"
-          width="120">
+          prop="grade"
+          label="年级"
+          width="290">
         </el-table-column>
         <el-table-column
-          prop="password"
-          label="密码"
-          width="120">
+          prop="numberCount"
+          label="人数"
+          width="140">
         </el-table-column>
         <el-table-column
-          prop="userGroup"
-          label="所属用户组"
-          show-overflow-tooltip>
+          prop="teacher"
+          label="教师"
+          width="200">
         </el-table-column>
-        <el-table-column
-          prop="phone"
-          label="联系方式"
-          width="120">
-        </el-table-column>
+        
         <el-table-column fixed="right" label="操作">                         
           <template slot-scope="scope">
-              <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit2(scope.row)">编辑</el-button>
+              <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit2(scope.row)">详情</el-button>
               <el-button type="danger" size="small"  icon="el-icon-delete">删除</el-button>
           </template>
         </el-table-column> 
@@ -116,23 +107,51 @@
 
       <!-- 新增系统用户的弹窗 -->
       <el-dialog
-        title="请输入新增系统用户的信息"
+        title="请输入新增班级的信息"
         :visible.sync="dialogVisible1"
         width="40%"
         :close-on-click-modal="false" >
-        <!-- 用于提示新增用户时的数据不能为空-->
-        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-          <el-form-item label="用户姓名" prop="name"> <el-input v-model="ruleForm.name"></el-input> </el-form-item>
-          <el-form-item label="登录名" prop="loginName"> <el-input v-model="ruleForm.loginName"></el-input> </el-form-item>
-          <el-form-item label="密码" prop="password"> <el-input v-model="ruleForm.password"></el-input> </el-form-item>
-          <el-form-item label="联系方式"prop="phone"> <el-input v-model="ruleForm.phone"></el-input> </el-form-item>
-          <el-form-item label="所属用户组" prop="userGroup">
-            <el-select v-model="ruleForm.userGroup" placeholder="请选择所属用户组" >
-              <el-option label="用户组 A" value="groupA"></el-option>
-              <el-option label="用户组 B" value="groupB"></el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
+        <!-- 下面选择不同的导入方案-->
+        <el-tabs type="border-card">
+          <el-tab-pane label="单个添加">
+            
+            <el-form ref="addForm" :model="addForm" label-width="100px">
+              
+              <el-form-item label="年级：">
+                <el-select v-model="addForm.region" placeholder="请选择年级">
+                  <el-option label="六三制小学一年级" value="6-3-1"></el-option>
+                  <el-option label="六三制小学二年级" value="6-3-2"></el-option>
+                  <el-option label="六三制小学三年级" value="6-3-3"></el-option>
+                  <el-option label="六三制小学四年级" value="6-3-4"></el-option>
+                  <el-option label="六三制小学五年级" value="6-3-5"></el-option>
+                  <el-option label="六三制小学六年级" value="6-3-6"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="班级名称：">
+                <el-input v-model="addForm.name"></el-input>
+              </el-form-item>
+              
+            </el-form>
+
+          </el-tab-pane>
+
+          <el-tab-pane label="批量添加">
+            <el-upload
+              class="upload-demo"
+              drag
+              action="https://jsonplaceholder.typicode.com/posts/"
+              multiple
+              accept=".xls,.xlsx">
+              <i class="el-icon-upload"></i>
+              <div class="el-upload__tip" slot="tip">Excel文件格式以年级、班级名的顺序排列,年级规范为：六三制小学一年级</div>
+              <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+              
+            </el-upload>
+
+          </el-tab-pane>
+          
+        </el-tabs>
+
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="dialogVisible1 = false">取消</el-button>
@@ -145,31 +164,60 @@
       <el-dialog
         title="点击修改信息"
         :visible.sync="dialogVisible2"
-        width="40%"
+        width="60%"
         :close-on-click-modal="false">
-        <el-form :model="editForm" label-width="100px">
-          <el-form-item label="用户姓名"> 
-            <el-input v-model="editForm.name"></el-input>
-          </el-form-item>
-          <el-form-item label="登录名">
-            <el-input v-model="editForm.loginName"></el-input>
-          </el-form-item>
-          <el-form-item label="密码">
-            <el-input v-model="editForm.password"></el-input>
-          </el-form-item>
-          <el-form-item label="联系方式">
-            <el-input v-model="editForm.phone"></el-input>
-          </el-form-item>
-          <el-form-item label="所属用户组">
-            <el-select v-model="editForm.userGroup" placeholder="请选择所属用户组">
-              <el-option label="用户组 A" value="groupA"></el-option>
-              <el-option label="用户组 B" value="groupB"></el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
+          <el-table
+          ref="editTable"
+          :data="editTableData"
+          stripe
+          tooltip-effect="dark"
+          style="width: 100%">
+          <el-table-column
+            prop="id"
+            label="编号"
+            width="95">
+          </el-table-column>
+          <el-table-column
+            prop="name"
+            label="姓名"
+            width="100">
+          </el-table-column>
+          <el-table-column
+            prop="number"
+            label="学籍号"
+            width="190">
+          </el-table-column>
+          <el-table-column
+            prop="password"
+            label="密码"
+            width="100">
+          </el-table-column>
+          <el-table-column
+            prop="grade"
+            label="年级"
+            width="150">
+          </el-table-column>
+          <el-table-column
+            prop="klass"
+            label="班级"
+            width="100">
+          </el-table-column>
+
+        </el-table>
+        <!-- 分页栏-->
+        <div style="padding:10px">
+          <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="currentPage4"
+            :page-sizes="[5, 10, 15, 20]"
+            :page-size="10"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="20">
+          </el-pagination>
+        </div>
         <template #footer>
           <span class="dialog-footer">
-            <el-button @click="dialogVisible2 = false">取消</el-button>
             <el-button type="primary" @click="handleSubmit2">确定</el-button>
           </span>
         </template>
@@ -188,55 +236,30 @@ export default {
       //搜索栏要用的
       inputVal:"",
       tableData: Array(8).fill().map(() => ({
-        ID:"10000",
-        name: "孙岳平",
-        loginName: "335508880",
-        password: "12345678",
-        userGroup: "盘成小学竞赛评阅教师组",
-        phone: "17715062004"
+        name: "19班",
+        grade: "六三制小学一年级",
+        numberCount: "56",
+        teacher: " 孙岳平",
+        schoolId: 11111
       })),
       showTable:[],
       //初始隐藏两个表单
       dialogVisible1: false,
       dialogVisible2: false,
-      //多选用的
-      multipleSelection: [],
-      editForm: { // 添加 editForm 即编辑弹窗里的表单定义
-        ID: '',
-        name: '',
-        loginName: '',
-        password: '',
-        phone: '',
-        userGroup: ''
-      },
-      //规则，即添加里的验证规则
-      ruleForm: {
-        name: '',
-        loginName: '',
-        password: '',
-        phone: '',
-        userGroup: ''
-      },
-      rules: {
-        name: [
-          { required: true, message: '请输入用户姓名', trigger: 'blur' }
-        ],
-        loginName: [
-          { required: true, message: '请输入登录名', trigger: 'blur' }
-        ],
-        password: [
-          { required: true, message: '请输入密码', trigger: 'blur' }
-        ],
-        phone: [
-          { required: true, message: '请输入联系方式', trigger: 'blur' },
-          { pattern: /^[0-9]+$/, message: '联系方式必须为数字', trigger: 'blur' }
-        ],
-        userGroup: [
-          { required: true, message: '请选择所属用户组', trigger: 'change' }
-        ]
+      editTableData: Array(8).fill().map(() => ({
+        id: '111111',
+        name: '王胜国',
+        number:'202283290993',
+        password: '123456',
+        klass:'19班',
+        grade:'六三制小学一年级'
+      })),
+      addForm:{
+        name:'',
+        region:''
       },
 
-
+      
       //为区域列表的数据
       provinces: [
         { id: 1, name: '北京市', cities: [
@@ -344,22 +367,16 @@ export default {
       }
     },
   },
+  computed: {
+    // 计算属性，根据选择的学校过滤班级数据
+    filteredTableData() {
+      if (!this.selectedSchool) return []; // 如果没有选择学校，返回空数组
+      return this.tableData.filter(item => item.schoolId === this.selectedSchool); 
+    },
+  },
 
   methods: {
-    //实现表格前面的多选框的
-    toggleSelection(rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
-        });
-      } else {
-        this.$refs.multipleTable.clearSelection();
-      }
-    },
-    //
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
-    },
+    
     //实现搜索栏多属性搜索的
     Search_table() {
       const Search_List = [];
@@ -407,35 +424,31 @@ export default {
       this.tableData = Search_List;
     },
 
+    // 当学校选择改变时，更新表格数据
+    onSchoolChange() {
+      // 你不需要在这里手动更新表格数据了，
+      // 因为 filteredTableData 计算属性会自动根据 selectedSchool 的变化更新
+
+
+    },
+
     //新增按钮跳出弹窗
     handleEdit1(){
-      if (this.$refs.ruleForm) {
-        this.$refs.ruleForm.resetFields(); // 清除表单验证并重置表单
-      }
+      
       this.dialogVisible1 = true;
     },
 
     //新增用户表单提交前判断下数据格式是否正确
     handleSubmit1() {
-      this.$refs.ruleForm.validate((valid) => {
-        if (valid) {
-          // 表单验证通过，提交数据
 
-          // 重置表单
-          this.$refs.ruleForm.resetFields(); 
-          this.dialogVisible1 = false;  //关闭弹窗
-          // 在此处添加你的提交逻辑，例如发送数据到服务器
 
-        } else {
-          return false; // 阻止表单提交
-        }
-      });
+      this.dialogVisible1 = false;  //关闭弹窗
     },
 
     //点击编辑按钮跳出弹窗填充数据
     handleEdit2(row) {
-      // 将当前行数据复制到 editForm 中，避免直接修改表格数据
-      this.editForm = Object.assign({}, row); 
+      
+
       this.dialogVisible2 = true;
     },
 

@@ -6,13 +6,7 @@
     row-key="id"
     border
     default-expand-all
-    @row-click="handleRowClick"
     :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
-    <el-table-column
-        type="selection"
-        width="55"
-        :selectable="row => !row.hasChildren1" >
-    </el-table-column>
     <el-table-column
         prop="name"
         label="名称">
@@ -117,7 +111,7 @@
                 },
                 {
                 id:'4',
-                name:"五四初中",
+                name:"五四制初中",
                 hasChildren1: true, // 有此才能判定是否为父节点
                 children:[
                     {
@@ -143,13 +137,7 @@
 
     },
     methods:{
-      //选中行就能选中前面的多选框
-      handleRowClick(row) {
-        //此处实现父节点不会被选中
-        if (!row.hasChildren1) { 
-                this.$refs.multipleTable.toggleRowSelection(row);
-        }
-      },
+      
 
     }
 

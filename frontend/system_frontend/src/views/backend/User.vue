@@ -314,6 +314,7 @@ export default {
     handleSizeChange() {},
     currentPage4() {}
   },
+  
   //把tableData数值赋给showTable
   created(){
     this.showTable = [...this.tableData];
