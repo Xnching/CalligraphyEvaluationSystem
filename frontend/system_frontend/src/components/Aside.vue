@@ -44,6 +44,14 @@
           <el-menu-item index="/define">定义管理</el-menu-item>
         </el-submenu>
 
+        <el-submenu index="analysis">
+          <template slot="title"><i class="el-icon-message"></i>数据分析</template>
+          <el-menu-item index="/dataAnalysis">用户数据分析</el-menu-item>
+          <el-menu-item index="/behaviorAnalysis">用户行为分析</el-menu-item>
+          <el-menu-item index="/fontAnalysis">字库分析</el-menu-item>
+          <el-menu-item index="/resourceAnalysis">书法知识资源分析</el-menu-item>
+        </el-submenu>
+
         <el-submenu index="announcementHelp">
           <template slot="title"><i class="el-icon-menu"></i>公告与帮助</template>
           <el-submenu index="announcement">
@@ -54,7 +62,6 @@
           <el-submenu index="help">
           <template slot="title">帮助管理</template>
             <el-menu-item index="/question">常见问题与答案设置</el-menu-item>
-            <el-menu-item index="/customerService">人工客服</el-menu-item>
             <el-menu-item index="/feedback">反馈管理</el-menu-item>
           </el-submenu>
         </el-submenu>
@@ -78,7 +85,7 @@
           <el-menu-item index="/type">类型管理</el-menu-item>
           <el-menu-item index="/addSource">添加书法知识</el-menu-item>
           <el-menu-item index="/resourceManagement">资源管理</el-menu-item>
-          <el-menu-item index="/collection">合集管理</el-menu-item>
+          <el-menu-item index="/collection">视频合集管理</el-menu-item>
         </el-submenu>
 
       </el-menu>

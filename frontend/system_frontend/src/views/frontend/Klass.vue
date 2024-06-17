@@ -5,32 +5,32 @@
         
         <label for="provinceSelect">请先选择到学校:</label> 
         <!--下面是学校选择器，从区域然后具体选到学校-->
-        <select v-model="selectedProvince" @change="onProvinceChange" style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
+        <select v-model="selectedProvince" filterable @change="onProvinceChange" style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
             <option value="">请选择省份</option>
             <option v-for="province in provinces" :key="province.id" :value="province.id">
                 {{ province.name }}
             </option>
         </select>
-        <select v-model="selectedCity" @change="onCityChange" v-if="cities.length" style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
+        <select v-model="selectedCity" filterable @change="onCityChange" v-if="cities.length" style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
             <option value="">请选择城市</option>
             <option v-for="city in cities" :key="city.id" :value="city.id">
                 {{ city.name }}
             </option>
         </select>
         <!--注意是county！！！不是country-->
-        <select v-model="selectedCounty" @change="onCountyChange" v-if="counties.length" style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
+        <select v-model="selectedCounty" filterable @change="onCountyChange" v-if="counties.length" style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
             <option value="">请选择区/县</option>
             <option v-for="county in counties" :key="county.id" :value="county.id">
                 {{ county.name }}
             </option>
         </select>
-        <select v-model="selectedSchoolType" @change="onSchoolTypeChange" v-if="schoolTypes.length" style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
+        <select v-model="selectedSchoolType" filterable @change="onSchoolTypeChange" v-if="schoolTypes.length" style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
             <option value="">请选择学校类型</option>
             <option v-for="schoolType in schoolTypes" :key="schoolType.id" :value="schoolType.id">
                 {{ schoolType.name }}
             </option>
         </select>
-        <select v-model="selectedSchool" v-if="schools.length" @change="onSchoolChange" style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
+        <select v-model="selectedSchool" v-if="schools.length" filterable @change="onSchoolChange" style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
             <option value="">请选择学校</option>
             <option v-for="school in schools" :key="school.id" :value="school.id">
                 {{ school.name }}

@@ -34,188 +34,99 @@
         return{
             reigonData:[{
                 id:'1',
-                name:"系统用户管理",
+                name:"北京市",
                 hasChildren1: true, // 有此才能判定是否为父节点,实现父节点多选框无法被选中
                 children:[
                     {
                     id:'11',    
-                    name:"系统用户管理",
-                    },
-                    {
-                    id:'12',
-                    name:"用户组管理",
+                    name:"东城区",
                     }
                 ]
                 },
                 {
                 id:'2',
-                name:"基础数据管理",
+                name:"江苏省",
                 hasChildren1: true, // 有此才能判定是否为父节点
                 children:[
                     {
                     id:'21',
-                    name:"区域管理",
+                    name:"南京市",
                     },
                     {
                     id:'22',
-                    name:"学校管理",
-                    },
-                    {
-                    id:'23',
-                    name:"年级管理",
-                    },
-                    {
-                    id:'24',
-                    name:"学年管理",
-                    },
+                    name:"苏州市",
+                    }
                 ]
                 },
                 {
                 id:'3',
-                name:"前端用户管理",
+                name:"浙江省",
                 hasChildren1: true, // 有此才能判定是否为父节点
                 children:[
                     {
                     id:'31',
-                    name:"班级管理",
+                    name:"杭州市",
                     },
                     {
                     id:'32',
-                    name:"学生管理",
-                    },
-                    {
-                    id:'33',
-                    name:"教师管理",
-                    },
+                    name:"宁波市",
+                    }
                 ]
                 },
                 {
                 id:'4',
-                name:"字库管理",
+                name:"安徽省",
                 hasChildren1: true, // 有此才能判定是否为父节点
                 children:[
                     {
                     id:'41',
-                    name:"样本字管理",
+                    name:"合肥市",
                     },
                     {
                     id:'42',
-                    name:"模板字管理",
-                    },
-                    {
-                    id:'43',
-                    name:"字帖管理",
-                    },
-                    {
-                    id:'44',
-                    name:"模板管理",
-                    },
-                    {
-                    id:'45',
-                    name:"定义管理",
-                    },
+                    name:"马鞍山市",
+                    }
                 ]
                 },
                 {
                 id:'5',
-                name:"公告与帮助",
+                name:"山东省",
                 hasChildren1: true, // 有此才能判定是否为父节点
                 children:[
                     {
                     id:'51',
-                    name:"公告管理",
+                    name:"青岛市",
                     hasChildren1: true, // 有此才能判定是否为父节点
                     children:[
                         {
                         id:'511',
-                        name:"发布公告",
+                        name:"胶州市",
                         },
                         {
                         id:'512',
-                        name:"查看公告",
+                        name:"平度市",
                         },
                     ]
                     },
                     {
                     id:'52',
-                    name:"帮助管理",
+                    name:"烟台市",
                     hasChildren1: true, // 有此才能判定是否为父节点
                     children:[
                         {
                         id:'521',
-                        name:"常见问题与答案设置",
+                        name:"福山区",
                         },
                         {
                         id:'522',
-                        name:"人工客服",
+                        name:"莱山区",
                         },
                         {
                         id:'523',
-                        name:"反馈管理",
+                        name:"蓬莱区",
                         },
                     ]
                     }
-                ]
-                },
-                {
-                id:'6',
-                name:"竞赛管理",
-                hasChildren1: true, // 有此才能判定是否为父节点
-                children:[
-                    {
-                    id:'61',
-                    name:"竞赛列表",
-                    },
-                    {
-                    id:'62',
-                    name:"评阅管理",
-                    },
-                    {
-                    id:'63',
-                    name:"作品评阅",
-                    },
-                ]
-                },
-                {
-                id:'7',
-                name:"优秀作品管理",
-                hasChildren1: true, // 有此才能判定是否为父节点
-                children:[
-                    {
-                    id:'71',
-                    name:"作业评审",
-                    },
-                    {
-                    id:'72',
-                    name:"作业作品",
-                    },
-                    {
-                    id:'73',
-                    name:"竞赛作品",
-                    },
-                ]
-                },
-                {
-                id:'8',
-                name:"书法知识管理",
-                hasChildren1: true, // 有此才能判定是否为父节点
-                children:[
-                    {
-                    id:'81',
-                    name:"类型管理",
-                    },
-                    {
-                    id:'82',
-                    name:"添加书法知识",
-                    },
-                    {
-                    id:'83',
-                    name:"资源管理",
-                    },
-                    {
-                    id:'84',
-                    name:"合集管理",
-                    },
                 ]
                 }
             ],

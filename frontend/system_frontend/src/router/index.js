@@ -18,7 +18,6 @@ import Define from '@/views/word/Define.vue'
 import ReleaseAnnouncement from '@/views/announcementHelp/ReleaseAnnouncement.vue'
 import ViewAnnouncement from '@/views/announcementHelp/ViewAnnouncement.vue'
 import Question from '@/views/announcementHelp/Question.vue'
-import CustomerService from '@/views/announcementHelp/CustomerService.vue'
 import Feedback from '@/views/announcementHelp/Feedback.vue'
 import CompetitionList from '@/views/competition/CompetitionList.vue'
 import ReviewManagement from '@/views/competition/ReviewManagement.vue'
@@ -30,6 +29,18 @@ import Type from '@/views/resource/Type.vue'
 import AddSource from '@/views/resource/AddSource.vue'
 import ResourceManagement from '@/views/resource/ResourceManagement.vue'
 import Collection from '@/views/resource/Collection.vue'
+import CompetitionDivision from '@/views/competition/ReviewMangement/CompetitionDivision.vue'
+import DtailedCompetition from '@/views/competition/DtailedCompetition.vue'
+import FinalView from '@/views/competition/ReviewWorks/finalView.vue'
+import JuniorView from '@/views/competition/ReviewWorks/juniorView.vue'
+import DetailedReview from '@/views/competition/ReviewMangement/DetailedReview.vue'
+import DetailedJuniorReview from '@/views/competition/ReviewMangement/DtailedJunoirReview.vue'
+import DetailedFinalReview from '@/views/competition/ReviewMangement/DetailedFinalReview.vue'
+import DataAnalysis from '@/views/analysis/DataAnalysis.vue'
+import BehaviorAnalysis from '@/views/analysis/BehaviorAnalysis.vue'
+import FontAnalysis from '@/views/analysis/FontAnalysis.vue'
+import ResourceAnalysis from '@/views/analysis/ResourceAnalysis.vue'
+
 
 //此文件路由
 Vue.use(VueRouter)
@@ -112,6 +123,26 @@ const routes = [
         component:Define
       },
       {
+        path:'dataAnalysis',
+        name:'用户数据分析',
+        component:DataAnalysis
+      },
+      {
+        path:'behaviorAnalysis',
+        name:'用户行为分析',
+        component:BehaviorAnalysis
+      },
+      {
+        path:'fontAnalysis',
+        name:'字库分析分析',
+        component:FontAnalysis
+      },
+      {
+        path:'resourceAnalysis',
+        name:'书法知识资源分析分析',
+        component:ResourceAnalysis
+      },
+      {
         path:'releaseAnnouncement',
         name:'发布公告',
         component:ReleaseAnnouncement
@@ -127,11 +158,6 @@ const routes = [
         component:Question
       },
       {
-        path:'customerService',
-        name:'人工客服',
-        component:CustomerService
-      },
-      {
         path:'feedback',
         name:'反馈管理',
         component:Feedback
@@ -142,14 +168,49 @@ const routes = [
         component:CompetitionList
       },
       {
+        path:'competitionList/:competition',
+        name:'竞赛列表-竞赛组别详情',
+        component:DtailedCompetition
+      },
+      {
         path:'reviewManagement',
         name:'评阅管理',
         component:ReviewManagement
       },
       {
+        path:'reviewManagement/:competitionDivision',
+        name:'评阅管理-竞赛组别详情',
+        component:CompetitionDivision
+      },
+      {
+        path:'reviewManagement/teacher/:teacherName',
+        name:'评阅管理-教师评阅详情',
+        component:DetailedReview
+      },
+      {
+        path:'reviewManagement/teacher/:teacherName/junior/:id',
+        name:'评阅管理-教师评阅详情-初级作品评阅详情',
+        component:DetailedJuniorReview
+      },
+      {
+        path:'reviewManagement/teacher/:teacherName/final/:id',
+        name:'评阅管理-教师评阅详情-最终作品评阅详情',
+        component:DetailedFinalReview
+      },
+      {
         path:'reviewWorks',
         name:'作品评阅',
         component:ReviewWorks
+      },
+      {
+        path:'reviewWorks/junior/:id',
+        name:'作品评阅-初级作品评阅详情',
+        component:JuniorView
+      },
+      {
+        path:'reviewWorks/final/:id',
+        name:'作品评阅-最终作品评阅详情',
+        component:FinalView
       },
       {
         path:'reviewOutstanding',
@@ -183,7 +244,7 @@ const routes = [
       },
       {
         path:'collection',
-        name:'合集管理',
+        name:'资源管理',
         component:Collection
       },
       {

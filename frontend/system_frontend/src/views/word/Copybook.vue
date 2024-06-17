@@ -28,7 +28,7 @@
             :value="item.value">
             </el-option>
         </el-select>
-        <el-button type="primary" @click="handleEdit1" style="margin-left: auto; margin-right: 120px;">新增模板字<i class="el-icon-circle-plus"></i></el-button>
+        <el-button type="primary" @click="handleEdit1" style="margin-left: auto; margin-right: 120px;">新增字帖<i class="el-icon-circle-plus"></i></el-button>
       </div>
         
         <!--下面是图片展示区域-->  

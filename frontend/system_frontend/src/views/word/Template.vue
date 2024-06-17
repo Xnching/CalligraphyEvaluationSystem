@@ -9,7 +9,7 @@
         clearable>
         </el-input>
         <el-button style="margin-left:20px ;margin-right:535px" type="primary">搜索</el-button>
-        <el-button type="primary" @click="handleEdit1">新增<i class="el-icon-circle-plus"></i></el-button>
+        <el-button type="primary" @click="handleEdit1">新增模板<i class="el-icon-circle-plus"></i></el-button>
       </div>       
 
       <el-table
@@ -74,45 +74,41 @@
       <el-dialog
         title="请输入新增模板的信息"
         :visible.sync="dialogVisible1"
-        width="40%"
+        width="80%"
         :close-on-click-modal="false" >
 
-        <el-tabs type="border-card">
-            <el-tab-pane label="用户管理">用户管理</el-tab-pane>
-            <el-tab-pane label="配置管理">配置管理</el-tab-pane>
-            <el-tab-pane label="角色管理">角色管理</el-tab-pane>
+        <el-tabs type="border-card" @tab-click="handleTabClick">
+            <el-tab-pane label="专项练习（偏旁部首）">
+              <earmarkedItem
+                  v-if="templateType[1] === '偏旁'"
+                  :templateType="templateType"
+              ></earmarkedItem>
+            </el-tab-pane>
+
+            <el-tab-pane label="专项练习（结构）">
+              <earmarkedItem
+                  v-if="templateType[1] === '结构'"
+                  :templateType="templateType"
+              ></earmarkedItem>
+            </el-tab-pane>
+
+            <el-tab-pane label="综合练习">
+              <comprehensiveItem
+                  v-if="templateType[0] === '综合练习'"
+                  :templateType="templateType"
+                  :key="new Date().getTime()"
+              ></comprehensiveItem>
+            </el-tab-pane>
+
+            <el-tab-pane label="字帖练习">
+              <copybookItem
+                  v-if="templateType[0] === '字帖练习'"
+                  :templateType="templateType"
+                  :key="new Date().getTime()"
+              ></copybookItem>
+            </el-tab-pane>
+
         </el-tabs>
-
-        <!--新建模板-->
-        <el-tab-pane label="新建模板">
-
-
-
-
-
-
-        <earmarkedItem
-            v-if="templateType[1]"
-            :templateType="templateType"
-            :key="new Date().getTime()"
-        ></earmarkedItem>
-        <comprehensiveItem
-            v-if="templateType[0] === '综合练习'"
-            :templateType="templateType"
-            :key="new Date().getTime()"
-        ></comprehensiveItem>
-        <copybookItem
-            v-if="templateType[0] === '字帖练习'"
-            :templateType="templateType"
-            :key="new Date().getTime()"
-        ></copybookItem>
-
-
-
-
-
-
-        </el-tab-pane>
 
         
         <template #footer>
@@ -121,15 +117,45 @@
             <el-button type="primary" @click="handleSubmit1()">确定</el-button>
           </span>
         </template>
+
       </el-dialog>
 
       <!-- 编辑模板的弹窗 -->
       <el-dialog
         title="点击修改模板信息"
         :visible.sync="dialogVisible2"
-        width="40%"
+        width="60%"
         :close-on-click-modal="false">
-        
+        <div class="top">
+          <el-input
+            v-model="formModel.name"
+            placeholder="请输入模板名称"
+            style="width: 240px"
+          ></el-input>
+          <el-select
+            v-model="formModel.radical"
+            size="large"
+            style="width: 240px"
+            :disabled="true" 
+          >
+            <el-option
+              v-for="item in radicalOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+          <el-select v-model="formModel.font" size="large" style="width: 240px">
+            <el-option
+              v-for="item in fontOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+          <el-rate v-model="formModel.difficulty" size="large" />
+          <img src="/images/copybook/1.jpg" style="width: 100%;">
+        </div>
 
 
 
@@ -139,6 +165,7 @@
             <el-button type="primary" @click="handleSubmit2">确定</el-button>
           </span>
         </template>
+
       </el-dialog>
 
     
@@ -146,8 +173,18 @@
 </template>
 
 
+
 <script>
+import comprehensiveItem from '@/components/word/comprehensiveItem.vue'
+import earmarkedItem from '@/components/word/earmarkedItem.vue'
+import copybookItem from '@/components/word/copybookItem.vue'
+
 export default {
+  components:{
+    earmarkedItem,
+    comprehensiveItem,
+    copybookItem
+  },
   data() {
     return {
       //搜索栏要用的
@@ -164,7 +201,45 @@ export default {
       //初始隐藏两个表单
       dialogVisible1: false,
       dialogVisible2: false,
-      
+      templateType: [],
+      formModel: {
+        name: '楷书体模板',
+        radical: '专项（结构）',
+        font: '楷书',
+        difficulty: 3
+      },
+      radicalOptions: [
+        {
+          value: '专项练习(偏旁部首)',
+          label: '专项练习(偏旁部首)'
+        },
+        {
+          value: '专项练习(结构)',
+          label: '专项练习(结构)'
+        },
+        {
+          value: '专项练习(字体)',
+          label: '专项练习(字体)'
+        }
+      ],
+      fontOptions: [
+        {
+          value: '楷书',
+          label: '楷书'
+        },
+        {
+          value: '行书',
+          label: '行书'
+        },
+        {
+          value: '草书',
+          label: '草书'
+        },
+        {
+          value: '隶书',
+          label: '隶书'
+        }
+      ],
     };
   },
   watch: {
@@ -230,11 +305,22 @@ export default {
       this.dialogVisible1 = true;
     },
 
-    //新增用户表单提交前判断下数据格式是否正确
-    handleSubmit1() {
+    handleTabClick(tab) {
+      // ...更新 templateType 的逻辑...
+    },
 
-        this.dialogVisible1 = false;  //关闭弹窗
-        
+    //新增用户表单提交前判断下数据格式是否正确
+    handleTabClick(tab) {
+      const label = tab.label;
+      if (label === "专项练习（偏旁部首）") {
+        this.templateType = ['专项练习', '偏旁'];
+      } else if (label === "专项练习（结构）") {
+        this.templateType = ['专项练习', '结构'];
+      } else if (label === "综合练习") {
+        this.templateType = ['综合练习'];
+      } else if (label === "字帖练习") {
+        this.templateType = ['字帖练习'];
+      }
     },
 
     //点击编辑按钮跳出弹窗填充数据
