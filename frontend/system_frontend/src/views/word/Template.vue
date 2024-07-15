@@ -1,7 +1,7 @@
 <template>
     <div>
       <div style="padding:10px; margin:10px; margin-bottom: -5px;">
-        <el-input style="width:300px ;margin-left:-80px" 
+        <el-input style="width:300px " 
         suffix-icon="el-icon-search" 
         placeholder="请输入"
         v-model="inputVal"

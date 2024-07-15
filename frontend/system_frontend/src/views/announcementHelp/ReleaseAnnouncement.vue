@@ -4,11 +4,19 @@
       <el-form-item label="公告名：">
         <el-input v-model="form.title" placeholder="请输入公告名"></el-input>
       </el-form-item>
+      <el-form-item label="公告类型：">
+        <el-select v-model="form.target" placeholder="请选择公告类型">
+          <el-option label="系统公告" value="system"></el-option>
+          <el-option label="竞赛公告" value="competition"></el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="发布对象：">
         <el-select v-model="form.target" placeholder="请选择发布对象">
+          <el-option label="学生" value="student"></el-option>
+          <el-option label="教师" value="teacher"></el-option>
+          <el-option label="学生和教师" value="both"></el-option>
+          <el-option label="管理员" value="manger"></el-option>
           <el-option label="所有人" value="all"></el-option>
-          <el-option label="特定人群" value="specific"></el-option>
-          <!-- 添加更多选项 -->
         </el-select>
       </el-form-item>
       <el-form-item label="发布时间：">
@@ -21,30 +29,35 @@
             v-model="form.scheduledTime"
             placeholder="选择发布时间"
             :picker-options="pickerOptions"
+            style="margin: auto;"
         >
         </el-time-picker>
       </el-form-item>
-      <el-form-item label="发布内容：">
-        <el-input type="textarea" v-model="form.content" :rows="5" placeholder="请输入发布内容"></el-input>
+      <el-form-item label="公告内容：">
+        <WangEditor></WangEditor>
       </el-form-item>
-      <el-form-item>
+      <el-form-item style=" text-align: center;">
         <el-button type="primary" @click="confirm">确认</el-button>
-        <el-button @click="cancel">取消</el-button>
+        <el-button @click="cancel">清空</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
+import WangEditor from '@/components/wangEditor.vue';
+
 export default {
+  components:{
+    WangEditor
+  },
   data() {
     return {
       form: {
         title: '',
-        target: 'all',
+        target: '',
         releaseType: 'immediate',
         scheduledTime: '',
-        content: ''
       },
       pickerOptions: {
         selectableRange: '00:00:00-23:59:59'
@@ -65,8 +78,8 @@ export default {
     },
     cancel() {
       this.$message({
-        message: '已取消',
-        type: 'info'
+
+
       });
       // 此处可以进行取消操作的逻辑
     }
@@ -76,7 +89,7 @@ export default {
 
 <style scoped>
 .announcement-form {
-  max-width: 400px;
+  max-width: 90%;
   margin: 0 auto;
 }
 .el-form-item__label {

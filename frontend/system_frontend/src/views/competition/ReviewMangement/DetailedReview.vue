@@ -1,13 +1,11 @@
 <template>
-    <div>
-      <div class="button-section">
-        <button @click="showPage('junior')">初级作品评阅</button>
-        <button @click="showPage('final')">最终作品评阅</button>
-      </div>
-  
-      <div v-if="currentPage === 'junior'" class="junior-add-section">
+  <div>
+    <el-tabs v-model="currentPage">
+      <el-tab-pane label="初级作品评阅" name="junior">
+        <!-- 初级作品评阅的内容 -->
         <div style="padding:10px; margin:10px; margin-bottom: -5px;">
-          <el-input style="width:300px ;margin-left:-80px"
+          <h2 style=" text-align: center;">{{ teacherName }}</h2>
+          <el-input style="width:300px "
                     suffix-icon="el-icon-search"
                     placeholder="请输入"
                     v-model="inputVal"
@@ -73,12 +71,13 @@
               :total="20">
           </el-pagination>
         </div>
-      </div>
-  
-  
-      <div v-if="currentPage === 'final'" class="final-add-section">
+
+      </el-tab-pane>
+      <el-tab-pane label="最终作品评阅" name="final">
+        <!-- 最终作品评阅的内容 -->
         <div style="padding:10px; margin:10px; margin-bottom: -5px;">
-          <el-input style="width:300px ;margin-left:-80px"
+          <h2 style=" text-align: center;">{{ teacherName }}</h2>
+          <el-input style="width:300px "
                     suffix-icon="el-icon-search"
                     placeholder="请输入"
                     v-model="inputVal"
@@ -116,7 +115,7 @@
           </el-table-column>
           <el-table-column
               prop="juniorAvgScore"
-              label="初级评分均分"
+              label="初级评分"
               width="120">
           </el-table-column>
           <el-table-column
@@ -144,202 +143,145 @@
               :total="20">
           </el-pagination>
         </div>
-      </div>
-    </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        //搜索栏要用的
-        inputVal:"",
-        currentPage: 'junior',
-        tableData: Array(8).fill().map(() => ({
-          juniorWorkID:"1000",
-          juniorCompetitionName: "兰亭序杯",
-          juniorGroup: "小学A组",
-          systemScore: "90",
-          mineScore: "92",
-          finalWorkID:"1000",
-          finalCompetitionName: "兰亭序杯",
-          finalGroup: "小学A组",
-          juniorAvgScore: "90",
-          mineFinalScore: "92"
-        })),
-        showTable:[],
-        multipleSelection: [],
-        ruleForm: {
-          juniorWorkID:'',
-          juniorCompetitionName: '',
-          juniorGroup: '',
-          systemScore: '',
-          mineScore: '',
-          finalWorkID:'',
-          finalCompetitionName: '',
-          finalGroup: '',
-          juniorAvgScore: '',
-          mineFinalScore: ''
-        },
-      };
+
+      </el-tab-pane>
+    </el-tabs>
+
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      //搜索栏要用的
+      inputVal:"",
+      currentPage: 'junior',
+      tableData: Array(8).fill().map(() => ({
+        juniorWorkID:"1000",
+        juniorCompetitionName: "兰亭序杯",
+        juniorGroup: "小学A组",
+        systemScore: "90",
+        mineScore: "92",
+        finalWorkID:"1000",
+        finalCompetitionName: "兰亭序杯",
+        finalGroup: "小学A组",
+        juniorAvgScore: "90",
+        mineFinalScore: "92"
+      })),
+      showTable:[],
+      multipleSelection: [],
+      ruleForm: {
+        juniorWorkID:'',
+        juniorCompetitionName: '',
+        juniorGroup: '',
+        systemScore: '',
+        mineScore: '',
+        finalWorkID:'',
+        finalCompetitionName: '',
+        finalGroup: '',
+        juniorAvgScore: '',
+        mineFinalScore: ''
+      },
+    };
+  },
+  watch: {
+    inputVal(item1) {
+      if (item1 == "") {
+        this.tableData = this.showTable;
+      }
     },
-    watch: {
-      inputVal(item1) {
-        if (item1 == "") {
-          this.tableData = this.showTable;
-        }
-      },
-    },
-  
-    methods: {
-      toggleSelection(rows) {
-        if (rows) {
-          rows.forEach(row => {
-            this.$refs.multipleTable.toggleRowSelection(row);
-          });
-        } else {
-          this.$refs.multipleTable.clearSelection();
-        }
-      },
-      showPage(page) {
-        this.currentPage = page;
-      },
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
-      Search_table() {
-        const Search_List = [];
-        let res1 = this.inputVal;
-        const res = res1.replace(/\s/gi, "");
-        let searchArr = this.showTable;
-        searchArr.forEach((e) => {
-          let ID = e.ID;
-          let name= e.name;
-          let count= e.count;
-          let competitionObject=e.competitionObject;
-          let group=e.group;
-          let state=e.state;
-          if (ID.includes(res)) {
-            if (Search_List.indexOf(e) == "-1") {
-              Search_List.push(e);
-            }
-          }
-          if (name.includes(res)) {
-            if (Search_List.indexOf(e) == "-1") {
-              Search_List.push(e);
-            }
-          }
-          if (count.includes(res)) {
-            if (Search_List.indexOf(e) == "-1") {
-              Search_List.push(e);
-            }
-          }
-          if (competitionObject.includes(res)) {
-            if (Search_List.indexOf(e) == "-1") {
-              Search_List.push(e);
-            }
-          }
-          if (group.includes(res)) {
-            if (Search_List.indexOf(e) == "-1") {
-              Search_List.push(e);
-            }
-          }
-          if (state.includes(res)) {
-            if (Search_List.indexOf(e) == "-1") {
-              Search_List.push(e);
-            }
-          }
+  },
+
+  methods: {
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.$refs.multipleTable.toggleRowSelection(row);
         });
-        this.tableData = Search_List;
-      },
-  
-      //初级作品评阅的评阅按钮
-      handleEdit1(row){
-        const id = row.juniorWorkID;
-        // 跳转到竞赛组别详情页面
-        this.$router.push(`/reviewManagement/teacher/${this.teacherName}/junior/${id}`);
-      },
-  
-      //最终作品评阅的按钮
-      handleEdit2(row){
-        const id = row.finalWorkID;
-        // 跳转到竞赛组别详情页面
-        this.$router.push(`/reviewManagement/teacher/${this.teacherName}/final/${id}`);
-      },
-      
-      handleCurrentChange() {},
-      handleSizeChange() {},
-      currentPage4() {}
-  
+      } else {
+        this.$refs.multipleTable.clearSelection();
+      }
     },
-    mounted() {
+    showPage(page) {
+      this.currentPage = page;
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    Search_table() {
+      const Search_List = [];
+      let res1 = this.inputVal;
+      const res = res1.replace(/\s/gi, "");
+      let searchArr = this.showTable;
+      searchArr.forEach((e) => {
+        let ID = e.ID;
+        let name= e.name;
+        let count= e.count;
+        let competitionObject=e.competitionObject;
+        let group=e.group;
+        let state=e.state;
+        if (ID.includes(res)) {
+          if (Search_List.indexOf(e) == "-1") {
+            Search_List.push(e);
+          }
+        }
+        if (name.includes(res)) {
+          if (Search_List.indexOf(e) == "-1") {
+            Search_List.push(e);
+          }
+        }
+        if (count.includes(res)) {
+          if (Search_List.indexOf(e) == "-1") {
+            Search_List.push(e);
+          }
+        }
+        if (competitionObject.includes(res)) {
+          if (Search_List.indexOf(e) == "-1") {
+            Search_List.push(e);
+          }
+        }
+        if (group.includes(res)) {
+          if (Search_List.indexOf(e) == "-1") {
+            Search_List.push(e);
+          }
+        }
+        if (state.includes(res)) {
+          if (Search_List.indexOf(e) == "-1") {
+            Search_List.push(e);
+          }
+        }
+      });
+      this.tableData = Search_List;
+    },
+
+    //初级作品评阅的评阅按钮
+    handleEdit1(row){
+      const id = row.juniorWorkID;
+      // 跳转到竞赛组别详情页面
+      this.$router.push(`/reviewManagement/teacher/${this.teacherName}/junior/${id}`);
+    },
+
+    //最终作品评阅的按钮
+    handleEdit2(row){
+      const id = row.finalWorkID;
+      // 跳转到竞赛组别详情页面
+      this.$router.push(`/reviewManagement/teacher/${this.teacherName}/final/${id}`);
+    },
+    
+    handleCurrentChange() {},
+    handleSizeChange() {},
+    currentPage4() {}
+
+  },
+  mounted() {
     // 通过 this.$route.params 获取路由参数
     this.teacherName = this.$route.params.teacherName;
-   }
-  };
-  
-  </script>
-  
-  <style>
-  .button-section {
-    display: flex;
-    gap: 10px;
   }
-  
-  .video-add-section,
-  .text-add-section {
-    margin-top: 20px;
-  }
-  
-  .upload-section {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .upload-left,
-  .upload-right {
-    width: 48%;
-  }
-  
-  .details-section,
-  .text-details-section,
-  .button-group {
-    margin-top: 20px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .details-section label,
-  .details-section input,
-  .details-section select,
-  .text-details-section label,
-  .text-details-section input,
-  .text-details-section textarea {
-    display: block;
-    width: 80%;
-    margin: 10px 0;
-  }
-  
-  .tags {
-    display: flex;
-    gap: 5px;
-    margin-top: 10px;
-  }
-  
-  textarea {
-    width: 80%;
-    height: 200px;
-  }
-  
-  .button-group {
-    flex-direction: row;
-    justify-content: center;
-  }
-  
-  .button-group button {
-    margin: 0 10px;
-  }
-  </style>
+};
+
+</script>
+
+<style>
+</style>
   

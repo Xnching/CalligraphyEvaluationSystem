@@ -28,6 +28,14 @@
             :value="item.value">
             </el-option>
         </el-select>
+        <el-select v-model="selectedSourceMan" filterable placeholder="请选择导入人" style="width: 150px;margin-right: 20px;">
+            <el-option
+            v-for="item in sourceManOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+            </el-option>
+        </el-select>
         <el-button type="primary" @click="handleEdit1" style="margin-left: auto; margin-right: 120px;">新增字帖<i class="el-icon-circle-plus"></i></el-button>
       </div>
         
@@ -35,6 +43,7 @@
         <div class="image-grid"> 
             <div v-for="image in paginatedImages" :key="image.id" class="image-item">
                 <img :src="image.src" :alt="image.title" @click="handleEdit2(image)">
+                <p style=" text-align: center;">{{ image.title }}</p> <!-- 添加这一行来显示图片标题 -->
             </div>
         </div>
 
@@ -46,32 +55,87 @@
 
       
 
-        <!-- 新增模板字的弹窗 -->
+        <!-- 新增字帖的弹窗 -->
         <el-dialog
         title="请导入新增字帖的信息"
         :visible.sync="dialogVisible1"
         width="40%"
         :close-on-click-modal="false" >
-            <el-upload
-            class="upload-demo"
-            drag
-            action="https://jsonplaceholder.typicode.com/posts/"
-            multiple
-            accept=".png,.jpeg,.jpg">
-                <i class="el-icon-upload"></i>
-                <div class="el-upload__text">将需要录入的字帖的图片拖到此处，或<em>点击上传</em></div>
-            </el-upload>
+        <el-tabs type="border-card">
+                <!--单个添加-->
+                <el-tab-pane label="单个添加">
+                    <el-form ref="addForm" :model="addForm" label-width="100px">
+                        <el-form-item label="字名：">
+                            <el-input v-model="addForm.name"></el-input>
+                        </el-form-item>
+                        <el-form-item label="字帖字体：">
+                            <el-select v-model="addForm.selectedFont" filterable placeholder="请选择字体" style="width: 150px;margin-right: 20px;">
+                                <el-option
+                                v-for="item in fontoptions"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="年级：">
+                            <el-select v-model="addForm.selectedGrade" filterable placeholder="请选择年级"
+                            style="width: 150px;margin-right: 20px;">
+                                <el-option
+                                v-for="item in gradeOptions"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="作者：">
+                            <el-input v-model="addForm.author"></el-input>
+                        </el-form-item>
+                    </el-form>
 
-            <el-upload
-            class="upload-demo"
-            drag
-            action="https://jsonplaceholder.typicode.com/posts/"
-            multiple
-            accept=".xls,.xlsx">
-                <i class="el-icon-upload"></i>
-                <div class="el-upload__tip" slot="tip">Excel文件格式以对应字帖文件名，字帖名，字体，年级，作者</div>
-                <div class="el-upload__text">将需要录入的字帖的对应的属性Excel拖到此处，或<em>点击上传</em></div>
-            </el-upload>
+                    <el-upload
+                    class="upload-demo"
+                    drag
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    multiple
+                    :limit="1"
+                    accept=".png,.jpeg,.jpg"
+                    style=" text-align: center;">
+                        <i class="el-icon-upload"></i>
+                        <div class="el-upload__text">将需要录入的字帖的图片拖到此处，或<em>点击上传</em></div>
+                    </el-upload>
+
+                </el-tab-pane>
+
+                <!--批量添加-->
+                <el-tab-pane label="批量添加" style=" text-align: center;">
+                    <el-upload
+                    class="upload-demo"
+                    drag
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    multiple
+                    accept=".png,.jpeg,.jpg">
+                        <i class="el-icon-upload"></i>
+                        <div class="el-upload__text">将需要录入的字帖的图片拖到此处，或<em>点击上传</em></div>
+                    </el-upload>
+
+                    <el-upload
+                    class="upload-demo"
+                    drag
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    multiple
+                    :limit="1"
+                    accept=".xls,.xlsx">
+                        <i class="el-icon-upload"></i>
+                        <div class="el-upload__tip" slot="tip">Excel文件格式以对应字帖文件名，字帖名，字体，年级，作者</div>
+                        <div class="el-upload__text">将需要录入的字帖的对应的属性Excel拖到此处，或<em>点击上传</em></div>
+                    </el-upload>
+
+                </el-tab-pane>
+            
+            </el-tabs>
+            
 
             <template #footer>
             <span class="dialog-footer">
@@ -103,7 +167,7 @@
                     <el-input v-model="editForm.author"></el-input>
                 </el-form-item>
                 <el-form-item label="导入人：">
-                    <el-input v-model="editForm.source"></el-input>
+                    <el-input v-model="editForm.sourceMan"></el-input>
                 </el-form-item>
             </el-form>
             <template #footer>
@@ -156,9 +220,20 @@ export default {
             value: '选项3',
             label: '朴鞑法'
             }],
+            sourceManOptions: [{
+            value: '选项1',
+            label: '孙大侠'
+            }, {
+            value: '选项2',
+            label: '张二侠'
+            }, {
+            value: '选项3',
+            label: '吕四侠'
+            }],
             selectedFont:'',
             selectedGrade:'',
             selectedAuthor:'',
+            selectedSourceMan:'',
             //初始隐藏两个表单
             dialogVisible1: false,
             dialogVisible2: false,
@@ -168,11 +243,19 @@ export default {
             selectedImage: null,
             
             images: [],
-        
+            
+            addForm:{
+                name:'',
+                author:'',
+                selectedFont:'',
+                selectedEccentricity:'',
+                selectedStructure:'',
+                selectedGrade:'',
+            },
             editForm:{
                 name:'佰',
                 grade:'五年级',
-                source:'孙昭展',
+                sourceMan:'孙昭展',
                 author:'庆册一',
                 font:'楷体-鞣天源',
             },
@@ -212,9 +295,6 @@ export default {
     },
 
     methods: {
-    
-    
-
 
 
     //新增按钮跳出弹窗

@@ -1,38 +1,67 @@
 <template>
 
   <div>
+
+
+    <!--评审弹窗-->
     <el-dialog
       :visible.sync="dialogVisible"
       width="50%"
-      @close="dialogVisible = false"
-  >
-    <div class="dialog-content">
-      <!-- 左上：照片 -->
-      <div class="dialog-left-top">
-        <img src="/images/copybook/1.jpg" alt="作业图片" style="width: 100%; ">
-      </div>
-      <!-- 左下：文本框 -->
-      <div class="dialog-left-bottom">
-        <p>(系统自动评价，含评分和评价与当初教师评价的分数与评语)</p>
-      </div>
-      <!-- 右上：所属年级 + 优秀作品标准 -->
-      <div class="dialog-right-top">
-        <div>所属年级：<span>一年级</span></div>
-        <div>优秀作品标准：</div>
-        <div>
-          <p>这里是优秀作品标准的描述...</p>
-        </div>
-      </div>
-      <!-- 右下：通过/不通过按钮 -->
-      <div class="dialog-right-bottom">
-        <el-button type="primary" @click="handlePass">通过</el-button>
-        <el-button @click="dialogVisible = false">不通过</el-button>
-      </div>
-    </div>
-  </el-dialog>
+      :close-on-click-modal="false"
+    >
+      <el-form label-position="left" label-width="80px">
+        <!-- 作业图片 -->
+        <el-form-item label="作业图片:">
+          <img :src="imageSrc" alt="作业图片" style="width: 100%; ">
+        </el-form-item>
+        <!-- 作业名称 -->
+        <el-form-item label="作业名称:">
+          <el-input v-model="homeworkName" placeholder="作业名称"></el-input>
+        </el-form-item>
+        <!-- 作者 -->
+        <el-form-item label="作者:">
+          <el-input v-model="author" placeholder="作者"></el-input>
+        </el-form-item>
+        <!-- 作者年级 -->
+        <el-form-item label="作者年级:">
+          <el-input v-model="grade" placeholder="作者年级"></el-input>
+        </el-form-item>
+        <!-- 推荐教师 -->
+        <el-form-item label="推荐教师:">
+          <el-input v-model="recommendedTeacher" placeholder="推荐教师"></el-input>
+        </el-form-item>
+        <!-- 作业类型 -->
+        <el-form-item label="作业类型:">
+          <el-input v-model="homeworkType" placeholder="作业类型"></el-input>
+        </el-form-item>
+        <!-- 智能评分评语 -->
+        <el-form-item label="智能评分:">
+          <el-input v-model="autoScore" placeholder="智能评分"></el-input>
+        </el-form-item>
+        <el-form-item label="智能评语:">
+          <el-input type="textarea" v-model="autoScore" placeholder="智能评语"></el-input>
+        </el-form-item>
+        <!-- 教师的评分评语 -->
+        <el-form-item label="教师评分:">
+          <el-input v-model="teacherScore" placeholder="教师评分"></el-input>
+        </el-form-item>
+        <el-form-item label="教师评语:">
+          <el-input type="textarea" v-model="teacherEvaluation" placeholder="教师评语"></el-input>
+        </el-form-item>
+        <!-- 通过/不通过按钮 -->
+        <el-form-item>
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="warning"@click="dialogVisible = false">不通过</el-button>
+          <el-button type="primary" @click="handlePass">通过</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
+
+  <!--主页面-->
   <div>
     <div style="padding:10px; margin:10px; margin-bottom: -5px;">
-      <el-input style="width:300px ;margin-left:-80px"
+      <el-input style="width:300px"
                 suffix-icon="el-icon-search"
                 placeholder="请输入"
                 v-model="inputVal"
@@ -50,10 +79,6 @@
         style="width: 100%"
         @selection-change="handleSelectionChange">
       <el-table-column
-          type="selection"
-          width="55">
-      </el-table-column>
-      <el-table-column
           prop="ID"
           label="作品ID"
           width="115">
@@ -61,7 +86,7 @@
       <el-table-column
           prop="homeworkName"
           label="作业名称"
-          width="120">
+          width="220">
       </el-table-column>
       <el-table-column
           prop="name"
@@ -76,12 +101,11 @@
       <el-table-column
           prop="workType"
           label="作业类型"
-          show-overflow-tooltip>
+          width="140">
       </el-table-column>
       <el-table-column fixed="right" label="操作">
         <template slot-scope="scope">
           <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit2(scope.row)">评审</el-button>
-          <el-button type="danger" size="small"  icon="el-icon-delete">移出优秀作品</el-button>
         </template>
       </el-table-column>
 
@@ -122,7 +146,7 @@ export default {
       })),
       dialogVisible: false,
       showTable:[],
-      multipleSelection: []
+      imageSrc:'/images/copybook/1.jpg',
     };
   },
   watch: {
@@ -146,20 +170,8 @@ export default {
       // 比如更新作业状态等
       this.dialogVisible = false; // 关闭弹窗
     },
-    //实现表格前面的多选框的
-    toggleSelection(rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
-        });
-      } else {
-        this.$refs.multipleTable.clearSelection();
-      }
-    },
-    //
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
-    },
+    
+    
     //实现搜索栏多属性搜索的
     Search_table() {
       const Search_List = [];
@@ -214,21 +226,5 @@ export default {
 
 </script>
 <style scoped>
-.dialog-content {
-  display: flex;
-  flex-wrap: wrap;
-}
-.dialog-left-top,
-.dialog-left-bottom,
-.dialog-right-top,
-.dialog-right-bottom {
-  flex: 1;
-  padding: 10px;
-  box-sizing: border-box;
-}
-.dialog-right-top {
-  display: flex;
-  flex-direction: column;
-}
-/* 其他样式 */
+
 </style>

@@ -1,150 +1,151 @@
 <template>
   <div>
-    <div class="button-section">
-      <button @click="showPage('junior')">初级作品评阅</button>
-      <button @click="showPage('final')">最终作品评阅</button>
-    </div>
+    <el-tabs v-model="currentPage" @tab-click="handleClick">
+      <el-tab-pane label="初级作品评阅" name="junior">
+        <!-- 初级作品评阅的内容 -->
+        <div style="padding:10px; margin:10px; margin-bottom: -5px;">
+          <el-input style="width:300px "
+                    suffix-icon="el-icon-search"
+                    placeholder="请输入"
+                    v-model="inputVal"
+                    @keyup.enter.native="Search_table()"
+                    clearable>
+          </el-input>
+          <el-button style="margin-left:20px ;margin-right:535px" type="primary">搜索</el-button>
+        </div>
 
-    <div v-if="currentPage === 'junior'" class="junior-add-section">
-      <div style="padding:10px; margin:10px; margin-bottom: -5px;">
-        <el-input style="width:300px ;margin-left:-80px"
-                  suffix-icon="el-icon-search"
-                  placeholder="请输入"
-                  v-model="inputVal"
-                  @keyup.enter.native="Search_table()"
-                  clearable>
-        </el-input>
-        <el-button style="margin-left:20px ;margin-right:535px" type="primary">搜索</el-button>
-      </div>
+        <el-table
+            ref="multipleTable"
+            :data="tableData"
+            stripe
+            tooltip-effect="dark"
+            style="width: 100%"
+            @selection-change="handleSelectionChange">
+          <el-table-column
+              type="selection"
+              width="55">
+          </el-table-column>
+          <el-table-column
+              prop="juniorWorkID"
+              label="ID"
+              width="95">
+          </el-table-column>
+          <el-table-column
+              prop="juniorCompetitionName"
+              label="竞赛名"
+              width="100">
+          </el-table-column>
+          <el-table-column
+              prop="juniorGroup"
+              label="组别"
+              width="120">
+          </el-table-column>
+          <el-table-column
+              prop="systemScore"
+              label="系统评分"
+              width="120">
+          </el-table-column>
+          <el-table-column
+              prop="mineScore"
+              label="我的评分"
+              show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column fixed="right" label="操作">
+            <template slot-scope="scope">
+              <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit1(scope.row)">修改/评阅</el-button>
+              <el-button type="danger" size="small"  icon="el-icon-delete">删除</el-button>
+            </template>
+          </el-table-column>
 
-      <el-table
-          ref="multipleTable"
-          :data="tableData"
-          stripe
-          tooltip-effect="dark"
-          style="width: 100%"
-          @selection-change="handleSelectionChange">
-        <el-table-column
-            type="selection"
-            width="55">
-        </el-table-column>
-        <el-table-column
-            prop="juniorWorkID"
-            label="ID"
-            width="95">
-        </el-table-column>
-        <el-table-column
-            prop="juniorCompetitionName"
-            label="竞赛名"
-            width="100">
-        </el-table-column>
-        <el-table-column
-            prop="juniorGroup"
-            label="组别"
-            width="120">
-        </el-table-column>
-        <el-table-column
-            prop="systemScore"
-            label="系统评分"
-            width="120">
-        </el-table-column>
-        <el-table-column
-            prop="mineScore"
-            label="我的评分"
-            show-overflow-tooltip>
-        </el-table-column>
-        <el-table-column fixed="right" label="操作">
-          <template slot-scope="scope">
-            <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit1(scope.row)">修改/评阅</el-button>
-            <el-button type="danger" size="small"  icon="el-icon-delete">删除</el-button>
-          </template>
-        </el-table-column>
+        </el-table>
 
-      </el-table>
+        <div style="padding:10px">
+          <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="currentPage4"
+              :page-sizes="[5, 10, 15, 20]"
+              :page-size="10"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="20">
+          </el-pagination>
+        </div>
 
-      <div style="padding:10px">
-        <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="currentPage4"
-            :page-sizes="[5, 10, 15, 20]"
-            :page-size="10"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="20">
-        </el-pagination>
-      </div>
-    </div>
+      </el-tab-pane>
+      <el-tab-pane label="最终作品评阅" name="final">
+        <!-- 最终作品评阅的内容 -->
+        <div style="padding:10px; margin:10px; margin-bottom: -5px;">
+          <el-input style="width:300px"
+                    suffix-icon="el-icon-search"
+                    placeholder="请输入"
+                    v-model="inputVal"
+                    @keyup.enter.native="Search_table()"
+                    clearable>
+          </el-input>
+          <el-button style="margin-left:20px ;margin-right:535px" type="primary">搜索</el-button>
+        </div>
+
+        <el-table
+            ref="multipleTable"
+            :data="tableData"
+            stripe
+            tooltip-effect="dark"
+            style="width: 100%"
+            @selection-change="handleSelectionChange">
+          <el-table-column
+              type="selection"
+              width="55">
+          </el-table-column>
+          <el-table-column
+              prop="finalWorkID"
+              label="ID"
+              width="95">
+          </el-table-column>
+          <el-table-column
+              prop="finalCompetitionName"
+              label="竞赛名"
+              width="100">
+          </el-table-column>
+          <el-table-column
+              prop="finalGroup"
+              label="组别"
+              width="120">
+          </el-table-column>
+          <el-table-column
+              prop="juniorAvgScore"
+              label="初级评分"
+              width="120">
+          </el-table-column>
+          <el-table-column
+              prop="mineFinalScore"
+              label="我的最终评分"
+              show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column fixed="right" label="操作">
+            <template slot-scope="scope">
+              <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit2(scope.row)">修改/评阅</el-button>
+              <el-button type="danger" size="small"  icon="el-icon-delete">删除</el-button>
+            </template>
+          </el-table-column>
+
+        </el-table>
+
+        <div style="padding:10px">
+          <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="currentPage4"
+              :page-sizes="[5, 10, 15, 20]"
+              :page-size="10"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="20">
+          </el-pagination>
+        </div>
 
 
-    <div v-if="currentPage === 'final'" class="final-add-section">
-      <div style="padding:10px; margin:10px; margin-bottom: -5px;">
-        <el-input style="width:300px ;margin-left:-80px"
-                  suffix-icon="el-icon-search"
-                  placeholder="请输入"
-                  v-model="inputVal"
-                  @keyup.enter.native="Search_table()"
-                  clearable>
-        </el-input>
-        <el-button style="margin-left:20px ;margin-right:535px" type="primary">搜索</el-button>
-      </div>
+      </el-tab-pane>
+    </el-tabs>
 
-      <el-table
-          ref="multipleTable"
-          :data="tableData"
-          stripe
-          tooltip-effect="dark"
-          style="width: 100%"
-          @selection-change="handleSelectionChange">
-        <el-table-column
-            type="selection"
-            width="55">
-        </el-table-column>
-        <el-table-column
-            prop="finalWorkID"
-            label="ID"
-            width="95">
-        </el-table-column>
-        <el-table-column
-            prop="finalCompetitionName"
-            label="竞赛名"
-            width="100">
-        </el-table-column>
-        <el-table-column
-            prop="finalGroup"
-            label="组别"
-            width="120">
-        </el-table-column>
-        <el-table-column
-            prop="juniorAvgScore"
-            label="初级评分均分"
-            width="120">
-        </el-table-column>
-        <el-table-column
-            prop="mineFinalScore"
-            label="我的最终评分"
-            show-overflow-tooltip>
-        </el-table-column>
-        <el-table-column fixed="right" label="操作">
-          <template slot-scope="scope">
-            <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit2(scope.row)">修改/评阅</el-button>
-            <el-button type="danger" size="small"  icon="el-icon-delete">删除</el-button>
-          </template>
-        </el-table-column>
-
-      </el-table>
-
-      <div style="padding:10px">
-        <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="currentPage4"
-            :page-sizes="[5, 10, 15, 20]"
-            :page-size="10"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="20">
-        </el-pagination>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -277,64 +278,5 @@ export default {
 </script>
 
 <style>
-.button-section {
-  display: flex;
-  gap: 10px;
-}
 
-.video-add-section,
-.text-add-section {
-  margin-top: 20px;
-}
-
-.upload-section {
-  display: flex;
-  justify-content: space-between;
-}
-
-.upload-left,
-.upload-right {
-  width: 48%;
-}
-
-.details-section,
-.text-details-section,
-.button-group {
-  margin-top: 20px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.details-section label,
-.details-section input,
-.details-section select,
-.text-details-section label,
-.text-details-section input,
-.text-details-section textarea {
-  display: block;
-  width: 80%;
-  margin: 10px 0;
-}
-
-.tags {
-  display: flex;
-  gap: 5px;
-  margin-top: 10px;
-}
-
-textarea {
-  width: 80%;
-  height: 200px;
-}
-
-.button-group {
-  flex-direction: row;
-  justify-content: center;
-}
-
-.button-group button {
-  margin: 0 10px;
-}
 </style>

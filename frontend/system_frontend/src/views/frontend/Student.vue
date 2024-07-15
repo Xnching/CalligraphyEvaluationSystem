@@ -41,7 +41,10 @@
         
 
 
-      <div style="display: flex; align-items: center; padding: 10px; margin: 10px; margin-bottom: -5px; margin-top: 5px;">
+      <div style="display: flex; align-items: center;
+       padding: 10px; margin: 10px; margin-bottom: -5px; 
+       margin-top: 5px;"
+       v-if="selectedSchool">
         <!-- 输入框 -->
         <el-input style="width: 300px;" 
                   suffix-icon="el-icon-search" 
@@ -104,7 +107,8 @@
       </el-table>
 
       <!-- 分页栏-->
-      <div style="padding:10px">
+      <div style="padding:10px"
+      v-if="selectedSchool">
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -168,12 +172,13 @@
 
           </el-tab-pane>
 
-          <el-tab-pane label="批量添加">
+          <el-tab-pane label="批量添加" style=" text-align: center;">
             <el-upload
               class="upload-demo"
               drag
               action="https://jsonplaceholder.typicode.com/posts/"
               multiple
+              :limit="1"
               accept=".xls,.xlsx">
               <i class="el-icon-upload"></i>
               <div class="el-upload__tip" slot="tip">请将Excel文件的格式以学籍号、姓名、

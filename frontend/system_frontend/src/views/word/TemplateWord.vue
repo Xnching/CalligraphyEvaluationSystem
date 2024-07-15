@@ -1,7 +1,18 @@
 <template>
     <div>
+        <!--用来搜索字的搜索框-->
+        <div style="padding:10px; margin:10px; margin-bottom: -5px;">
+            <el-input style="width:300px " 
+            suffix-icon="el-icon-search" 
+            placeholder="请输入要查找的字名"
+            v-model="inputVal"
+            @keyup.enter.native="Search_table()"
+            clearable>
+            </el-input>
+            <el-button style="margin-left:20px ;margin-right:535px" type="primary">搜索</el-button>
+        </div>
       <!-- 下面为表格的筛选-->
-      <div style="text-align: left;margin-left: 30px;margin-top: 25px;display: flex">
+      <div style="text-align: left;margin-left: 30px;margin-top: 10px;display: flex">
         
         <!--下面是属性选择器 ，可以手动输入搜索-->
         
@@ -69,26 +80,103 @@
         :visible.sync="dialogVisible1"
         width="40%"
         :close-on-click-modal="false" >
-            <el-upload
-            class="upload-demo"
-            drag
-            action="https://jsonplaceholder.typicode.com/posts/"
-            multiple
-            accept=".png,.jpeg,.jpg">
-                <i class="el-icon-upload"></i>
-                <div class="el-upload__text">将需要录入的字、偏旁部首的图片拖到此处，或<em>点击上传</em></div>
-            </el-upload>
 
-            <el-upload
-            class="upload-demo"
-            drag
-            action="https://jsonplaceholder.typicode.com/posts/"
-            multiple
-            accept=".xls,.xlsx">
-                <i class="el-icon-upload"></i>
-                <div class="el-upload__tip" slot="tip">Excel文件格式以对应字文件名，字名，字体，结构，偏旁部首，年级，作者</div>
-                <div class="el-upload__text">将需要录入的字、偏旁部首的对应的属性Excel拖到此处，或<em>点击上传</em></div>
-            </el-upload>
+            <el-tabs type="border-card">
+                    <!--单个添加-->
+                    <el-tab-pane label="单个添加">
+                        <el-form ref="addForm" :model="addForm" label-width="100px">
+                            <el-form-item label="字名：">
+                                <el-input v-model="addForm.name"></el-input>
+                            </el-form-item>
+                            <el-form-item label="字体：">
+                                <el-select v-model="addForm.selectedFont" filterable placeholder="请选择字体" style="width: 150px;margin-right: 20px;">
+                                    <el-option
+                                    v-for="item in fontoptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="结构：">
+                                <el-select v-model="addForm.selectedStructure" filterable placeholder="请选择结构" style="width: 150px;margin-right: 20px;">
+                                    <el-option
+                                    v-for="item in structureOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                    </el-option>
+                                </el-select>
+                                
+                            </el-form-item>
+                            <el-form-item label="偏旁部首：">
+                                <el-select v-model="addForm.selectedEccentricity" filterable placeholder="请选择偏旁部首" style="width: 150px;margin-right: 20px;">
+                                    <el-option
+                                    v-for="item in eccentricityOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="年级：">
+                                <el-select v-model="addForm.selectedGrade" filterable placeholder="请选择年级"
+                                style="width: 150px;margin-right: 20px;">
+                                    <el-option
+                                    v-for="item in gradeOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="作者：">
+                                <el-input v-model="addForm.author"></el-input>
+                            </el-form-item>
+                        </el-form>
+
+                        <el-upload
+                        class="upload-demo"
+                        drag
+                        action="https://jsonplaceholder.typicode.com/posts/"
+                        multiple
+                        :limit="1"
+                        accept=".png,.jpeg,.jpg"
+                        style=" text-align: center;">
+                            <i class="el-icon-upload"></i>
+                            <div class="el-upload__text">将需要录入的字、偏旁部首的图片拖到此处，或<em>点击上传</em></div>
+                        </el-upload>
+
+                    </el-tab-pane>
+
+                    <!--批量添加-->
+                    <el-tab-pane label="批量添加" style=" text-align: center;">
+                        <el-upload
+                        class="upload-demo"
+                        drag
+                        action="https://jsonplaceholder.typicode.com/posts/"
+                        multiple
+                        accept=".png,.jpeg,.jpg">
+                            <i class="el-icon-upload"></i>
+                            <div class="el-upload__text">将需要录入的字、偏旁部首的图片拖到此处，或<em>点击上传</em></div>
+                        </el-upload>
+
+                        <el-upload
+                        class="upload-demo"
+                        drag
+                        action="https://jsonplaceholder.typicode.com/posts/"
+                        multiple
+                        :limit="1"
+                        accept=".xls,.xlsx">
+                            <i class="el-icon-upload"></i>
+                            <div class="el-upload__tip" slot="tip">Excel文件格式以对应字文件名，字名，字体，结构，偏旁部首，年级，作者</div>
+                            <div class="el-upload__text">将需要录入的字、偏旁部首的对应的属性Excel拖到此处，或<em>点击上传</em></div>
+                        </el-upload>
+
+                    </el-tab-pane>
+                
+                </el-tabs>
+            
 
             <template #footer>
             <span class="dialog-footer">
@@ -103,7 +191,8 @@
         title="该模板字详细信息"
         :visible.sync="dialogVisible2"
         width="30%"
-        :close-on-click-modal="false" >
+        :close-on-click-modal="false" 
+        style=" text-align: center;">
             <img v-if="selectedImage" :src="selectedImage.src" :alt="selectedImage.title" style="width: 100%;">
             <el-form :model="editForm" label-width="120px">
                 <el-form-item label="模板字名：">
@@ -209,7 +298,15 @@ export default {
             selectedImage: null,
             
             images: [],
-        
+            
+            addForm:{
+                name:'',
+                author:'',
+                selectedFont:'',
+                selectedEccentricity:'',
+                selectedStructure:'',
+                selectedGrade:'',
+            },
             editForm:{
                 name:'佰',
                 structure:'左右结构',

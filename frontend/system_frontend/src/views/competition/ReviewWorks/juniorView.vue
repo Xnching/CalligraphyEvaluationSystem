@@ -3,7 +3,7 @@
     <!-- 上半部分 -->
     <div class="upper-section">
       <div class="back-button">
-        <button @click="goBack">返回</button>
+        <el-button type="primary" @click="goBack">返回</el-button>
       </div>
       <div class="title-text">
         初级作品评阅
@@ -18,7 +18,7 @@
           <img src="/images/copybook/1.jpg" alt="作品图片" />
         </div>
         <!-- 文本框 -->
-        <div class="text-box" style="width:780px">
+        <div class="text-box" style="width:680px">
           <textarea disabled>{{ defaultComment }}</textarea>
         </div>
       </div>
@@ -26,7 +26,9 @@
       <div class="right-part">
         <!-- 题目要求，竞赛名与组别，已阅份数，目标份数 -->
         <div class="info-section">
-          <div>题目要求：{{ questionRequirement }}</div>
+          <div>题目要求：
+            <el-input type="textarea"></el-input>
+          </div>
           <div>竞赛名与组别：{{ competitionName }}</div>
           <div>已阅份数：{{ reviewedCount }}</div>
           <div>目标份数：{{ targetCount }}</div>
@@ -34,18 +36,16 @@
         <!-- 评分，评语 -->
         <div class="input-section">
           <div>
-            评分：<input type="number" v-model="score" />
+            评分：<el-input type="number" v-model="score" ></el-input>
           </div>
           <div>
-            评语：<textarea v-model="comment"></textarea>
+            评语：<el-input type="textarea" v-model="comment"></el-input>
           </div>
         </div>
         <!-- 按钮区域 -->
         <div class="button-group">
-          <button @click="previousItem">上一份</button>
-          <button :disabled="!isValid" @click="confirmReview">确认</button>
-          <button @click="cancelReview">取消</button>
-          <button @click="nextItem">下一份</button>
+          <el-button type="primary" @click="previousItem">上一份</el-button>
+          <el-button type="primary" @click="nextItem">下一份</el-button>
         </div>
       </div>
     </div>
@@ -58,8 +58,7 @@ export default {
     return {
       imageSrc: 'path/to/your/image.jpg', // 图片路径
       defaultComment: '（系统自动评价）',
-      questionRequirement: '***',
-      competitionName: '***',
+      competitionName: '盘城小学竞赛A组',
       reviewedCount: 0,
       targetCount: 0,
       score: null,
@@ -134,7 +133,6 @@ export default {
   padding: 20px; /* 增大内边距 */
 }
 
-.left-part,
 .right-part {
   display: flex;
   flex-direction: column;
@@ -161,12 +159,4 @@ export default {
   margin-top: 10px;
 }
 
-button {
-  padding: 5px 10px;
-  margin-right: 5px;
-  background-color: #007BFF; /* 修改按钮背景色 */
-  color: white; /* 修改按钮文字颜色 */
-  border: none; /* 移除边框 */
-  border-radius: 5px; /* 添加圆角 */
-}
 </style>

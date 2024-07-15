@@ -6,88 +6,92 @@
             <el-button type="primary" @click="goBack">返回</el-button>
             <div style="display: flex; flex-wrap: wrap; padding: 10px;">
                 <div style="flex: 1; margin-right: 20px;">
-                <el-form :model="form">
-                    <el-form-item label="竞赛编号">
-                    <el-input v-model="form.competitionID" :disabled="!editable"></el-input>
-                    </el-form-item>
-                    <el-form-item label="竞赛名称">
-                    <el-input v-model="competition" :disabled="!editable"></el-input>
-                    </el-form-item>
-                    <el-form-item label="开始报名时间">
-                    <el-date-picker v-model="form.startSignupTime" type="datetime" :disabled="!editable"></el-date-picker>
-                    </el-form-item>
-                    <el-form-item label="截止报名时间">
-                    <el-date-picker v-model="form.endSignupTime" type="datetime" :disabled="!editable"></el-date-picker>
-                    </el-form-item>
-                    <el-form-item label="开始竞赛时间">
-                    <el-date-picker v-model="form.startCompetitionTime" type="datetime" :disabled="!editable"></el-date-picker>
-                    </el-form-item>
-                    <el-form-item label="结束竞赛时间">
-                    <el-date-picker v-model="form.endCompetitionTime" type="datetime" :disabled="!editable"></el-date-picker>
-                    </el-form-item>
-                    <el-form-item label="开始评阅时间">
-                    <el-date-picker v-model="form.startReviewTime" type="datetime" :disabled="!editable"></el-date-picker>
-                    </el-form-item>
-                    <el-form-item label="结束评阅时间">
-                    <el-date-picker v-model="form.endReviewTime" type="datetime" :disabled="!editable"></el-date-picker>
-                    </el-form-item>
-                </el-form>
+                    <el-form :model="form">
+                        <el-form-item label="竞赛编号">
+                            <el-input v-model="form.competitionID" :disabled="!editable"></el-input>
+                        </el-form-item>
+                        <el-form-item label="竞赛名称">
+                            <el-input v-model="competition" :disabled="!editable"></el-input>
+                        </el-form-item>
+                        <el-form-item label="开始报名时间">
+                            <el-date-picker v-model="form.startSignupTime" type="datetime" :disabled="!editable"></el-date-picker>
+                        </el-form-item>
+                        <el-form-item label="截止报名时间">
+                            <el-date-picker v-model="form.endSignupTime" type="datetime" :disabled="!editable"></el-date-picker>
+                        </el-form-item>
+                        <el-form-item label="开始竞赛时间">
+                            <el-date-picker v-model="form.startCompetitionTime" type="datetime" :disabled="!editable"></el-date-picker>
+                        </el-form-item>
+                        <el-form-item label="结束竞赛时间">
+                            <el-date-picker v-model="form.endCompetitionTime" type="datetime" :disabled="!editable"></el-date-picker>
+                        </el-form-item>
+                        <el-form-item label="开始评阅时间">
+                            <el-date-picker v-model="form.startReviewTime" type="datetime" :disabled="!editable"></el-date-picker>
+                        </el-form-item>
+                        <el-form-item label="结束评阅时间">
+                            <el-date-picker v-model="form.endReviewTime" type="datetime" :disabled="!editable"></el-date-picker>
+                        </el-form-item>
+                    </el-form>
                 </div>
                 <div style="flex: 1;">
-                <el-form :model="form">
-                    <el-form-item label="竞赛要求" :disabled="!editable">
-                    <el-input type="textarea" v-model="form.competitionRequirements"></el-input>
-                    </el-form-item>
-                    <el-form-item label="宣传图添加">
-                    <el-upload
-                        action="#"
-                        list-type="picture-card"
-                        :on-preview="handlePictureCardPreview"
-                        :on-remove="handleRemove">
-                        <i class="el-icon-plus"></i>
-                    </el-upload>
-                    </el-form-item>
-                </el-form>
+                    <el-form :model="form">
+                        <el-form-item label="竞赛要求" :disabled="!editable">
+                            <el-input type="textarea" v-model="form.competitionRequirements"></el-input>
+                        </el-form-item>
+                        <el-form-item label="宣传图添加">
+                            <el-upload
+                                action="#"
+                                list-type="picture-card"
+                                :on-preview="handlePictureCardPreview"
+                                :on-remove="handleRemove"
+                                :limit="1"
+                                accept=".jpg,.jpeg,.png">
+                                <i class="el-icon-plus"></i>
+                            </el-upload>
+                        </el-form-item>
+                    </el-form>
                 </div>
             </div>
 
             <div style="padding: 10px;">
                 <div style="display: flex; flex-wrap: wrap; margin-bottom: 10px;">
-                <div style="flex: 1; margin-right: 20px;">
-                    <el-form :model="form">
-                    <el-form-item label="组名">
-                        <el-input v-model="form.groupName" :disabled="!editable"></el-input>
-                    </el-form-item>
-                    <el-form-item label="特等奖比例">
-                        <el-input v-model="form.specialAwardRatio" suffix="%":disabled="!editable"></el-input>
-                    </el-form-item>
-                    <el-form-item label="一等奖比例">
-                        <el-input v-model="form.firstAwardRatio" suffix="%" :disabled="!editable"></el-input>
-                    </el-form-item>
-                    <el-form-item label="二等奖比例">
-                        <el-input v-model="form.secondAwardRatio" suffix="%" :disabled="!editable"></el-input>
-                    </el-form-item>
-                    <el-form-item label="三等奖比例">
-                        <el-input v-model="form.thirdAwardRatio" suffix="%" :disabled="!editable"></el-input>
-                    </el-form-item>
-                    <el-form-item label="参赛对象">
-                        <el-radio-group v-model="form.competitionObject" :disabled="!editable">
-                        <el-radio label="小学">小学</el-radio>
-                        <el-radio label="初中">初中</el-radio>
-                        </el-radio-group>
-                    </el-form-item>
-                    </el-form>
+                    <div style="flex: 1; margin-right: 20px;">
+                        <el-form :model="form">
+                        <el-form-item label="组名">
+                            <el-input v-model="form.groupName" :disabled="!editable"></el-input>
+                        </el-form-item>
+                        <el-form-item label="特等奖比例">
+                            <el-input v-model="form.specialAwardRatio" suffix="%":disabled="!editable"></el-input>
+                        </el-form-item>
+                        <el-form-item label="一等奖比例">
+                            <el-input v-model="form.firstAwardRatio" suffix="%" :disabled="!editable"></el-input>
+                        </el-form-item>
+                        <el-form-item label="二等奖比例">
+                            <el-input v-model="form.secondAwardRatio" suffix="%" :disabled="!editable"></el-input>
+                        </el-form-item>
+                        <el-form-item label="三等奖比例">
+                            <el-input v-model="form.thirdAwardRatio" suffix="%" :disabled="!editable"></el-input>
+                        </el-form-item>
+                        <el-form-item label="参赛对象">
+                            <el-radio-group v-model="form.competitionObject" :disabled="!editable">
+                            <el-radio label="小学">小学</el-radio>
+                            <el-radio label="初中">初中</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                        </el-form>
+                    </div>
+                    <div style="flex: 1;">
+                        <el-form :model="form">
+                        <el-form-item label="该组题目要求">
+                            <el-input type="textarea" v-model="form.groupRequirements"></el-input>
+                        </el-form-item>
+                        </el-form>
+                    </div>
                 </div>
-                <div style="flex: 1;">
-                    <el-form :model="form">
-                    <el-form-item label="该组题目要求">
-                        <el-input type="textarea" v-model="form.groupRequirements"></el-input>
-                    </el-form-item>
-                    </el-form>
+                <div style=" text-align: center;">
+                    <el-button type="primary" @click="addGroup">添加组别</el-button>
+                    <el-button type="buttonType" @click="handleEdit1">{{ buttonText }}</el-button>
                 </div>
-                </div>
-                <el-button type="primary" @click="addGroup">添加组别</el-button>
-                <el-button type="buttonType" @click="handleEdit1">{{ buttonText }}</el-button>
             </div>
 
         </el-tab-pane>
@@ -108,7 +112,7 @@
             <el-button style="margin-left: 20px;margin-right: 30px;" type="primary">搜索</el-button>
             <!-- 显示学校名称 -->
             <h1>{{ competition }}</h1> 
-            <el-select v-model="selectedGrade" filterable placeholder="请选择年级 " style="width: 150px;margin-left:auto;margin-right: 20px;">
+            <el-select v-model="selectedGrade" filterable placeholder="请选择年级 " style="width: 150px;margin-left:auto;margin-right: 170px;">
                 <el-option
                 v-for="item in gradeOptions"
                 :key="item.value"
@@ -138,11 +142,6 @@
                 prop="number"
                 label="学籍号"
                 width="190">
-            </el-table-column>
-            <el-table-column
-                prop="password"
-                label="密码"
-                width="150">
             </el-table-column>
             <el-table-column
                 prop="grade"
@@ -196,7 +195,7 @@
             <el-button style="margin-left: 20px;margin-right: 30px;" type="primary">搜索</el-button>
             <!-- 显示竞赛名称 -->
             <h1>{{ competition}}</h1> 
-            <el-select v-model="selectedGrade" filterable placeholder="请选择年级 " style="width: 150px;margin-left:auto;margin-right: 20px;">
+            <el-select v-model="selectedGrade" filterable placeholder="请选择年级 " style="width: 150px;margin-left:auto;">
                 <el-option
                 v-for="item in gradeOptions"
                 :key="item.value"
@@ -204,7 +203,7 @@
                 :value="item.value">
                 </el-option>
             </el-select>
-            <el-select v-model="selectedLevel" filterable placeholder="请选择等级" style="width: 150px;margin-left:auto;margin-right: 20px;">
+            <el-select v-model="selectedLevel" filterable placeholder="请选择等级" style="width: 150px;margin-left:20px;">
                 <el-option
                 v-for="item in levelOptions"
                 :key="item.value"

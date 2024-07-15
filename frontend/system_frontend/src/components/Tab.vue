@@ -3,7 +3,7 @@
 <template>
     <div class="tab" @wheel="handleScroll">
         <ul ref="tab">
-            <router-link v-for="(item,index) in list"
+                <router-link v-for="(item,index) in list"
                          :key="index"
                          :to="item.path"
                          tag="li"
@@ -11,6 +11,7 @@
                 {{ item.name }}
                 <i class="el-icon-close" v-if="item.path!=='/'" @click.stop="closeTab(index)"></i>
             </router-link>
+            
         </ul>
     </div>
 </template>

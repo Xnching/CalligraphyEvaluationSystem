@@ -1,7 +1,7 @@
 <template>
   <div>
     <div style="padding:10px; margin:10px; margin-bottom: -5px;">
-      <el-input style="width:300px ;margin-left:-80px"
+      <el-input style="width:300px"
                 suffix-icon="el-icon-search"
                 placeholder="请输入"
                 v-model="inputVal"
@@ -30,7 +30,7 @@
       <el-table-column
           prop="competitionName"
           label="竞赛名"
-          width="100">
+          width="200">
       </el-table-column>
       <el-table-column
           prop="name"
@@ -45,7 +45,7 @@
       <el-table-column
           prop="level"
           label="等级"
-          show-overflow-tooltip>
+          width="120">
       </el-table-column>
       <el-table-column
           prop="judge"
@@ -54,7 +54,7 @@
       </el-table-column>
       <el-table-column fixed="right" label="操作">
         <template slot-scope="scope">
-          <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit2(scope.row)">作品详情</el-button>
+          <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit(scope.row)">作品详情</el-button>
           <el-button type="danger" size="small"  icon="el-icon-delete">移出优秀作品</el-button>
         </template>
       </el-table-column>
@@ -75,28 +75,48 @@
     </div>
 
     <!-- 弹窗 -->
-    <el-dialog title="作品详情" :visible.sync="dialogVisible" width="50%">
-      <span class="dialog-content">
-        <img src="/images/copybook/1.jpg" style="width:100%; height:75%;">
-        <div style="display:flex; justify-content:space-between; margin-top:10px;">
-          <div>
-            <p>作者：{{ currentRow.name }}</p>
-            <p>竞赛名：{{ currentRow.competitionName }}</p>
-            <p>分数：{{ currentRow.finalScore }}</p>
-            <p>展示状态：
-              <el-button type="text" @click="toggleDisplayStatus">
-                {{ displayStatus }}
-              </el-button>
-            </p>
-          </div>
-          <div>
-            <p>等级：{{ currentRow.level }}</p>
-            <p>评选人：{{ currentRow.judge }}</p>
-            <p>教师评语：{{ currentRow.comment }}</p>
-            <el-button type="danger" @click="handleDelete">删除</el-button>
-          </div>
-        </div>
-      </span>
+    <el-dialog title="作品详情"
+        :visible.sync="dialogVisible"
+        width="40%"
+        :close-on-click-modal="false">
+      <el-form label-position="left" label-width="90px">
+        <!-- 作业图片 -->
+        <el-form-item label="作业图片:">
+          <img :src="imageSrc" style="width: 100%; height: 75%;">
+        </el-form-item>
+        <!-- 作者 -->
+        <el-form-item label="作者:">
+          <el-input v-model="currentRow.name" placeholder="作者"></el-input>
+        </el-form-item>
+        <!-- 竞赛名 -->
+        <el-form-item label="竞赛名:">
+          <el-input v-model="currentRow.competitionName" placeholder="竞赛名"></el-input>
+        </el-form-item>
+        <!-- 分数 -->
+        <el-form-item label="最终分数:">
+          <el-input v-model="currentRow.finalScore" placeholder="分数"></el-input>
+        </el-form-item>
+        <!-- 展示状态 -->
+        <el-form-item label="展示状态:">
+          <el-button type="text" @click="toggleDisplayStatus">{{ displayStatus }}</el-button>
+        </el-form-item>
+        <!-- 等级 -->
+        <el-form-item label="等级:">
+          <el-input v-model="currentRow.level" placeholder="等级"></el-input>
+        </el-form-item>
+        <!-- 评选人 -->
+        <el-form-item label="评选人:">
+          <el-input v-model="currentRow.judge" placeholder="评选人"></el-input>
+        </el-form-item>
+        <!-- 教师评语 -->
+        <el-form-item label="教师评语:">
+          <el-input v-model="currentRow.comment" placeholder="教师评语"></el-input>
+        </el-form-item>
+        <!-- 删除按钮 -->
+        <el-form-item style=" text-align: right;">
+          <el-button type="danger" @click="handleDelete">移出优秀作品</el-button>
+        </el-form-item>
+      </el-form>
     </el-dialog>
   </div>
 </template>
@@ -120,7 +140,8 @@ export default {
       multipleSelection: [],
       dialogVisible: false,
       currentRow: {},
-      displayStatus: '允许展示'
+      displayStatus: '允许展示',
+      imageSrc:'/images/copybook/3.jpg',
     };
   },
   watch: {
@@ -166,7 +187,7 @@ export default {
     handleCurrentChange() {},
     handleSizeChange() {},
     currentPage4() {},
-    handleEdit2(row) {
+    handleEdit(row) {
       this.currentRow = row;
       this.dialogVisible = true;
     },

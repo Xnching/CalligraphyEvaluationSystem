@@ -1,7 +1,7 @@
 <template>
     <div>
       <div style="padding:10px; margin:10px; margin-bottom: -5px;">
-        <el-input style="width:300px ;margin-left:-80px" 
+        <el-input style="width:300px " 
         suffix-icon="el-icon-search" 
         placeholder="请输入"
         v-model="inputVal"
@@ -80,7 +80,7 @@
           
           </div>
           
-          <el-radio v-model="radio" :label="1">未激活</el-radio>
+          <el-radio v-model="radio" :label="1" style="margin-left: 180px">未激活</el-radio>
           <el-radio v-model="radio" :label="2">激活</el-radio>
         </el-form>
         <template #footer>
@@ -111,7 +111,7 @@
             <el-input v-model="editForm.state"></el-input>
           </el-form-item>
           
-          <el-radio v-model="radio2" :label="1">未激活</el-radio>
+          <el-radio v-model="radio2" :label="1" style="margin-left: 180px">未激活</el-radio>
           <el-radio v-model="radio2" :label="2">激活</el-radio>
         </el-form>
         <template #footer>

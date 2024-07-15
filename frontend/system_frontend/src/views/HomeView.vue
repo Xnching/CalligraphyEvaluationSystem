@@ -22,8 +22,11 @@
         
         <Tab></Tab>
         <!--当前页面的子路由将在<router-view/>中展示-->
-        <router-view/>  
         
+        <!--keep-alive使得每个页面不会重新刷新展现，而是保存-->
+        <keep-alive>
+          <router-view/>  
+        </keep-alive>
          
       </el-main>
 

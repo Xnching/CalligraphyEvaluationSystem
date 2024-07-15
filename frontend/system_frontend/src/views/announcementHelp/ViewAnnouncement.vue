@@ -1,7 +1,7 @@
 <template>
   <div>
     <div style="padding:10px; margin:10px; margin-bottom: -5px;">
-      <el-input style="width:300px ;margin-left:-80px"
+      <el-input style="width:300px "
                 suffix-icon="el-icon-search"
                 placeholder="请输入"
                 v-model="inputVal"
@@ -10,34 +10,61 @@
       </el-input>
       <el-button style="margin-left:20px ;margin-right:535px" type="primary">搜索</el-button>
     </div>
-    <!-- ... 省略其他代码 ... -->
 
+    <!-- 编辑按钮的弹窗 -->
     <el-dialog
-        title="编辑公告"
+        title="点击修改信息"
         :visible.sync="dialogVisible"
-        :before-close="handleDialogClose"
-        width="50%"
-    >
-      <el-form :model="editForm" ref="editForm"  label-width="120px">
-        <!-- ... 省略表单项 ... -->
-        <el-form-item prop="content" label="公告内容">
-          <el-input type="textarea" v-model="editForm.content"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-      <el-button @click="handleDialogCancel">取消</el-button>
-      <el-button type="primary" @click="handleDialogConfirm">确认</el-button>
-    </span>
-    </el-dialog>
+        width="60%"
+        :close-on-click-modal="false">
+        <el-form :model="editForm" label-width="100px">
+          <el-form-item label="公告名："> 
+            <el-input v-model="editForm.name"></el-input>
+          </el-form-item>
+          <el-form-item label="公告类型：">
+            <el-select v-model="editForm.type" placeholder="请选择公告类型">
+              <el-option label="系统更新公告" value="system"></el-option>
+              <el-option label="竞赛公告" value="competition"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="发布对象：">
+            <el-select v-model="editForm.target" placeholder="请选择发布对象">
+              <el-option label="学生" value="student"></el-option>
+              <el-option label="教师" value="teacher"></el-option>
+              <el-option label="学生和教师" value="both"></el-option>
+              <el-option label="管理员" value="manger"></el-option>
+              <el-option label="所有人" value="all"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="发布状态：">
+            <el-radio-group v-model="editForm.state">
+              <el-radio label="已发布" ></el-radio>
+              <el-radio label="待发布" ></el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="发布时间：">
+            <el-input v-model="editForm.time"></el-input>
+          </el-form-item>
+          <el-form-item label="公告内容：">
+            <WangEditor></WangEditor>
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="dialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="handleSubmit2">确定</el-button>
+          </span>
+        </template>
+      </el-dialog>
 
-    <!-- ... 省略其他代码 ... -->
+
+    <!--主表格-->
     <el-table
         ref="multipleTable"
         :data="tableData"
         stripe
         tooltip-effect="dark"
         style="width: 100%"
-
         @selection-change="handleSelectionChange">
       <el-table-column
           type="selection"
@@ -52,6 +79,11 @@
           prop="announcementName"
           label="公告名"
           width="100">
+      </el-table-column>
+      <el-table-column
+          prop="announcementType"
+          label="公告类型"
+          width="120">
       </el-table-column>
       <el-table-column
           prop="publishObject"
@@ -69,13 +101,13 @@
           show-overflow-tooltip>
       </el-table-column>
       <el-table-column
-          prop="announcementType"
-          label="公告类型"
-          width="120">
+          prop="publishMan"
+          label="发布人"
+          show-overflow-tooltip>
       </el-table-column>
       <el-table-column fixed="right" label="操作">
         <template slot-scope="scope">
-          <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit2(scope.row)">编辑</el-button>
+          <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit2(scope.row)">查看</el-button>
           <el-button type="danger" size="small"  icon="el-icon-delete">删除</el-button>
         </template>
       </el-table-column>
@@ -97,7 +129,12 @@
 </template>
 
 <script>
+import WangEditor from '@/components/wangEditor.vue';
+
 export default {
+  components:{
+    WangEditor
+  },
   data() {
     return {
       //搜索栏要用的
@@ -108,6 +145,7 @@ export default {
         publishObject: "全体",
         publishState: "已发布",
         publishDate: "2024-1-10",
+        publishMan:'赵云',
         announcementType: "系统公告",
       })),
       showTable:[],
@@ -189,34 +227,10 @@ export default {
     handleEdit2(row) {
       this.dialogVisible = true;
       this.$set(this.editForm, 'announcementName', row.announcementName);
-      // ... 将其他字段赋值给editForm ...
+      
     },
-    handleDialogClose() {
-      this.dialogVisible = false;
-      this.resetForm('editForm');
-    },
-    handleDialogCancel() {
-      this.dialogVisible = false;
-      this.handleDialogClose();
-    },
-    handleDialogConfirm() {
-      this.dialogVisible = false;
-      this.$refs.editForm.validate(async valid => {
-        if (valid) {
-          try {
-            const response = await axios.post('/api/announcement/update', this.editForm);
-            // 处理响应数据，关闭弹窗等
-            this.handleDialogClose();
-            // 提示用户更新成功或进行其他操作
-          } catch (error) {
-            // 处理请求错误，显示错误信息给用户
-            console.error(error);
-          }
-        } else {
-          console.log('表单验证失败！');
-          return false;
-        }
-      });
+    handleSubmit2(){
+      this.dialogVisible=false;
     },
     resetForm(formName) {
       this.$refs[formName].resetFields();

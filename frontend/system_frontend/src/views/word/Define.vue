@@ -1,10 +1,10 @@
 <template>
-    <div class="management-container">
+    <div class="management-container" style=" text-align: center;">
 
 
         <!--字体定义管理-->
         <div>
-            <label style="margin-left: -220px;">字体类型管理:</label>
+            <label>字体类型管理</label>
             <!--搜索框-->
             <div style="padding:10px; margin:10px;  display: flex; align-items: center;">
                 <el-input style="width:150px ;margin-right: 30px" 
@@ -58,7 +58,7 @@
 
         <!--结构定义管理-->
         <div>
-            <label style="margin-left: -220px;">结构类型管理:</label>
+            <label>结构类型管理</label>
             <!--搜索框-->
             <div style="padding:10px; margin:10px;  display: flex; align-items: center;">
                 <el-input style="width:150px ;margin-right: 30px" 
@@ -109,7 +109,7 @@
 
         <!--偏旁部首定义管理-->
         <div>
-            <label style="margin-left: -220px;">偏旁部首类型管理:</label>
+            <label>偏旁部首类型管理</label>
             <!--搜索框-->
             <div style="padding:10px; margin:10px; display: flex; align-items: center;">
                 <el-input style="width:150px ;margin-right: 30px" 

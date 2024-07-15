@@ -5,7 +5,7 @@ import App from './App.vue'
 import router from './router'
 import './assets/gloable.css'       //添加优化侧边栏样式
 import request from '@/utils/request'
-
+import store from './store/index'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI);
@@ -14,5 +14,6 @@ Vue.prototype.request=request
 
 new Vue({
   router,
+  store,
   render: h => h(App)
 }).$mount('#app')

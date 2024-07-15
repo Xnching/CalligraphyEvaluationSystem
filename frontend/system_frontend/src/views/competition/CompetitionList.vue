@@ -2,7 +2,7 @@
   <div>
     <div v-if="!showForm">
       <div style="padding:10px; margin:10px; margin-bottom: -5px;">
-        <el-input style="width:300px ;margin-left:-80px"
+        <el-input style="width:300px "
                   suffix-icon="el-icon-search"
                   placeholder="请输入"
                   v-model="inputVal"
@@ -116,7 +116,9 @@
                   action="#"
                   list-type="picture-card"
                   :on-preview="handlePictureCardPreview"
-                  :on-remove="handleRemove">
+                  :on-remove="handleRemove"
+                  :limit="1"
+                  accept=".jpg,.jpeg,.png">
                 <i class="el-icon-plus"></i>
               </el-upload>
             </el-form-item>
@@ -159,7 +161,10 @@
             </el-form>
           </div>
         </div>
-        <el-button type="primary" @click="addGroup">添加组别</el-button>
+        <div style=" text-align: center;">
+          <el-button type="primary" @click="addGroup">添加组别</el-button>
+        </div>
+        
       </div>
     </div>
   </div>

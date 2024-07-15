@@ -1,5 +1,10 @@
 package com.moyunzhijiao.system_backend.controller;
 
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.moyunzhijiao.system_backend.common.Constants;
+import com.moyunzhijiao.system_backend.common.Result;
+import com.moyunzhijiao.system_backend.controller.dto.UserDTO;
 import com.moyunzhijiao.system_backend.entiy.User;
 import com.moyunzhijiao.system_backend.mapper.UserMapper;
 import com.moyunzhijiao.system_backend.service.UserService;
@@ -12,8 +17,20 @@ import java.util.List;
 @RequestMapping("/backend")
 public class UserController {
     @Autowired
-    private UserMapper userMapper;
     private UserService userService;
+
+    @PostMapping("/login")
+    public Result login(@RequestBody UserDTO userDTO){
+        String login_id = userDTO.getLoginId();
+        String password = userDTO.getPassword();
+        //调用hutool工具中的StrUtil函数实现用户名和密码是否为空的判断
+        if(StrUtil.isBlank(login_id) || StrUtil.isBlank(password)){
+            return Result.error(Constants.CODE_400,"参数错误");
+        }
+        UserDTO dto = userService.login(userDTO);
+        return Result.success(dto);
+    }
+
 
     @PostMapping
     //此处是使用mybatis-plus,返回的是boolean类型

@@ -41,7 +41,10 @@
         
 
 
-      <div style="display: flex; align-items: center; padding: 10px; margin: 10px; margin-bottom: -5px; margin-top: 5px;">
+      <div style="display: flex; align-items: center; 
+      padding: 10px; margin: 10px; margin-bottom: -5px; 
+      margin-top: 5px;" 
+      v-if="selectedSchool">
         <el-input style="width: 300px;" 
                   suffix-icon="el-icon-search" 
                   placeholder="请输入"
@@ -93,7 +96,7 @@
       </el-table>
 
       <!-- 分页栏-->
-      <div style="padding:10px">
+      <div style="padding:10px" v-if="selectedSchool">
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -127,6 +130,16 @@
                   <el-option label="六三制小学六年级" value="6-3-6"></el-option>
                 </el-select>
               </el-form-item>
+              <el-form-item label="入学年份：">
+                <el-select id="enrollmentYear" v-model="selectedYear">
+                  <el-option
+                    v-for="year in years"
+                    :key="year"
+                    :label="year"
+                    :value="year">
+                  </el-option>
+                </el-select>
+              </el-form-item>
               <el-form-item label="班级名称：">
                 <el-input v-model="addForm.name"></el-input>
               </el-form-item>
@@ -135,12 +148,13 @@
 
           </el-tab-pane>
 
-          <el-tab-pane label="批量添加">
+          <el-tab-pane label="批量添加" style="  text-align: center;">
             <el-upload
               class="upload-demo"
               drag
               action="https://jsonplaceholder.typicode.com/posts/"
               multiple
+              :limit="1"
               accept=".xls,.xlsx">
               <i class="el-icon-upload"></i>
               <div class="el-upload__tip" slot="tip">Excel文件格式以年级、班级名的顺序排列,年级规范为：六三制小学一年级</div>
@@ -242,6 +256,8 @@ export default {
         teacher: " 孙岳平",
         schoolId: 11111
       })),
+      selectedYear: new Date().getFullYear(), // 默认为当前年份
+      years: this.generateYears(),
       showTable:[],
       //初始隐藏两个表单
       dialogVisible1: false,
@@ -376,7 +392,15 @@ export default {
   },
 
   methods: {
-    
+    //入学年份的方法
+    generateYears() {
+      const currentYear = new Date().getFullYear();
+      const years = [];
+      for (let year = currentYear + 5; year >= currentYear - 10; year--) {
+        years.push(year);
+      }
+      return years;
+    },
     //实现搜索栏多属性搜索的
     Search_table() {
       const Search_List = [];

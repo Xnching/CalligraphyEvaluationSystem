@@ -1,11 +1,16 @@
 <template>
-  <div class="container">
-    <el-button type="primary" @click="handleNew">新增</el-button>
+  <div class="container" >
+    <div style=" text-align: right;">
+      <el-button type="primary" @click="handleNew" style="margin-right: 130px">新增</el-button>
+    </div>
     <el-container>
       <el-aside width="100%">
-        <el-table :data="tableData" style="width: 100%">
+        <el-table :data="tableData" 
+        style="width: 100%"
+        stripe>
           <el-table-column prop="question" label="问题"></el-table-column>
           <el-table-column prop="answer" label="答案"></el-table-column>
+          <el-table-column prop="man" label="编辑人"></el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
               <el-button @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -58,6 +63,7 @@ export default {
       tableData: Array(8).fill().map(() => ({
         question:"如何找回作业",
         answer: "反馈管理处提交反馈帮助找回作业",
+        man:'哈洛德',
 
       })),
       dialogVisible: false, // 弹窗显示状态4
