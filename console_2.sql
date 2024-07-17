@@ -597,6 +597,7 @@ create table video_collection(
     custom_type varchar(255) comment '自定义类型',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '视频合集表';
+#加简介加封面
 
 create table protocol (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '协议id',

@@ -1,0 +1,17 @@
+server:
+  port: 8084
+spring:
+  datasource:
+    username: root2
+    password: 123456
+    #url中database为对应的数据库名称
+    url: jdbc:mysql://47.120.39.45:3306/calligraphy_evaluation_system?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  main:
+    allow-bean-definition-overriding: true
+mybatis:
+  mapper-locations: classpath:mapper/*.xml   #扫描所有mapper文件夹
+#下面是配置sql日志输出，使其可以在idea中看到sql的运行情况并打印输出
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
