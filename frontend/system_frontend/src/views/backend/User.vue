@@ -9,7 +9,7 @@
         clearable>
         </el-input>
         <el-button style="margin-left:20px ;margin-right:535px" type="primary" @click="Search_table">搜索</el-button>
-        <el-button type="primary" @click="handleEdit1">新增<i class="el-icon-circle-plus"></i></el-button>
+        <el-button type="primary" @click="handleAdd">新增<i class="el-icon-circle-plus"></i></el-button>
       </div>       
 
       <el-table
@@ -55,8 +55,8 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作">                         
           <template slot-scope="scope">
-              <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit2(scope.row)">编辑</el-button>
-              <el-button type="danger" size="small"  icon="el-icon-delete">删除</el-button>
+              <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit1(scope.row)">编辑</el-button>
+              <el-button type="danger" size="small"  icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column> 
 
@@ -88,9 +88,13 @@
           <el-form-item label="密码" prop="password"> <el-input v-model="ruleForm.password"></el-input> </el-form-item>
           <el-form-item label="联系方式"prop="phone"> <el-input v-model="ruleForm.phone"></el-input> </el-form-item>
           <el-form-item label="所属用户组" prop="userGroup">
-            <el-select v-model="ruleForm.userGroup" placeholder="请选择所属用户组" >
-              <el-option label="用户组 A" value="groupA"></el-option>
-              <el-option label="用户组 B" value="groupB"></el-option>
+            <el-select v-model="ruleForm.userGroupName" placeholder="请选择所属用户组" @change="handleGroupChange1">
+              <el-option
+                v-for="group in userGroups"
+                :key="group.id"
+                :label="group.name"
+                :value="group.id">
+              </el-option>
             </el-select>
           </el-form-item>
         </el-form>
@@ -110,31 +114,38 @@
         :close-on-click-modal="false">
         <el-form :model="editForm" label-width="100px">
           <el-form-item label="用户姓名"> 
-            <el-input v-model="editForm.name"></el-input>
+            <el-input v-model="editForm.name" :disabled="!isEditing"></el-input>
           </el-form-item>
           <el-form-item label="登录名">
-            <el-input v-model="editForm.loginId"></el-input>
+            <el-input v-model="editForm.loginId" :disabled="!isEditing"></el-input>
           </el-form-item>
           <el-form-item label="密码">
-            <el-input v-model="editForm.password"></el-input>
+            <el-input v-model="editForm.password" :disabled="!isEditing"></el-input>
           </el-form-item>
           <el-form-item label="联系方式">
-            <el-input v-model="editForm.phone"></el-input>
+            <el-input v-model="editForm.phone" :disabled="!isEditing"></el-input>
           </el-form-item>
           <el-form-item label="所属用户组">
-            <el-select v-model="editForm.userGroup" placeholder="请选择所属用户组">
-              <el-option label="用户组 A" value="groupA"></el-option>
-              <el-option label="用户组 B" value="groupB"></el-option>
+            <el-select v-model="editForm.userGroupName" placeholder="请选择所属用户组" :disabled="!isEditing" @change="handleGroupChange2">
+              <el-option
+                v-for="group in userGroups"
+                :key="group.id"
+                :label="group.name"
+                :value="group.id">
+              </el-option>
             </el-select>
           </el-form-item>
         </el-form>
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="dialogVisible2 = false">取消</el-button>
-            <el-button type="primary" @click="handleSubmit2">确定</el-button>
+            <el-button type="primary" @click="isEditing ? handleConfirm() : handleEdit2()">
+              {{ isEditing ? '确定' : '编辑' }}
+            </el-button>
           </span>
         </template>
       </el-dialog>
+
 
     
 
@@ -150,6 +161,8 @@ export default {
       inputVal:"",
       tableData: [],
       showTable:[],
+      //编辑弹窗的状态
+      isEditing: false,
       total:0,
       pageNum:1,
       pageSize:6,
@@ -158,13 +171,15 @@ export default {
       dialogVisible2: false,
       //多选用的
       multipleSelection: [],
+      userGroups: [],  // 用于保存用户组数据
       editForm: { // 添加 editForm 即编辑弹窗里的表单定义
-        ID: '',
+        id: '',
         name: '',
         loginId: '',
         password: '',
         phone: '',
-        userGroup: ''
+        userGroupName: '',
+        userGroupId:''
       },
       //规则，即添加里的验证规则
       ruleForm: {
@@ -172,7 +187,8 @@ export default {
         loginId: '',
         password: '',
         phone: '',
-        userGroup: ''
+        userGroupName: '',
+        userGroupId:''
       },
       rules: {
         name: [
@@ -188,7 +204,7 @@ export default {
           { required: true, message: '请输入联系方式', trigger: 'blur' },
           { pattern: /^[0-9]+$/, message: '联系方式必须为数字', trigger: 'blur' }
         ],
-        userGroup: [
+        userGroupName: [
           { required: true, message: '请选择所属用户组', trigger: 'change' }
         ]
       }
@@ -199,6 +215,7 @@ export default {
       //请求分页查询数据
       this.load();
       this.showTable = [...this.tableData];
+      this.loadUserGroups();
   },
 
   methods: {
@@ -220,9 +237,25 @@ export default {
     Search_table() {
       this.load();
     },
+    //让userGroupId跟着userGroupName一起变
+    handleGroupChange1(value) {
+      let selectedGroup = this.userGroups.find(group => group.id === value);
+      if (selectedGroup) {
+        this.ruleForm.userGroupId = selectedGroup.id;
+        this.eruleForm.userGroupName = selectedGroup.name;
+      }
+    },
+    //让userGroupId跟着userGroupName一起变
+    handleGroupChange2(value) {
+      let selectedGroup = this.userGroups.find(group => group.id === value);
+      if (selectedGroup) {
+        this.editForm.userGroupId = selectedGroup.id;
+        this.editForm.userGroupName = selectedGroup.name;
+      }
+    },
 
     //新增按钮跳出弹窗
-    handleEdit1(){
+    handleAdd(){
       if (this.$refs.ruleForm) {
         this.$refs.ruleForm.resetFields(); // 清除表单验证并重置表单
       }
@@ -234,12 +267,18 @@ export default {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           // 表单验证通过，提交数据
-
+          this.request.post("/user/add",this.ruleForm).then(res=>{
+            if(res.code == '200'){
+              this.$message.success('新增用户数据成功！');
+              this.load();
+            } else {
+              this.$message.error('新增用户数据失败，原因：' + res.msg);
+            }
+          })
           // 重置表单
           this.$refs.ruleForm.resetFields(); 
           this.dialogVisible1 = false;  //关闭弹窗
           // 在此处添加你的提交逻辑，例如发送数据到服务器
-
         } else {
           return false; // 阻止表单提交
         }
@@ -247,18 +286,37 @@ export default {
     },
 
     //点击编辑按钮跳出弹窗填充数据
-    handleEdit2(row) {
+    handleEdit1(row) {
       // 将当前行数据复制到 editForm 中，避免直接修改表格数据
       this.editForm = Object.assign({}, row); 
       this.dialogVisible2 = true;
     },
-
-    //编辑用户弹窗确定提交的方法
-    handleSubmit2() {
-      // 在此处处理表格提交逻辑
-      
-      this.dialogVisible2 = false; // 关闭弹窗
+    //删除按钮的删除接口以及逻辑
+    handleDelete(row) {
+      this.$confirm('确认删除该记录吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 调用后端删除接口
+        this.request.put('/user/delete', {
+          id: row.id
+        }).then(res => {
+          if(res.code == '200'){
+            this.$message.success('删除用户数据成功！');
+            this.load();
+          }else{
+            this.$message.error('删除用户数据失败，原因：'+res.msg);
+          }
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
+      });
     },
+
 
     //分页用的功能
     handleCurrentChange(val) {
@@ -278,12 +336,50 @@ export default {
           str:this.inputVal,
         }
       }).then(res=>{
-        console.log(res);
-        this.tableData=res.data.records;
-        this.total=res.data.total;
-        console.log('执行了没');
+        //console.log(res);
+        if(res.code=='200'){
+          this.tableData=res.data.records;
+          this.total=res.data.total;
+        }else{
+          this.$message.error('获取全部用户数据失败，原因：'+res.msg);
+        }
       })
-    } 
+    },
+    //获取全部已激活用户组数据
+    loadUserGroups(){
+      this.request.get("/user/groups").then(res=>{
+        //console.log('将要获取用户组信息');
+        //console.log(res);
+        if(res.code=='200'){
+          this.userGroups = res.data
+        }else{
+          this.$message.error('获取用户组数据失败，原因：'+res.msg);
+        }
+      })
+    }, 
+    //编辑弹窗里的编辑按钮
+    handleEdit2() {
+      this.isEditing = true;
+    },
+    //编辑弹窗里的确定按钮
+    handleConfirm() {
+      console.log('编辑所属用户组');
+      console.log(this.editForm.userGroupId);
+      console.log(this.editForm.userGroupName);
+      // 在这里处理提交逻辑
+      this.request.put("/user/update",this.editForm).then(res=>{
+        if(res.code=='200'){
+          this.$message.success('编辑用户数据成功！');
+          this.load();
+          this.isEditing = false;
+          this.dialogVisible2=false;
+        }else{
+          this.$message.error('编辑用户数据数据失败，原因：'+res.msg);
+        }
+      })
+    },
+
+
 
   },
 

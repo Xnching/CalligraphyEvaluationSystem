@@ -106,6 +106,37 @@ public class UserService extends ServiceImpl<UserMapper,User> {
         page.setTotal(count);
         return page;
     }
+    /*
+    * 根据id更新一个用户数据
+    * */
+    public void updateUser(UserDTO userDTO){
+        User user = convertToEntity(userDTO);
+        System.out.println();
+        userMapper.updateById(user);
+    }
+    /*
+    * 将UserDTO转化成User,将与前端交互的实例类转化为与数据库交互的实例类
+    * */
+    private User convertToEntity(UserDTO userDTO){
+        User user = new User();
+        BeanUtil.copyProperties(userDTO,user);
+        return user;
+    }
 
+    /*
+     * 根据id逻辑删除一个用户数据，为逻辑删除
+     * */
+    public void deleteUser(String id){
+        User user = userMapper.selectById(id);
+        user.setDeleteFlag(true);
+        userMapper.updateById(user);
+    }
 
+    /*
+    * 新增一个用户
+    * */
+    public void addUser(UserDTO userDTO){
+        User user = convertToEntity(userDTO);
+        userMapper.insert(user);
+    }
 }

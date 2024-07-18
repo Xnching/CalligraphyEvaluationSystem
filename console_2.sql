@@ -32,11 +32,11 @@ create table user_group (
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '用户组';
 
-INSERT INTO user_group (name, state, user_count, description) VALUES ('用户组1', '活跃', 10, '这是用户组1');
-INSERT INTO user_group (name, state, user_count, description) VALUES ('用户组2', '活跃', 20, '这是用户组2');
-INSERT INTO user_group (name, state, user_count, description) VALUES ('用户组3', '非活跃', 5, '这是用户组3');
-INSERT INTO user_group (name, state, user_count, description) VALUES ('用户组4', '活跃', 15, '这是用户组4');
-INSERT INTO user_group (name, state, user_count, description) VALUES ('用户组5', '非活跃', 8, '这是用户组5');
+INSERT INTO user_group (name, state, user_count, description) VALUES ('用户组1', '已激活', 10, '这是用户组1');
+INSERT INTO user_group (name, state, user_count, description) VALUES ('用户组2', '已激活', 20, '这是用户组2');
+INSERT INTO user_group (name, state, user_count, description) VALUES ('用户组3', '已激活', 5, '这是用户组3');
+INSERT INTO user_group (name, state, user_count, description) VALUES ('用户组4', '未激活', 15, '这是用户组4');
+INSERT INTO user_group (name, state, user_count, description) VALUES ('用户组5', '未激活', 8, '这是用户组5');
 
 create table permissions (
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment'权限id',

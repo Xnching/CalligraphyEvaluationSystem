@@ -18,15 +18,16 @@ public interface UserMapper extends BaseMapper<User> {
     * */
     @Select("SELECT user.*, user_group.name AS userGroupName " +
             "FROM user LEFT JOIN user_group ON user.user_group_id = user_group.id " +
-            "WHERE user.login_id LIKE CONCAT('%',#{str},'%') " +
+            "WHERE delete_flag = 0 AND (user.login_id LIKE CONCAT('%',#{str},'%') " +
             "OR user.name LIKE CONCAT('%',#{str},'%') " +
-            "OR user_group.name LIKE CONCAT('%',#{str},'%')")
+            "OR user_group.name LIKE CONCAT('%',#{str},'%'))")
     IPage<UserDTO> selectUserWithGroupName(IPage<UserDTO> page,@Param("str") String str);
 
     @Select("SELECT COUNT(*) " +
             "FROM user LEFT JOIN user_group ON user.user_group_id = user_group.id " +
-            "WHERE user.login_id LIKE CONCAT('%',#{str},'%') " +
+            "WHERE delete_flag = 0 AND (user.login_id LIKE CONCAT('%',#{str},'%') " +
             "OR user.name LIKE CONCAT('%',#{str},'%') " +
-            "OR user_group.name LIKE CONCAT('%',#{str},'%')")
+            "OR user_group.name LIKE CONCAT('%',#{str},'%'))")
     int countUserWithGroupName(@Param("str") String str);
+
 }
