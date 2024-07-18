@@ -45,8 +45,9 @@ export default {
       login(){
         this.$refs['LoginFormRef'].validate(async (valid) =>{
           if(valid){
-            this.request.post("http://localhost:8084/backend/login",this.loginForm).then(res=>{
+            this.request.post("http://localhost:8084/api/backend/login",this.loginForm).then(res=>{
               if(res.code=='200'){
+                console.log(res.data.token)
                 localStorage.setItem("user",JSON.stringify(res.data));//存储用户信息到浏览器
                 //动态设置当前用户的路由
                 localStorage.setItem("menus",JSON.stringify(res.data.menus));//存储用户权限菜单信息到浏览器

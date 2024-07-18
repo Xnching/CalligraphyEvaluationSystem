@@ -2,23 +2,29 @@ package com.moyunzhijiao.system_backend.service;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_backend.common.Constants;
 import com.moyunzhijiao.system_backend.controller.dto.UserDTO;
 import com.moyunzhijiao.system_backend.entiy.Permissions;
 import com.moyunzhijiao.system_backend.entiy.User;
+import com.moyunzhijiao.system_backend.entiy.UserGroup;
 import com.moyunzhijiao.system_backend.exception.ServiceException;
 import com.moyunzhijiao.system_backend.mapper.PermissionsMapper;
 import com.moyunzhijiao.system_backend.mapper.UserGroupPermissionsMapper;
 import com.moyunzhijiao.system_backend.mapper.UserMapper;
 import com.moyunzhijiao.system_backend.utils.TokenUtils;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class UserService extends ServiceImpl<UserMapper,User> {
 
@@ -35,11 +41,11 @@ public class UserService extends ServiceImpl<UserMapper,User> {
      *
      **/
     public UserDTO login(UserDTO userDTO){
+        System.out.println(userDTO.getToken());
         QueryWrapper<User> queryWrapper=new QueryWrapper<>();
         queryWrapper.eq("login_id",userDTO.getLoginId());
         queryWrapper.eq("password",userDTO.getPassword());
         User one;
-        System.out.println(userMapper);
         try {
             one = getOne(queryWrapper);
         } catch (Exception e) {
@@ -51,7 +57,7 @@ public class UserService extends ServiceImpl<UserMapper,User> {
             //hutool里的
             BeanUtil.copyProperties(one,userDTO,true);
             //设置token
-            String token= TokenUtils.genToken(one.getId().toString(),one.getPassword().toString());
+            String token= TokenUtils.checkToken(userDTO.getToken(),one.getId().toString(),one.getPassword());
             userDTO.setToken(token);
             Integer userGroupId = one.getUserGroupId();
             //根据权限设置用户的菜单列表
@@ -89,5 +95,17 @@ public class UserService extends ServiceImpl<UserMapper,User> {
         }
         return ownMenus;
     }
+
+
+    /*
+    * 分页查询
+    * */
+    public IPage<UserDTO> selectPageWithGroupName(IPage<UserDTO> page, String str) {
+        page = userMapper.selectUserWithGroupName(page,str);
+        Integer count = userMapper.countUserWithGroupName(str);
+        page.setTotal(count);
+        return page;
+    }
+
 
 }

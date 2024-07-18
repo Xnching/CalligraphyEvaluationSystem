@@ -8,7 +8,7 @@
         @keyup.enter.native="Search_table()"
         clearable>
         </el-input>
-        <el-button style="margin-left:20px ;margin-right:535px" type="primary">搜索</el-button>
+        <el-button style="margin-left:20px ;margin-right:535px" type="primary" @click="Search_table">搜索</el-button>
         <el-button type="primary" @click="handleEdit1">新增<i class="el-icon-circle-plus"></i></el-button>
       </div>       
 
@@ -24,7 +24,7 @@
           width="55">
         </el-table-column>
         <el-table-column
-          prop="ID"
+          prop="id"
           label="用户ID"
           width="95">
         </el-table-column>
@@ -34,7 +34,7 @@
           width="100">
         </el-table-column>
         <el-table-column
-          prop="loginName"
+          prop="loginId"
           label="登录名"
           width="120">
         </el-table-column>
@@ -44,14 +44,14 @@
           width="120">
         </el-table-column>
         <el-table-column
-          prop="userGroup"
+          prop="userGroupName"
           label="所属用户组"
-          show-overflow-tooltip>
+          width="220">
         </el-table-column>
         <el-table-column
           prop="phone"
           label="联系方式"
-          width="120">
+          width="170">
         </el-table-column>
         <el-table-column fixed="right" label="操作">                         
           <template slot-scope="scope">
@@ -67,11 +67,11 @@
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page="currentPage4"
+          :current-page="pageNum"
           :page-sizes="[5, 10, 15, 20]"
-          :page-size="10"
+          :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="20">
+          :total="total">
         </el-pagination>
       </div>
 
@@ -84,7 +84,7 @@
         <!-- 用于提示新增用户时的数据不能为空-->
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
           <el-form-item label="用户姓名" prop="name"> <el-input v-model="ruleForm.name"></el-input> </el-form-item>
-          <el-form-item label="登录名" prop="loginName"> <el-input v-model="ruleForm.loginName"></el-input> </el-form-item>
+          <el-form-item label="登录名" prop="loginId"> <el-input v-model="ruleForm.loginId"></el-input> </el-form-item>
           <el-form-item label="密码" prop="password"> <el-input v-model="ruleForm.password"></el-input> </el-form-item>
           <el-form-item label="联系方式"prop="phone"> <el-input v-model="ruleForm.phone"></el-input> </el-form-item>
           <el-form-item label="所属用户组" prop="userGroup">
@@ -113,7 +113,7 @@
             <el-input v-model="editForm.name"></el-input>
           </el-form-item>
           <el-form-item label="登录名">
-            <el-input v-model="editForm.loginName"></el-input>
+            <el-input v-model="editForm.loginId"></el-input>
           </el-form-item>
           <el-form-item label="密码">
             <el-input v-model="editForm.password"></el-input>
@@ -148,15 +148,11 @@ export default {
     return {
       //搜索栏要用的
       inputVal:"",
-      tableData: Array(8).fill().map(() => ({
-        ID:"10000",
-        name: "孙岳平",
-        loginName: "335508880",
-        password: "12345678",
-        userGroup: "盘成小学竞赛评阅教师组",
-        phone: "17715062004"
-      })),
+      tableData: [],
       showTable:[],
+      total:0,
+      pageNum:1,
+      pageSize:6,
       //初始隐藏两个表单
       dialogVisible1: false,
       dialogVisible2: false,
@@ -165,7 +161,7 @@ export default {
       editForm: { // 添加 editForm 即编辑弹窗里的表单定义
         ID: '',
         name: '',
-        loginName: '',
+        loginId: '',
         password: '',
         phone: '',
         userGroup: ''
@@ -173,7 +169,7 @@ export default {
       //规则，即添加里的验证规则
       ruleForm: {
         name: '',
-        loginName: '',
+        loginId: '',
         password: '',
         phone: '',
         userGroup: ''
@@ -182,7 +178,7 @@ export default {
         name: [
           { required: true, message: '请输入用户姓名', trigger: 'blur' }
         ],
-        loginName: [
+        loginId: [
           { required: true, message: '请输入登录名', trigger: 'blur' }
         ],
         password: [
@@ -199,13 +195,10 @@ export default {
 
     };
   },
-  watch: {
-    //用于实现搜索栏搜索的
-    inputVal(item1) {
-      if (item1 == "") {
-        this.tableData = this.showTable;
-      }
-    },
+  created(){
+      //请求分页查询数据
+      this.load();
+      this.showTable = [...this.tableData];
   },
 
   methods: {
@@ -225,49 +218,7 @@ export default {
     },
     //实现搜索栏多属性搜索的
     Search_table() {
-      const Search_List = [];
-      let res1 = this.inputVal;
-      const res = res1.replace(/\s/gi, "");
-      let searchArr = this.showTable;
-      searchArr.forEach((e) => {
-        let ID = e.ID;
-        let name= e.name;
-        let loginName= e.loginName;
-        let password= e.password;
-        let userGroup= e.userGroup;
-        let phone= e.phone;
-        if (ID.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (name.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (loginName.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (password.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (userGroup.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (phone.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-      });
-      this.tableData = Search_List;
+      this.load();
     },
 
     //新增按钮跳出弹窗
@@ -310,14 +261,31 @@ export default {
     },
 
     //分页用的功能
-    handleCurrentChange() {},
-    handleSizeChange() {},
-    currentPage4() {}
+    handleCurrentChange(val) {
+      this.pageNum = val;   //获取当前第几页
+      this.load();
+    },
+    handleSizeChange(val) {
+      this.pageSize = val;  //获取当前每页显示条数
+      this.load();
+    },
+    //请求分页查询数据
+    load(){
+      this.request.get("/user/page",{
+        params:{
+          pageNum:this.pageNum,
+          pageSize:this.pageSize,
+          str:this.inputVal,
+        }
+      }).then(res=>{
+        console.log(res);
+        this.tableData=res.data.records;
+        this.total=res.data.total;
+        console.log('执行了没');
+      })
+    } 
+
   },
-  
-  //把tableData数值赋给showTable
-  created(){
-    this.showTable = [...this.tableData];
-  }
+
 };
 </script>
