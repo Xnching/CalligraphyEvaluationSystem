@@ -1,6 +1,7 @@
 package com.moyunzhijiao.system_backend.service;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -35,13 +36,13 @@ public class UserService extends ServiceImpl<UserMapper,User> {
     @Resource
     private PermissionsService permissionsService;
     @Resource
-    private UserGroupPermissionsMapper userGroupPermissionsMapper;
+    private UserGroupPermissionsService userGroupPermissionsService;
+
     /*
      * 登陆方法，实现登录
      *
      **/
     public UserDTO login(UserDTO userDTO){
-        System.out.println(userDTO.getToken());
         QueryWrapper<User> queryWrapper=new QueryWrapper<>();
         queryWrapper.eq("login_id",userDTO.getLoginId());
         queryWrapper.eq("password",userDTO.getPassword());
@@ -60,9 +61,14 @@ public class UserService extends ServiceImpl<UserMapper,User> {
             String token= TokenUtils.checkToken(userDTO.getToken(),one.getId().toString(),one.getPassword());
             userDTO.setToken(token);
             Integer userGroupId = one.getUserGroupId();
-            //根据权限设置用户的菜单列表
-            List<Permissions> menus = getMenus(userGroupId);
-            userDTO.setMenus(menus);
+            //判断下所属用户组是否激活
+            if (StrUtil.equals(userGroupService.getState(userGroupId),"未激活")){
+                userDTO.setMenus(null);
+            }else {
+                //根据权限设置用户的菜单列表
+                List<Permissions> menus = getMenus(userGroupId);
+                userDTO.setMenus(menus);
+            }
             return userDTO;     //返回登录类userDTO
         }else {
             throw new ServiceException(Constants.CODE_600,"用户名或密码错误");
@@ -76,11 +82,13 @@ public class UserService extends ServiceImpl<UserMapper,User> {
 
 
     /*
-     * 获取当前用户的菜单列表
+     * 获取当前用户的菜单列表,此处不用表连接查询而是在后端筛选不推荐使用
+     * 要尽可能地减少数据库查询次数和优化数据处理，
+     * 数据库引擎可以优化查询并减少网络传输的数据量。
      */
     private List<Permissions> getMenus(Integer userGroupId){
         //根据用户组id查到所有权限的id
-        List<Integer> permissionsIds = userGroupPermissionsMapper.selectByUserGroupId(userGroupId);
+        List<Integer> permissionsIds = userGroupPermissionsService.getIdByUserGroupId(userGroupId);
         //查出系统所有菜单
         List<Permissions> menus=permissionsService.findPermissions("");
         //筛选当前用户菜单
@@ -106,14 +114,15 @@ public class UserService extends ServiceImpl<UserMapper,User> {
         page.setTotal(count);
         return page;
     }
+
     /*
     * 根据id更新一个用户数据
     * */
     public void updateUser(UserDTO userDTO){
         User user = convertToEntity(userDTO);
-        System.out.println();
         userMapper.updateById(user);
     }
+
     /*
     * 将UserDTO转化成User,将与前端交互的实例类转化为与数据库交互的实例类
     * */

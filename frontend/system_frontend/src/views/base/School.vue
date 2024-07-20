@@ -34,7 +34,7 @@
           width="250">
         </el-table-column>
         <el-table-column
-          prop="schoolType"
+          prop="type"
           label="学校类型"
           width="90">
         </el-table-column>
@@ -62,11 +62,11 @@
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page="currentPage4"
+          :current-page="pageNum"
           :page-sizes="[5, 10, 15, 20]"
-          :page-size="10"
+          :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="20">
+          :total="total">
         </el-pagination>
       </div>
 
@@ -151,10 +151,10 @@
             </el-form-item>
 
           <el-form-item label="详细地址："> 
-            <el-input v-model="editForm.detailAddress"></el-input>
+            <el-input v-model="editForm.address"></el-input>
           </el-form-item>
           <el-form-item label="学校类别：">
-            <el-select v-model="editForm.schoolType" placeholder="请选择学校类别">
+            <el-select v-model="editForm.type" placeholder="请选择学校类别">
               <el-option label="用户组 A" value="groupA"></el-option>
               <el-option label="用户组 B" value="groupB"></el-option>
             </el-select>
@@ -188,27 +188,22 @@
 export default {
   data() {
     return {
+      total:0,
+      pageNum:1,
+      pageSize:6,
       //搜索栏要用的
       inputVal:"",
-      tableData: Array(8).fill().map(() => ({
-        id:"10000",
-        name: "江苏省南京市第一初级中学",
-        address: "江苏省南京市鼓楼区第二街道三号",
-        schoolType: "初中",
-        leader: "初中政教处主任",
-        leaderPhone: "17715062004"
-      })),
-      showTable:[],
+      tableData:[],
       //初始隐藏两个表单
       dialogVisible1: false,
       dialogVisible2: false,
       editForm: { // 添加 editForm 即编辑弹窗里的表单定义
         id: '',
         name: '',
-        loginName: '',
-        password: '',
-        phone: '',
-        userGroup: ''
+        type:'',
+        address:'',
+        leader:'',
+        leaderPhone:'',
       },
       //规则，即添加里的验证规则
       ruleForm: {
@@ -270,61 +265,15 @@ export default {
 
     };
   },
-  watch: {
-    //用于实现搜索栏搜索的
-    inputVal(item1) {
-      if (item1 == "") {
-        this.tableData = this.showTable;
-      }
-    },
+  created(){
+      //请求分页查询数据
+      this.load();
   },
 
   methods: {
     //实现搜索栏多属性搜索的
     Search_table() {
-      const Search_List = [];
-      let res1 = this.inputVal;
-      const res = res1.replace(/\s/gi, "");
-      let searchArr = this.showTable;
-      searchArr.forEach((e) => {
-        let id = e.id;
-        let name= e.name;
-        let address= e.address;
-        let schoolType= e.schoolType;
-        let leader= e.leader;
-        let leaderPhone= e.leaderPhone;
-        if (id.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (name.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (address.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (schoolType.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (leader.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (leaderPhone.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-      });
-      this.tableData = Search_List;
+      this.load();
     },
 
     //新增按钮跳出弹窗
@@ -389,15 +338,36 @@ export default {
       this.counties = selectedCity ? selectedCity.counties : [];
       this.selectedCounty = ''; 
     },
-
     //分页用的功能
-    handleCurrentChange() {},
-    handleSizeChange() {},
-    currentPage4() {}
+    handleCurrentChange(val) {
+      this.pageNum = val;   //获取当前第几页
+      this.load();
+    },
+    handleSizeChange(val) {
+      this.pageSize = val;  //获取当前每页显示条数
+      this.load();
+    },
+    //请求分页查询数据
+    load(){
+      this.request.get("/school/page",{
+        params:{
+          pageNum:this.pageNum,
+          pageSize:this.pageSize,
+          str:this.inputVal,
+        }
+      }).then(res=>{
+        console.log(res);
+        if(res.code=='200'){
+          this.tableData=res.data.records;
+          this.total=res.data.total;
+        }else{
+          this.$message.error('获取全部用户数据失败，原因：'+res.msg);
+        }
+      })
+    },
+
+    
   },
-  //把tableData数值赋给showTable
-  created(){
-    this.showTable = [...this.tableData];
-  }
+  
 };
 </script>

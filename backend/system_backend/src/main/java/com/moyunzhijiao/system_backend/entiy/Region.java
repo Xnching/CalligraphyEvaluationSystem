@@ -6,20 +6,18 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-@TableName(value="user_group")
-public class UserGroup {
+@TableName(value="region")
+public class Region {
     @TableId(value = "id",type = IdType.AUTO)
     Integer id;
     String name;
-    String state;
-    @TableField(value="user_count")
-    Integer userCount;
-    String description;
-    @TableField(value="delete_flag")
-    boolean deleteFlag;
-    @TableField(value="created_time")
-    String createTime;
+    Integer level;
+    @TableField(value="parent_id")
+    Integer parentId;
+    //在数据表中没有children这个字段，这个在做菜单的时候会用到，所以使用exist=false忽略
     @TableField(exist = false)
-    Integer permissionsId;
+    private List<Region> children;
 }

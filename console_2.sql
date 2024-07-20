@@ -31,6 +31,9 @@ create table user_group (
     description varchar(255) comment '描述',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '用户组';
+#给用户组也增加逻辑删除
+ALTER TABLE user_group
+ADD COLUMN delete_flag TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）';
 
 INSERT INTO user_group (name, state, user_count, description) VALUES ('用户组1', '已激活', 10, '这是用户组1');
 INSERT INTO user_group (name, state, user_count, description) VALUES ('用户组2', '已激活', 20, '这是用户组2');
@@ -174,15 +177,38 @@ CREATE TABLE grade(
 
 create table school(
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '学校id',
-    region_id int UNSIGNED not null comment '区域id',
     name varchar(50) not null comment '学校名',
     type varchar(50) not null comment '学校类型',
     leader varchar(50) not null comment '校负责人',
-    address varchar(75) not null comment '详细地址',
+    region_id int UNSIGNED not null comment '区域id',
+    address varchar(75) not null comment '地址',
     leader_phone VARCHAR(20) comment'联系方式',
     person_count int default 0 comment '人数',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '学校';
+INSERT INTO school (region_id, name, type, leader, address, leader_phone, person_count) VALUES
+(1, '北京市第一小学', '公立', '张三', '北京市海淀区', '13800138000', 1000),
+(2, '北京市第二小学', '公立', '李四', '北京市海淀区', '13800138001', 900),
+(3, '上海市第一中学', '公立', '王五', '上海市杨浦区', '13800138002', 800),
+(4, '杭州市第一小学', '公立', '赵六', '浙江省杭州市', '13800138003', 1200),
+(5, '南京市第一中学', '公立', '孙七', '江苏省南京市', '13800138004', 1100),
+(6, '武汉市第一小学', '公立', '周八', '湖北省武汉市', '13800138005', 1000),
+(7, '广州市第一中学', '公立', '吴九', '广东省广州市', '13800138006', 900),
+(8, '西安市第一小学', '公立', '郑十', '陕西省西安市', '13800138007', 800),
+(9, '成都市第一中学', '公立', '王十一', '四川省成都市', '13800138008', 1200),
+(10, '厦门市第一小学', '公立', '李十二', '福建省厦门市', '13800138009', 1100),
+(11, '上海市第二中学', '公立', '赵十三', '上海市杨浦区', '13800138010', 1000),
+(12, '北京市第三小学', '公立', '孙十四', '北京市海淀区', '13800138011', 900),
+(13, '上海市第三中学', '公立', '周十五', '上海市杨浦区', '13800138012', 800),
+(14, '南京市第二小学', '公立', '吴十六', '江苏省南京市', '13800138013', 1200),
+(15, '广州市第二中学', '公立', '郑十七', '广东省广州市', '13800138014', 1100),
+(16, '成都市第二小学', '公立', '王十八', '四川省成都市', '13800138015', 1000),
+(17, '哈尔滨市第一中学', '公立', '李十九', '黑龙江省哈尔滨市', '13800138016', 900),
+(18, '长春市第一小学', '公立', '赵二十', '吉林省长春市', '13800138017', 800),
+(19, '兰州市第一中学', '公立', '孙二十一', '甘肃省兰州市', '13800138018', 1200),
+(20, '西安市第二小学', '公立', '周二十二', '陕西省西安市', '13800138019', 1100);
+
+
 
 create table klass(
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '班级id',

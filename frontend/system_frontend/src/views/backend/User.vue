@@ -80,6 +80,7 @@
         title="请输入新增系统用户的信息"
         :visible.sync="dialogVisible1"
         width="40%"
+        destroy-on-close
         :close-on-click-modal="false" >
         <!-- 用于提示新增用户时的数据不能为空-->
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
@@ -111,6 +112,7 @@
         title="点击修改信息"
         :visible.sync="dialogVisible2"
         width="40%"
+        destroy-on-close
         :close-on-click-modal="false">
         <el-form :model="editForm" label-width="100px">
           <el-form-item label="用户姓名"> 
@@ -363,9 +365,6 @@ export default {
     },
     //编辑弹窗里的确定按钮
     handleConfirm() {
-      console.log('编辑所属用户组');
-      console.log(this.editForm.userGroupId);
-      console.log(this.editForm.userGroupName);
       // 在这里处理提交逻辑
       this.request.put("/user/update",this.editForm).then(res=>{
         if(res.code=='200'){

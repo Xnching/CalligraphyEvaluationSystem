@@ -6,20 +6,24 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-@TableName(value="user_group")
-public class UserGroup {
+@TableName(value="school")
+public class School {
     @TableId(value = "id",type = IdType.AUTO)
     Integer id;
     String name;
-    String state;
-    @TableField(value="user_count")
-    Integer userCount;
-    String description;
-    @TableField(value="delete_flag")
-    boolean deleteFlag;
+    String type;
+    String leader;
+    String address;
+    @TableField(value="leader_phone")
+    String leaderPhone;
+    @TableField(value="person_count")
+    Integer personCount;
+    @TableField(value="region_id")
+    Integer regionId;
     @TableField(value="created_time")
-    String createTime;
-    @TableField(exist = false)
-    Integer permissionsId;
+    String createdTime;
+
 }

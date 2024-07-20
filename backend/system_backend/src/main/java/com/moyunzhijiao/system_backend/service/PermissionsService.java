@@ -12,6 +12,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class PermissionsService extends ServiceImpl<PermissionsMapper, Permissions> {
+
+    /*
+    * 用于查出菜单
+    * */
     public List<Permissions> findPermissions(String name){
         QueryWrapper<Permissions> queryWrapper=new QueryWrapper<>();
         if(StrUtil.isNotBlank(name)){
@@ -22,10 +26,12 @@ public class PermissionsService extends ServiceImpl<PermissionsMapper, Permissio
         for(Permissions menu:parentNodes){
             menu.setChildren(getChildren(menu, list));
         }
-        System.out.println(parentNodes);
         return parentNodes;
     }
 
+    /*
+    * 拼接子菜单和父菜单
+    * */
     private List<Permissions> getChildren(Permissions parent, List<Permissions> allMenu) {
         List<Permissions> children = allMenu.stream().filter(menu -> menu.getParentId()!=null && menu.getParentId().equals(parent.getId())).collect(Collectors.toList());
         for (Permissions child : children) {
