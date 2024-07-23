@@ -9,7 +9,7 @@
         clearable>
         </el-input>
         <el-button style="margin-left:20px ;margin-right:535px" type="primary">搜索</el-button>
-        <el-button type="primary" @click="handleEdit1">新增<i class="el-icon-circle-plus"></i></el-button>
+        <el-button type="primary" @click="handleAdd">新增<i class="el-icon-circle-plus"></i></el-button>
       </div>       
 
       <el-table
@@ -50,8 +50,8 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作">                         
           <template slot-scope="scope">
-              <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit2(scope.row)">编辑</el-button>
-              <el-button type="danger" size="small"  icon="el-icon-delete">删除</el-button>
+              <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit1(scope.row)">编辑</el-button>
+              <el-button type="danger" size="small"  icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column> 
 
@@ -75,6 +75,7 @@
         title="请输入新增系统用户的信息"
         :visible.sync="dialogVisible1"
         width="40%"
+        destroy-on-close
         :close-on-click-modal="false" >
         <!-- 用于提示新增学校时的数据不能为空-->
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
@@ -101,9 +102,9 @@
                 </select>
             </el-form-item>
             
-          <el-form-item label="详细地址:" prop="detailAddress"> <el-input v-model="ruleForm.detailAddress"></el-input> </el-form-item>
-          <el-form-item label="学校类别" prop="schoolType">
-            <el-select v-model="ruleForm.schoolType" placeholder="学校类别" >
+          <el-form-item label="详细地址:" prop="address"> <el-input v-model="ruleForm.address"></el-input> </el-form-item>
+          <el-form-item label="学校类别" prop="type">
+            <el-select v-model="ruleForm.type" placeholder="学校类别" >
                 <el-option label="小学" value="primary"></el-option>
                 <el-option label="初中" value="juniorHigh"></el-option>
                 <el-option label="中小学" value="pj"></el-option>
@@ -126,23 +127,27 @@
         title="点击修改信息"
         :visible.sync="dialogVisible2"
         width="40%"
+        destroy-on-close
         :close-on-click-modal="false">
         <el-form :model="editForm" label-width="100px">
             <!--下面是区域选择器-->
             <el-form-item label="请选择区域:" prop="address" >
-                <select v-model="selectedProvince" @change="onProvinceChange" style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
+                <select v-model="selectedProvince" @change="onProvinceChange" :disabled="!isEditing"
+                style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
                     <option value="">请选择省份</option>
                     <option v-for="province in provinces" :key="province.id" :value="province.id">
                         {{ province.name }}
                     </option>
                 </select>
-                <select v-model="selectedCity" @change="onCityChange" v-if="cities.length" style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
+                <select v-model="selectedCity" @change="onCityChange" v-if="cities.length" :disabled="!isEditing"
+                style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
                     <option value="">请选择城市</option>
                     <option v-for="city in cities" :key="city.id" :value="city.id">
                         {{ city.name }}
                     </option>
                 </select>
-                <select v-model="selectedCounty" v-if="counties.length" style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
+                <select v-model="selectedCounty" v-if="counties.length" :disabled="!isEditing"
+                style="height: calc(2em + 10px); margin: 0px 10px; border: 1px solid #ccc;">
                     <option value="">请选择区/县</option>
                     <option v-for="county in counties" :key="county.id" :value="county.id">
                         {{ county.name }}
@@ -151,29 +156,32 @@
             </el-form-item>
 
           <el-form-item label="详细地址："> 
-            <el-input v-model="editForm.address"></el-input>
+            <el-input v-model="editForm.address" :disabled="!isEditing"></el-input>
           </el-form-item>
           <el-form-item label="学校类别：">
-            <el-select v-model="editForm.type" placeholder="请选择学校类别">
-              <el-option label="用户组 A" value="groupA"></el-option>
-              <el-option label="用户组 B" value="groupB"></el-option>
+            <el-select v-model="editForm.type" placeholder="请选择学校类别" :disabled="!isEditing">
+              <el-option label="小学" value="小学"></el-option>
+              <el-option label="初中" value="初中"></el-option>
+              <el-option label="中小学" value="中小学"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="学校名称：">
-            <el-input v-model="editForm.name"></el-input>
+            <el-input v-model="editForm.name" :disabled="!isEditing"></el-input>
           </el-form-item>
           <el-form-item label="校负责人：">
-            <el-input v-model="editForm.leader"></el-input>
+            <el-input v-model="editForm.leader" :disabled="!isEditing"></el-input>
           </el-form-item>
           <el-form-item label="联系方式：">
-            <el-input v-model="editForm.leaderPhone"></el-input>
+            <el-input v-model="editForm.leaderPhone" :disabled="!isEditing"></el-input>
           </el-form-item>
           
         </el-form>
         <template #footer>
           <span class="dialog-footer">
-            <el-button @click="dialogVisible2 = false">取消</el-button>
-            <el-button type="primary" @click="handleSubmit2">确定</el-button>
+            <el-button @click="handleCancel">取消</el-button>
+            <el-button type="primary" @click="isEditing ? handleConfirm() : handleEdit2()">
+              {{ isEditing ? '确定' : '编辑' }}
+            </el-button>
           </span>
         </template>
       </el-dialog>
@@ -196,6 +204,7 @@ export default {
       tableData:[],
       //初始隐藏两个表单
       dialogVisible1: false,
+      isEditing: false,
       dialogVisible2: false,
       editForm: { // 添加 editForm 即编辑弹窗里的表单定义
         id: '',
@@ -204,59 +213,37 @@ export default {
         address:'',
         leader:'',
         leaderPhone:'',
+        regionId:'',
+        regionId2:'',
+        regionId1:'',
       },
       //规则，即添加里的验证规则
       ruleForm: {
-        detailAddress: '',
-        schoolType: '',
+        id: '',
         name: '',
-        leader: '',
-        leaderPhone: ''
+        type:'',
+        address:'',
+        leader:'',
+        leaderPhone:'',
+        regionId:'',
+        regionId2:'',
+        regionId1:'',
       },
       rules: {
-        detailAddress: [
+        address: [
           { required: true, message: '请输入详细地址', trigger: 'blur' }
         ],
-        schoolType: [
+        type: [
           { required: true, message: '请选择学校类型', trigger: 'blur' }
         ],
         name: [
           { required: true, message: '请输入学校名称', trigger: 'blur' }
         ],
-        leaderPhone: [
-          { required: true, message: '请输入联系方式', trigger: 'blur' },
-          { pattern: /^[0-9]+$/, message: '联系方式必须为数字', trigger: 'blur' }
-        ],
-        leader: [
-          { required: true, message: '请输入学校负责人', trigger: 'change' }
-        ], 
-        
       },
 
 
       //为区域列表的数据
-      provinces: [
-        { id: 1, name: '北京市', cities: [
-          { id: 11, name: '北京市', counties: [
-            { id: 111, name: '东城区' },
-            { id: 112, name: '西城区' },
-          ]},
-          { id: 12, name: '朝阳区', counties: [
-            { id: 121, name: '望京街道' },
-            { id: 122, name: '三里屯街道' },
-          ]},
-        ]},
-        { id: 2, name: '上海市', cities: [
-          { id: 21, name: '上海市', counties: [
-            { id: 211, name: '黄浦区' },
-            { id: 212, name: '徐汇区' },
-          ]},
-          { id: 22, name: '浦东新区', counties: [
-            { id: 221, name: '陆家嘴街道' },
-            { id: 222, name: '世纪大道街道' },
-          ]},
-        ]},
-      ], // 省份数据
+      provinces: [], // 省份数据
       cities: [], // 城市数据
       counties: [], // 区/县数据
       selectedProvince: '', 
@@ -268,6 +255,8 @@ export default {
   created(){
       //请求分页查询数据
       this.load();
+      //请求获取省份数据
+      this.getPronvince();
   },
 
   methods: {
@@ -277,7 +266,15 @@ export default {
     },
 
     //新增按钮跳出弹窗
-    handleEdit1(){
+    handleAdd(){
+      // 重置下拉框的选择
+      this.selectedProvince = '';
+      this.selectedCity = '';
+      this.selectedCounty = '';
+      
+      // 如果需要，也可以清空省份、城市和区县的列表
+      this.cities = [];
+      this.counties = [];
       if (this.$refs.ruleForm) {
         this.$refs.ruleForm.resetFields(); // 清除表单验证并重置表单
       }
@@ -295,8 +292,21 @@ export default {
         }
         this.$refs.ruleForm.validate((valid) => {
         if (valid) {
+          const selectedProvinceId = parseInt(this.selectedProvince, 10);
+          const selectedCityId = parseInt(this.selectedCity, 10);
+          const selectedCountyId = parseInt(this.selectedCounty,10);
+          this.ruleForm.regionId2 = selectedProvinceId;
+          this.ruleForm.regionId1 = selectedCityId;
+          this.ruleForm.regionId = selectedCountyId;
           // 表单验证通过，提交数据
-
+          this.request.post("/school/add",this.ruleForm).then(res=>{
+            if(res.code == '200'){
+              this.$message.success('新增学校数据成功！');
+              this.load();
+            } else {
+              this.$message.error('新增学校数据失败，原因：' + res.msg);
+            }
+          })
           // 重置表单
           this.$refs.ruleForm.resetFields(); 
           this.dialogVisible1 = false;  //关闭弹窗
@@ -307,11 +317,68 @@ export default {
         }
       });
     },
-
+    //删除按钮
+    handleDelete(row){
+      this.$confirm('确认删除该记录吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 调用后端删除接口
+        this.request.put('/school/delete', {
+          id: row.id
+        }).then(res => {
+          if(res.code == '200'){
+            this.$message.success('删除学校数据成功！');
+            this.load();
+          }else{
+            this.$message.error('删除学校数据失败，原因：'+res.msg);
+          }
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
+      });
+    },
+    //将编辑表单的内容提交给后端
+    handleConfirm(){
+      const selectedProvinceId = parseInt(this.selectedProvince, 10);
+      const selectedCityId = parseInt(this.selectedCity, 10);
+      const selectedCountyId = parseInt(this.selectedCounty,10);
+      this.editForm.regionId2 = selectedProvinceId;
+      this.editForm.regionId1 = selectedCityId;
+      this.editForm.regionId = selectedCountyId;
+      this.request.put("/school/update",this.editForm).then(res=>{
+        if(res.code=='200'){
+          this.$message.success('编辑学校数据成功！');
+          this.load();
+          this.isEditing = false;
+          this.dialogVisible2=false;
+        }else{
+          this.$message.error('获取全部用户数据失败，原因：'+res.msg);
+        }
+      })
+    },
+    handleEdit2() {
+      //开始编辑
+      this.isEditing = true;
+    },
     //点击编辑按钮跳出弹窗填充数据
-    handleEdit2(row) {
+    handleEdit1(row) {
       // 将当前行数据复制到 editForm 中，避免直接修改表格数据
       this.editForm = Object.assign({}, row); 
+      //console.log(this.editForm);
+      this.selectedProvince=this.editForm.regionId2;
+      this.selectedCity=this.editForm.regionId1;
+      this.selectedCounty=this.editForm.regionId;
+      const selectedProvinceId = parseInt(this.selectedProvince, 10);
+      const selectedCityId = parseInt(this.selectedCity, 10);
+      console.log(selectedCityId);
+      console.log(selectedProvinceId);
+      this.getCity(selectedProvinceId);
+      this.getCounty(selectedCityId);
       this.dialogVisible2 = true;
     },
 
@@ -321,23 +388,27 @@ export default {
       
       this.dialogVisible2 = false; // 关闭弹窗
     },
+    //编辑里的取消事件
+    handleCancel(){
+      this.isEditing = false;
+      this.dialogVisible2 = false;
+    },
     
     //当省份选择改变时 (onProvinceChange)，根据选择的省份过滤出对应的城市列表，并清空下级区域数据。
     onProvinceChange() {
       const selectedProvinceId = parseInt(this.selectedProvince, 10);
-      const selectedProvince = this.provinces.find(p => p.id === selectedProvinceId);
-      this.cities = selectedProvince ? selectedProvince.cities : [];
       this.counties = []; 
       this.selectedCity = ''; 
       this.selectedCounty = ''; 
+      this.getCity(selectedProvinceId);
     },
     //当城市选择改变时 (onCityChange)，根据选择的城市过滤出对应的区/县列表。
     onCityChange() {
       const selectedCityId = parseInt(this.selectedCity, 10);
-      const selectedCity = this.cities.find(c => c.id === selectedCityId);
-      this.counties = selectedCity ? selectedCity.counties : [];
       this.selectedCounty = ''; 
+      this.getCounty(selectedCityId);
     },
+    
     //分页用的功能
     handleCurrentChange(val) {
       this.pageNum = val;   //获取当前第几页
@@ -356,12 +427,52 @@ export default {
           str:this.inputVal,
         }
       }).then(res=>{
-        console.log(res);
         if(res.code=='200'){
           this.tableData=res.data.records;
           this.total=res.data.total;
         }else{
           this.$message.error('获取全部用户数据失败，原因：'+res.msg);
+        }
+      })
+    },
+    //获取省份数据渲染省份下拉框
+    getPronvince(){
+      this.request.get("/region/provinces").then(res=>{
+        if(res.code=='200'){
+          this.provinces=res.data;
+        }else{
+          this.$message.error('获取全部省级地区数据失败，原因：'+res.msg);
+        }
+
+      })
+    },
+    getCity(val){
+      const selectedProvinceId = val;
+      this.request.get('/region/cities', { 
+        params:{
+          provinceId: selectedProvinceId 
+        }
+      }).then(res=>{
+        if(res.code=='200'){
+          //console.log(res);
+          this.cities=res.data;
+        }else{
+          this.$message.error('获取全部市级地区数据失败，原因：'+res.msg);
+        }
+      })
+    },
+    getCounty(val){
+      const selectedCityId = val;
+      this.request.get('/region/counties', { 
+        params:{
+          cityId: selectedCityId
+        }
+      }).then(res=>{
+        if(res.code=='200'){
+          console.log(res);
+          this.counties=res.data;
+        }else{
+          this.$message.error('获取全部县级地区数据失败，原因：'+res.msg);
         }
       })
     },

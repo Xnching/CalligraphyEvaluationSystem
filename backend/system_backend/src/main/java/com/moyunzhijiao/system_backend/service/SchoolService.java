@@ -25,6 +25,9 @@ public class SchoolService extends ServiceImpl<SchoolMapper,School> {
     @Resource
     RegionService regionService;
 
+    @Resource
+    SchoolMapper schoolMapper;
+
     public IPage<SchoolDTO> selectSchools(IPage<School> page, String str) {
         QueryWrapper<School> queryWrapper=new QueryWrapper<>();
         if(StrUtil.isNotBlank(str)){
@@ -34,6 +37,7 @@ public class SchoolService extends ServiceImpl<SchoolMapper,School> {
             queryWrapper.like("type",str);
             queryWrapper.like("leader",str);
         }
+        queryWrapper.eq("delete_flag",0);
         IPage<School> pagedResult = page(page, queryWrapper);
         List<School> list = pagedResult.getRecords();
         // 转换为 DTO
@@ -42,7 +46,7 @@ public class SchoolService extends ServiceImpl<SchoolMapper,School> {
                 .collect(Collectors.toList());
         //给每个学校赋值其所拥有的三级地区id
         dtoList = dtoList.stream()
-                .map(this::setThreeRegion)
+                .map(regionService::setThreeRegion)
                 .collect(Collectors.toList());
         // 创建新的 IPage 对象并设置数据
         IPage<SchoolDTO> dtoPage = new Page<>(page.getCurrent(), page.getSize(), pagedResult.getTotal());
@@ -57,24 +61,40 @@ public class SchoolService extends ServiceImpl<SchoolMapper,School> {
         return schoolDTO;
     }
 
-    public SchoolDTO setThreeRegion(SchoolDTO schoolDTO){
-        Region region1 = getRegion(schoolDTO.getRegionId());
-        if (region1 != null) {
-            schoolDTO.setRegionId1(region1.getId());
-            Region region2 = getRegion(region1.getParentId());
-            if (region2 != null) {
-                schoolDTO.setRegionId2(region2.getId());
-            }
-        }
-        return schoolDTO;
+    /*
+    * 修改一个学校
+    * */
+    public void updateSchool(SchoolDTO schoolDTO) {
+        fullShoolAddress(schoolDTO);
+        School school = convertToEntity(schoolDTO);
+        schoolMapper.updateById(school);
     }
 
-    private Region getRegion(Integer id) {
-        Region region = regionService.getById(id);
-        if (region == null) {
-            // 在这里处理 region 为 null 的情况，例如抛出异常或者返回一个默认值
-        }
-        return region;
+    private School convertToEntity(SchoolDTO schoolDTO) {
+        School school = new School();
+        BeanUtil.copyProperties(schoolDTO,school);
+        return school;
     }
 
+    /*
+    * 逻辑删除一个学校
+    * */
+    public void deleteSchool(String id) {
+        School school = schoolMapper.selectById(id);
+        school.setDeleteFlag(true);
+        schoolMapper.updateById(school);
+    }
+
+    /*
+    * 新增一个学校
+    * */
+    public void addSchool(SchoolDTO schoolDTO) {
+        School school = convertToEntity(schoolDTO);
+        schoolMapper.insert(school);
+    }
+
+    public void fullShoolAddress(SchoolDTO schoolDTO){
+        String region = regionService.selectAllNameById(schoolDTO.getRegionId());
+        schoolDTO.setAddress(region+schoolDTO.getAddress());
+    }
 }

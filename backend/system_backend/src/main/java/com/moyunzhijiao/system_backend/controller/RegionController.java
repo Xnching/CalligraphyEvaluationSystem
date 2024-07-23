@@ -21,13 +21,36 @@ public class RegionController {
     RegionService regionService;
 
     @GetMapping("/page")
-    public Result findPage(@RequestParam Integer pageNum,@RequestParam Integer pageSize,
-                           @RequestParam(defaultValue = "")String str){
-        IPage<Region> page=new Page<>(pageNum,pageSize);
-        IPage<RegionDTO> p = regionService.findRegions(page,str);
-        System.out.println(p.getRecords());
+    public Result findPage(@RequestParam(defaultValue = "")String str){
+        List<RegionDTO> p = regionService.findRegions(str);
         return Result.success(p);
     }
 
+    /*
+    * 获取所有省份id
+    * */
+    @GetMapping("/provinces")
+    public Result findProvinces(){
+        List<RegionDTO> provinces = regionService.getAllProvince();
+        return Result.success(provinces);
+    }
+
+    /*
+    * 根据省份id查找这个省份下面的所有市级地区
+    * */
+    @GetMapping("/cities")
+    public Result findCities(@RequestParam Integer provinceId){
+        List<RegionDTO> cities = regionService.getAllChildren(provinceId);
+        return Result.success(cities);
+    }
+
+    /*
+     * 根据市级id查找这个省份下面的所有县级地区
+     * */
+    @GetMapping("/counties")
+    public Result findCounties(@RequestParam Integer cityId){
+        List<RegionDTO> counties = regionService.getAllChildren(cityId);
+        return Result.success(counties);
+    }
 }
 

@@ -7,7 +7,6 @@ create table tmp_area(
   parent_id INT UNSIGNED DEFAULT NULL comment '上一级id',
   level tinyint(1) DEFAULT NULL COMMENT '地区等级'
 );
-select * from tmp_area;
 
 create table citycode2(
 id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '区域id',

@@ -25,5 +25,7 @@ public class School {
     Integer regionId;
     @TableField(value="created_time")
     String createdTime;
+    @TableField(value="delete_flag")
+    boolean deleteFlag;
 
 }

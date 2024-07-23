@@ -12,10 +12,14 @@
         </div>
         <el-table
         ref="multipleTable"
-        :data="reigonData"
+        :data="regionData"
         style="width: 100%;margin-bottom: 20px;"
         row-key="id"
         border
+        v-loading="loading"
+        element-loading-text="拼命加载中"
+        element-loading-spinner="el-icon-loading"
+        element-loading-background="rgba(0, 0, 0, 0.8)"
         default-expand-all
         @data-change="handleDataChange"
         :tree-props="{children: 'children'}">
@@ -26,8 +30,8 @@
             </template>
         </el-table-column>
         <el-table-column
-          prop="name"
-          label="用户姓名"
+          prop="id"
+          label="区域id"
           width="100">
         </el-table-column>
         <el-table-column fixed="right" label="操作">                         
@@ -38,20 +42,8 @@
             </template>
             </el-table-column> 
         </el-table>
-        <p>{{regionData}}</p>
 
-        <!-- 分页栏-->
-        <div style="padding:10px">
-            <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="pageNum"
-            :page-sizes="[15, 30, 50, 100]"
-            :page-size="pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total">
-            </el-pagination>
-        </div>
+    
         
     </div>
     
@@ -64,11 +56,9 @@
     data(){
         return{
             inputVal:"",
-            reigonData:[],
-            total:0,
-            pageNum:1,
-            pageSize:15,
-            reigonData:[],
+            regionData:[],
+            loading: false, // 新增
+            // reigonData:[],
         }
 
     },
@@ -76,42 +66,28 @@
         this.load();
     },
     watch: {
-        regionData(newData) {
-            console.log('表格数据发生变化:', newData);
-        }
     },
     
     methods:{
         Search_table() {
             this.load();
         },
-        //分页用的功能
-        handleCurrentChange(val) {
-            this.pageNum = val;   //获取当前第几页
-            this.load();
-        },
-        handleSizeChange(val) {
-            this.pageSize = val;  //获取当前每页显示条数
-            this.load();
-        },
         //加载页面数据
         load(){
+            this.loading = true; // 开始加载
             this.request.get("/region/page",{
                 params:{
-                    pageNum:this.pageNum,
-                    pageSize:this.pageSize,
                     str:this.inputVal,
                 }
             }).then(res=>{
                 console.log(res);
                 if(res.code=='200'){
-                    this.regionData=res.data.records;
-                    this.total=res.data.total;
+                    this.regionData=res.data;
                     console.log('设置到表格的数据:', this.regionData);
-                    this.$refs.multipleTable.clearSelection();
                 }else{
                     this.$message.error('获取全部地区数据失败，原因：'+res.msg);
                 }
+                this.loading = false; // 加载完成
             })
 
         },

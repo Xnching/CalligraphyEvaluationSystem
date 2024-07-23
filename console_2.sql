@@ -174,6 +174,29 @@ CREATE TABLE grade(
   level tinyint NOT NULL comment'等级',
   updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'
 )comment '学制年级';
+INSERT INTO grade (name, parent_id, level) VALUES
+('六三制小学', NULL, 1),
+('一年级', 1, 2),
+('二年级', 1, 2),
+('三年级', 1, 2),
+('四年级', 1, 2),
+('五年级', 1, 2),
+('六年级', 1, 2),
+('六三制初中', NULL, 1),
+('初一', 8, 2),
+('初二', 8, 2),
+('初三', 8, 2),
+('五四制小学', NULL, 1),
+('一年级', 12, 2),
+('二年级', 12, 2),
+('三年级', 12, 2),
+('四年级', 12, 2),
+('五年级', 12, 2),
+('五四制初中', NULL, 1),
+('初一', 18, 2),
+('初二', 18, 2),
+('初三', 18, 2),
+('初四', 18, 2);
 
 create table school(
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '学校id',
@@ -184,8 +207,11 @@ create table school(
     address varchar(75) not null comment '地址',
     leader_phone VARCHAR(20) comment'联系方式',
     person_count int default 0 comment '人数',
+    delete_flag tinyint(1) not null DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '学校';
+ALTER TABLE school
+ADD COLUMN delete_flag TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）';
 INSERT INTO school (region_id, name, type, leader, address, leader_phone, person_count) VALUES
 (1, '北京市第一小学', '公立', '张三', '北京市海淀区', '13800138000', 1000),
 (2, '北京市第二小学', '公立', '李四', '北京市海淀区', '13800138001', 900),
@@ -248,11 +274,16 @@ create table teacher(
     gender ENUM('男', '女') comment '性别',
     phone varchar(25) comment'电话',
     email varchar(50) comment '邮箱',
+    school_id int UNSIGNED not null comment '所属学校id',
     region_id int UNSIGNED comment '所在区域id',
     picture_url varchar(255) comment'头像url',
     delete_flag tinyint(1) NULL DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '教师';
+# alter table teacher
+#     add column school_id int UNSIGNED not null comment '所属学校id';
+
+
 #教师和系统模板再来一个关系表，用于表示该教师常用的系统模板有哪些，已成为下表
 create table teacher_system_template(
     teacher_id int UNSIGNED not null comment '教师id',
@@ -263,9 +294,12 @@ create table teacher_system_template(
 
 CREATE TABLE academic_year (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    year VARCHAR(9) comment '学年，格式是 ‘2023-2024’ ',
-    semester ENUM('第一学期', '第二学期')
+    first_start DATETIME comment '第一学期开始日期',
+    first_end DATETIME comment '第一学期结束日期',
+    second_start DATETIME comment '第二学期开始日期',
+    second_end DATETIME comment '第二学期结束日期'
 )comment '学年';
+
 
 /*
 #下面这个表干什么用的不知道

@@ -237,6 +237,7 @@ export default {
     },
     //实现搜索栏多属性搜索的
     Search_table() {
+      this.pageNum=1
       this.load();
     },
     //让userGroupId跟着userGroupName一起变

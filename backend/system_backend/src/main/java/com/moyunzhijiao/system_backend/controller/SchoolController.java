@@ -10,10 +10,9 @@ import com.moyunzhijiao.system_backend.entiy.Region;
 import com.moyunzhijiao.system_backend.entiy.School;
 import com.moyunzhijiao.system_backend.service.SchoolService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/backend/school")
@@ -28,6 +27,33 @@ public class SchoolController {
         IPage<SchoolDTO> p = schoolService.selectSchools(page,str);
         System.out.println(p.getRecords());
         return Result.success(p);
+    }
+    /*
+     * 编辑弹窗中的更新用户数据
+     * */
+    @PutMapping("/update")
+    public Result updateUser(@RequestBody SchoolDTO schoolDTO){
+        schoolService.updateSchool(schoolDTO);
+        return Result.success();
+    }
+
+    /*
+     * 删除一行用户数据
+     * */
+    @PutMapping("/delete")
+    public Result deleteUser(@RequestBody Map<String, String> params){
+        String id = params.get("id");
+        schoolService.deleteSchool(id);
+        return Result.success();
+    }
+
+    /*
+     * 新增一个用户
+     * */
+    @PostMapping("/add")
+    public Result addUser(@RequestBody SchoolDTO schoolDTO){
+        schoolService.addSchool(schoolDTO);
+        return Result.success();
     }
 
 }
