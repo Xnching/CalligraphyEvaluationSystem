@@ -375,8 +375,8 @@ export default {
       this.selectedCounty=this.editForm.regionId;
       const selectedProvinceId = parseInt(this.selectedProvince, 10);
       const selectedCityId = parseInt(this.selectedCity, 10);
-      console.log(selectedCityId);
-      console.log(selectedProvinceId);
+      // console.log(selectedCityId);
+      // console.log(selectedProvinceId);
       this.getCity(selectedProvinceId);
       this.getCounty(selectedCityId);
       this.dialogVisible2 = true;

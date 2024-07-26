@@ -210,8 +210,8 @@ create table school(
     delete_flag tinyint(1) not null DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '学校';
-ALTER TABLE school
-ADD COLUMN delete_flag TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）';
+# ALTER TABLE school
+# ADD COLUMN delete_flag TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）';
 INSERT INTO school (region_id, name, type, leader, address, leader_phone, person_count) VALUES
 (1, '北京市第一小学', '公立', '张三', '北京市海淀区', '13800138000', 1000),
 (2, '北京市第二小学', '公立', '李四', '北京市海淀区', '13800138001', 900),
@@ -243,18 +243,68 @@ create table klass(
     teacher_id int UNSIGNED comment '所属教师id',
     grade_id int UNSIGNED comment '所属年级id',
     school_id int UNSIGNED not null comment '所属学校id',
-    year varchar(4) not null comment '入学年份',
+    delete_flag TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）',
+    year varchar(4) not null default curdate() comment '入学年份',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '班级';
 #班级表加个入校年份，创建时间作为不了入校年份，所以下面的没有执行，上面表已修改
-#alter table klass add admission_year varchar(4) not null comment '入学年份';
+#alter table klass add year varchar(4) not null comment '入学年份';
+# ALTER TABLE klass
+# ADD COLUMN delete_flag TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）';
+INSERT INTO klass (name, student_count, teacher_id, grade_id, school_id, year)
+VALUES
+('班级1', 30, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级2', 32, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级3', 28, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级4', 31, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级5', 29, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级6', 30, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级7', 33, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级8', 28, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级9', 32, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级10', 30, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级11', 31, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级12', 29, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级13', 30, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级14', 33, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级15', 28, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级16', 32, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级17', 30, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级18', 31, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级19', 29, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级20', 30, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级21', 33, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级22', 28, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级23', 32, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级24', 30, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级25', 31, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级26', 29, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级27', 30, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级28', 33, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级29', 28, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级30', 32, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级31', 30, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级32', 31, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级33', 29, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级34', 30, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级35', 33, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级36', 28, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级37', 32, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级38', 30, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级39', 31, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE())),
+('班级40', 29, 1, FLOOR(1 + RAND() * 9), FLOOR(2 + RAND() * 2), YEAR(CURDATE()));
+
+
+
 
 create table student(
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '学生id',
     name varchar(25) not null comment '学生名',
     student_number varchar(50) not null comment '学籍号',
     password VARCHAR(100) NOT NULL comment'密码',
-    klass_id int UNSIGNED not null comment '所属班级id',
+    klass_id int UNSIGNED comment '所属班级id',
+    grade_id int UNSIGNED comment '所属年级id',
+    school_id int UNSIGNED not null comment '所属学校id',
     phone varchar(25) comment'电话',
     email varchar(50) comment '邮箱',
     region_id int UNSIGNED comment '所在区域id',
@@ -264,6 +314,43 @@ create table student(
     delete_flag tinyint(1) NULL DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '学生';
+# ALTER TABLE student
+# MODIFY klass_id int UNSIGNED comment '所属班级id';
+# alter table student
+# add column grade_id int UNSIGNED comment '所属年级id';
+INSERT INTO student
+(name, student_number, password, klass_id, school_id, phone, email, region_id, id_number, gender, picture_url, delete_flag)
+VALUES
+('学生1', '学籍号1', '密码1', 4, 2, '电话1', '邮箱1', 3, '身份证号1', '男', '头像url1', 0),
+('学生2', '学籍号2', '密码2', 4, 2, '电话2', '邮箱2', 3, '身份证号2', '女', '头像url2', 0),
+('学生3', '学籍号3', '密码3', 4, 2, '电话3', '邮箱3', 3, '身份证号3', '男', '头像url3', 0),
+('学生4', '学籍号4', '密码4', 4, 2, '电话4', '邮箱4', 3, '身份证号4', '女', '头像url4', 0),
+('学生5', '学籍号5', '密码5', 4, 2, '电话5', '邮箱5', 3, '身份证号5', '男', '头像url5', 0),
+('学生6', '学籍号6', '密码6', 4, 2, '电话6', '邮箱6', 3, '身份证号6', '女', '头像url6', 0),
+('学生7', '学籍号7', '密码7', 4, 2, '电话7', '邮箱7', 3, '身份证号7', '男', '头像url7', 0),
+('学生8', '学籍号8', '密码8', 4, 2, '电话8', '邮箱8', 3, '身份证号8', '女', '头像url8', 0),
+('学生9', '学籍号9', '密码9', 4, 2, '电话9', '邮箱9', 3, '身份证号9', '男', '头像url9', 0),
+('学生10', '学籍号10', '密码10', 4, 2, '电话10', '邮箱10', 3, '身份证号10', '女', '头像url10', 0),
+('学生11', '学籍号11', '密码11', 4, 2, '电话11', '邮箱11', 3, '身份证号11', '男', '头像url11', 0),
+('学生12', '学籍号12', '密码12', 4, 2, '电话12', '邮箱12', 3, '身份证号12', '女', '头像url12', 0),
+('学生13', '学籍号13', '密码13', 4, 2, '电话13', '邮箱13', 3, '身份证号13', '男', '头像url13', 0),
+('学生14', '学籍号14', '密码14', 4, 2, '电话14', '邮箱14', 3, '身份证号14', '女', '头像url14', 0),
+('学生15', '学籍号15', '密码15', 4, 2, '电话15', '邮箱15', 3, '身份证号15', '男', '头像url15', 0),
+('学生16', '学籍号16', '密码16', 4, 2, '电话16', '邮箱16', 3, '身份证号16', '女', '头像url16', 0),
+('学生17', '学籍号17', '密码17', 4, 2, '电话17', '邮箱17', 3, '身份证号17', '男', '头像url17', 0),
+('学生18', '学籍号18', '密码18', 4, 2, '电话18', '邮箱18', 3, '身份证号18', '女', '头像url18', 0),
+('学生19', '学籍号19', '密码19', 4, 2, '电话19', '邮箱19', 3, '身份证号19', '男', '头像url19', 0),
+('学生20', '学籍号20', '密码20', 4, 2, '电话20', '邮箱20', 3, '身份证号20', '女', '头像url20', 0),
+('学生21', '学籍号21', '密码21', 4, 2, '电话21', '邮箱21', 3, '身份证号21', '男', '头像url21', 0),
+('学生22', '学籍号22', '密码22', 4, 2, '电话22', '邮箱22', 3, '身份证号22', '女', '头像url22', 0),
+('学生23', '学籍号23', '密码23', 4, 2, '电话23', '邮箱23', 3, '身份证号23', '男', '头像url23', 0),
+('学生24', '学籍号24', '密码24', 4, 2, '电话24', '邮箱24', 3, '身份证号24', '女', '头像url24', 0),
+('学生25', '学籍号25', '密码25', 4, 2, '电话25', '邮箱25', 3, '身份证号25', '男', '头像url25', 0),
+('学生26', '学籍号26', '密码26', 4, 2, '电话26', '邮箱26', 3, '身份证号26', '女', '头像url26', 0),
+('学生27', '学籍号27', '密码27', 4, 2, '电话27', '邮箱27', 3, '身份证号27', '男', '头像url27', 0),
+('学生28', '学籍号28', '密码28', 4, 2, '电话28', '邮箱28', 3, '身份证号28', '女', '头像url28', 0),
+('学生29', '学籍号29', '密码29', 4, 2, '电话29', '邮箱29', 3, '身份证号29', '男', '头像url29', 0),
+('学生30', '学籍号30', '密码30', 4, 2, '电话30', '邮箱30', 3, '身份证号30', '女', '头像url30', 0);
 
 create table teacher(
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '教师id',
@@ -282,6 +369,39 @@ create table teacher(
 )comment '教师';
 # alter table teacher
 #     add column school_id int UNSIGNED not null comment '所属学校id';
+INSERT INTO teacher
+(name, workno, password, id_number, gender, phone, email, school_id, region_id, picture_url, delete_flag)
+VALUES
+('教师1', '111', '111', '身份证号1', '男', '电话1', '邮箱1', 2, 3, '头像url1', 0),
+('教师2', '112', '112', '身份证号2', '女', '电话2', '邮箱2', 2, 3, '头像url2', 0),
+('教师3', '113', '113', '身份证号3', '男', '电话3', '邮箱3', 2, 3, '头像url3', 0),
+('教师4', '114', '114', '身份证号4', '女', '电话4', '邮箱4', 2, 3, '头像url4', 0),
+('教师5', '115', '115', '身份证号5', '男', '电话5', '邮箱5', 2, 3, '头像url5', 0),
+('教师6', '116', '116', '身份证号6', '女', '电话6', '邮箱6', 2, 3, '头像url6', 0),
+('教师7', '117', '117', '身份证号7', '男', '电话7', '邮箱7', 2, 3, '头像url7', 0),
+('教师8', '118', '118', '身份证号8', '女', '电话8', '邮箱8', 2, 3, '头像url8', 0),
+('教师9', '119', '119', '身份证号9', '男', '电话9', '邮箱9', 2, 3, '头像url9', 0),
+('教师10', '工号10', '密码10', '身份证号10', '女', '电话10', '邮箱10', 2, 3, '头像url10', 0),
+('教师11', '工号11', '密码11', '身份证号11', '男', '电话11', '邮箱11', 2, 3, '头像url11', 0),
+('教师12', '工号12', '密码12', '身份证号12', '女', '电话12', '邮箱12', 2, 3, '头像url12', 0),
+('教师13', '工号13', '密码13', '身份证号13', '男', '电话13', '邮箱13', 2, 3, '头像url13', 0),
+('教师14', '工号14', '密码14', '身份证号14', '女', '电话14', '邮箱14', 2, 3, '头像url14', 0),
+('教师15', '工号15', '密码15', '身份证号15', '男', '电话15', '邮箱15', 2, 3, '头像url15', 0),
+('教师16', '工号16', '密码16', '身份证号16', '女', '电话16', '邮箱16', 2, 3, '头像url16', 0),
+('教师17', '工号17', '密码17', '身份证号17', '男', '电话17', '邮箱17', 2, 3, '头像url17', 0),
+('教师18', '工号18', '密码18', '身份证号18', '女', '电话18', '邮箱18', 2, 3, '头像url18', 0),
+('教师19', '工号19', '密码19', '身份证号19', '男', '电话19', '邮箱19', 2, 3, '头像url19', 0),
+('教师20', '工号20', '密码20', '身份证号20', '女', '电话20', '邮箱20', 2, 3, '头像url20', 0),
+('教师21', '工号21', '密码21', '身份证号21', '男', '电话21', '邮箱21', 2, 3, '头像url21', 0),
+('教师22', '工号22', '密码22', '身份证号22', '女', '电话22', '邮箱22', 2, 3, '头像url22', 0),
+('教师23', '工号23', '密码23', '身份证号23', '男', '电话23', '邮箱23', 2, 3, '头像url23', 0),
+('教师24', '工号24', '密码24', '身份证号24', '女', '电话24', '邮箱24', 2, 3, '头像url24', 0),
+('教师25', '工号25', '密码25', '身份证号25', '男', '电话25', '邮箱25', 2, 3, '头像url25', 0),
+('教师26', '工号26', '密码26', '身份证号26', '女', '电话26', '邮箱26', 2, 3, '头像url26', 0),
+('教师27', '工号27', '密码27', '身份证号27', '男', '电话27', '邮箱27', 2, 3, '头像url27', 0),
+('教师28', '工号28', '密码28', '身份证号28', '女', '电话28', '邮箱28', 2, 3, '头像url28', 0),
+('教师29', '工号29', '密码29', '身份证号29', '男', '电话29', '邮箱29', 2, 3, '头像url29', 0),
+('教师30', '工号30', '密码30', '身份证号30', '女', '电话30', '邮箱30', 2, 3, '头像url30', 0);
 
 
 #教师和系统模板再来一个关系表，用于表示该教师常用的系统模板有哪些，已成为下表
@@ -409,18 +529,75 @@ create table stroke (
     name varchar(25) not null comment '笔画名',
     updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'
 )comment '笔画';
+INSERT INTO stroke (name) VALUES
+('点'),
+('横'),
+('竖'),
+('撇'),
+('提'),
+('横折'),
+('横撇/横钩'),
+('横折钩'),
+('竖弯钩'),
+('横折弯钩/横斜钩'),
+('竖折折钩'),
+('横折折/横折弯'),
+('横折提'),
+('横折折折钩/横撇弯钩'),
+('竖折撇/竖折折'),
+('横折折撇'),
+('捺'),
+('斜钩'),
+('弯钩'),
+('竖钩'),
+('竖折/竖弯'),
+('撇折'),
+('撇点'),
+('竖提');
+
 
 create table eccentricity (
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '偏旁id',
     name varchar(25) not null comment '偏旁名',
     updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'
 )comment '偏旁';
+INSERT INTO eccentricity (name) VALUES
+('丨'), ('亅'), ('丿'), ('乛'), ('一'), ('乙'), ('乚'), ('丶'),
+('八'), ('勹'), ('匕'), ('冫'), ('卜'), ('厂'), ('刀'), ('刂'), ('儿'), ('二'), ('匚'), ('阝'), ('丷'), ('几'), ('卩'), ('冂'), ('力'), ('冖'), ('凵'), ('人'), ('亻'), ('入'), ('十'), ('厶'), ('亠'), ('匸'), ('讠'), ('廴'), ('又'),
+('艹'), ('屮'), ('彳'), ('巛'), ('川'), ('辶'), ('寸'), ('大'), ('飞'), ('干'), ('工'), ('弓'), ('廾'), ('广'), ('己'), ('彐'), ('彑'), ('巾'), ('口'), ('马'), ('门'), ('宀'), ('女'), ('犭'), ('山'), ('彡'), ('尸'), ('饣'), ('士'), ('扌'), ('氵'), ('纟'), ('巳'), ('土'), ('囗'), ('兀'), ('夕'), ('小'), ('忄'), ('幺'), ('弋'), ('尢'), ('夂'), ('子'),
+('贝'), ('比'), ('灬'), ('长'), ('车'), ('歹'), ('斗'), ('厄'), ('方'), ('风'), ('父'), ('戈'), ('卝'), ('户'), ('火'), ('旡'), ('见'), ('斤'), ('耂'), ('毛'), ('木'), ('肀'), ('牛'), ('牜'), ('爿'), ('片'), ('攴'), ('攵'), ('气'), ('欠'), ('犬'), ('日'), ('氏'), ('礻'), ('手'), ('殳'), ('水'), ('瓦'), ('尣'), ('王'), ('韦'), ('文'), ('毋'), ('心'), ('牙'), ('爻'), ('曰'), ('月'), ('爫'), ('支'), ('止'), ('爪'),
+('白'), ('癶'), ('歺'), ('甘'), ('瓜'), ('禾'), ('钅'), ('立'), ('龙'), ('矛'), ('皿'), ('母'), ('目'), ('疒'), ('鸟'), ('皮'), ('生'), ('石'), ('矢'), ('示'), ('罒'), ('田'), ('玄'), ('穴'), ('疋'), ('业'), ('衤'), ('用'), ('玉'),
+('耒'), ('艸'), ('臣'), ('虫'), ('而'), ('耳'), ('缶'), ('艮'), ('虍'), ('臼'), ('米'), ('齐'), ('肉'), ('色'), ('舌'), ('覀'), ('页'), ('先'), ('行'), ('血'), ('羊'), ('聿'), ('至'), ('舟'), ('衣'), ('竹'), ('自'), ('羽'), ('糸'), ('糹'),
+('貝'), ('采'), ('镸'), ('车'), ('辰'), ('赤'), ('辵'), ('豆'), ('谷'), ('见'), ('角'), ('克'), ('里'), ('卤'), ('麦'), ('身'), ('豕'), ('辛'), ('言'), ('邑'), ('酉'), ('豸'), ('走'), ('足'),
+('青'), ('靑'), ('雨'), ('齿'), ('长'), ('非'), ('阜'), ('金'), ('釒'), ('隶'), ('门'), ('靣'), ('飠'), ('鱼'), ('隹'),
+('风'), ('革'), ('骨'), ('鬼'), ('韭'), ('面'), ('首'), ('韋'), ('香'), ('页'), ('音'),
+('髟'), ('鬯'), ('鬥'), ('高'), ('鬲'), ('马'),
+('黄'), ('鹵'), ('鹿'), ('麻'), ('麦'), ('鸟'), ('鱼'),
+('鼎'), ('黑'), ('黽'), ('黍'), ('黹'),
+('鼓'), ('鼠'),
+('鼻'), ('齊'),
+('齿'), ('龍'), ('龠');
 
 create table structure (
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '结构id',
     name varchar(25) not null comment '结构名',
     updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'
 )comment '结构';
+INSERT INTO structure (name) VALUES
+('上三包围结构'),
+('上下结构'),
+('上中下结构'),
+('下三包围结构'),
+('全包围结构'),
+('右上包围结构'),
+('品字形结构'),
+('左三包围结构'),
+('左上包围结构'),
+('左下包围结构'),
+('左中右结构'),
+('左右结构');
+
+
 
 create table template_word(
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '模板字id',

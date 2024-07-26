@@ -36,10 +36,26 @@ public class GradeService extends ServiceImpl<GradeMapper,Grade> {
         return children;
     }
 
+    public List<GradeDTO> getAllGrades(){
+        QueryWrapper<Grade> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("level",2);
+        List<Grade> list = list(queryWrapper);
+        List<GradeDTO> dtoList = list.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return dtoList;
+    }
 
     private GradeDTO convertToDTO(Grade grade){
         GradeDTO gradeDTO = new GradeDTO();
         BeanUtil.copyProperties(grade,gradeDTO);
         return gradeDTO;
     }
+
+    public Integer getIdByField(String name){
+        QueryWrapper<Grade> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("id").eq("name", name);
+        Grade grade = gradeMapper.selectOne(queryWrapper);
+        return grade != null ? grade.getId() : null;
+    }
+
+
 }

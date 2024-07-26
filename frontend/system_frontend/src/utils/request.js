@@ -12,7 +12,10 @@ const request = axios.create({
 // 可以自请求发送前对请求做一些处理
 // 比如统一加token，对请求参数统一加密
 request.interceptors.request.use(config => {
-    config.headers['Content-Type'] = 'application/json;charset=utf-8';
+    // 只有当请求体不是 FormData 类型时，才将 Content-Type 设置为 application/json
+    if (!(config.data instanceof FormData)) {
+        config.headers['Content-Type'] = 'application/json;charset=utf-8';
+    }
     let user=localStorage.getItem("user")?JSON.parse(localStorage.getItem("user")):{}//获取登录时存放的user对象信息
     config.headers['token'] = user.token;  // 设置请求头
     return config

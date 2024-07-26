@@ -97,4 +97,16 @@ public class SchoolService extends ServiceImpl<SchoolMapper,School> {
         String region = regionService.selectAllNameById(schoolDTO.getRegionId());
         schoolDTO.setAddress(region+schoolDTO.getAddress());
     }
+
+    /*
+    * @param 县级地区id以及学校类型
+    * @return 只查找id和name用来渲染学校下拉框
+    * */
+    public List<School> findSchoolsByRegion(Integer countyId,String type){
+        QueryWrapper<School> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("region_id", countyId);
+        queryWrapper.eq("type", type);
+        queryWrapper.select("id", "name");  // 只查询 id 和 name 字段
+        return list(queryWrapper);
+    }
 }

@@ -8,7 +8,7 @@
         @keyup.enter.native="Search_table()"
         clearable>
         </el-input>
-        <el-button style="margin-left:20px ;margin-right:535px" type="primary" @click="Search_table">搜索</el-button>
+        <el-button style="margin-left:20px ;margin-right:535px" type="primary" @clickadd="Search_table">搜索</el-button>
         <el-button type="primary" @click="handleAdd">新增<i class="el-icon-circle-plus"></i></el-button>
       </div>       
 
@@ -140,7 +140,7 @@
         </el-form>
         <template #footer>
           <span class="dialog-footer">
-            <el-button @click="dialogVisible2 = false">取消</el-button>
+            <el-button @click="handleCancel">取消</el-button>
             <el-button type="primary" @click="isEditing ? handleConfirm() : handleEdit2()">
               {{ isEditing ? '确定' : '编辑' }}
             </el-button>
@@ -245,7 +245,7 @@ export default {
       let selectedGroup = this.userGroups.find(group => group.id === value);
       if (selectedGroup) {
         this.ruleForm.userGroupId = selectedGroup.id;
-        this.eruleForm.userGroupName = selectedGroup.name;
+        this.ruleForm.userGroupName = selectedGroup.name;
       }
     },
     //让userGroupId跟着userGroupName一起变
@@ -264,7 +264,7 @@ export default {
       }
       this.dialogVisible1 = true;
     },
-
+    
     //新增用户表单提交前判断下数据格式是否正确
     handleSubmit1() {
       this.$refs.ruleForm.validate((valid) => {
@@ -363,6 +363,12 @@ export default {
     //编辑弹窗里的编辑按钮
     handleEdit2() {
       this.isEditing = true;
+    },
+
+    //取消方法
+    handleCancel(){
+      this.dialogVisible2=false;
+      this.isEditing = false;
     },
     //编辑弹窗里的确定按钮
     handleConfirm() {

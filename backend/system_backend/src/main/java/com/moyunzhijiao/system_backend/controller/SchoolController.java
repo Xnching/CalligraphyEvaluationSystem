@@ -12,6 +12,7 @@ import com.moyunzhijiao.system_backend.service.SchoolService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -54,6 +55,15 @@ public class SchoolController {
     public Result addUser(@RequestBody SchoolDTO schoolDTO){
         schoolService.addSchool(schoolDTO);
         return Result.success();
+    }
+
+    /*
+    * 用来渲染学校下拉框
+    * */
+    @GetMapping("/schools")
+    public Result findSchools(@RequestParam Integer countyId,@RequestParam String type){
+        List<School> schools = schoolService.findSchoolsByRegion(countyId,type);
+        return Result.success(schools);
     }
 
 }

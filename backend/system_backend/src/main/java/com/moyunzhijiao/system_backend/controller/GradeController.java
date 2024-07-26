@@ -24,4 +24,10 @@ public class GradeController {
         List<GradeDTO> p = gradeService.findRegions();
         return Result.success(p);
     }
+
+    @GetMapping("/grades")
+    public Result findAllGrades(){
+        List<GradeDTO> list = gradeService.getAllGrades();
+        return Result.success(list);
+    }
 }

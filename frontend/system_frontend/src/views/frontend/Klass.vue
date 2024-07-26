@@ -52,7 +52,7 @@
                   @keyup.enter.native="Search_table()"
                   clearable>
         </el-input>
-        <el-button style="margin-left: 20px;margin-right: 30px;" type="primary">搜索</el-button>
+        <el-button style="margin-left: 20px;margin-right: 30px;" type="primary" @click="Search_table">搜索</el-button>
         <!-- 显示学校名称 -->
         <h1>{{ selectedSchool ? schools.find(s => s.id === selectedSchool).name : '' }}</h1> 
         <el-button type="primary" @click="handleEdit1" style="margin-left: auto; margin-right: 120px;">新增班级<i class="el-icon-circle-plus"></i></el-button>
@@ -60,11 +60,16 @@
 
       <el-table
         ref="multipleTable"
-        :data="filteredTableData" 
+        :data="tableData" 
         stripe
         tooltip-effect="dark"
         style="width: 100%"
         v-if="selectedSchool" >
+        <el-table-column
+          prop="id"
+          label="班级id"
+          width="85">
+        </el-table-column>
         <el-table-column
           prop="name"
           label="班级名"
@@ -76,9 +81,9 @@
           width="290">
         </el-table-column>
         <el-table-column
-          prop="numberCount"
+          prop="count"
           label="人数"
-          width="140">
+          width="100">
         </el-table-column>
         <el-table-column
           prop="teacher"
@@ -89,7 +94,7 @@
         <el-table-column fixed="right" label="操作">                         
           <template slot-scope="scope">
               <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit2(scope.row)">详情</el-button>
-              <el-button type="danger" size="small"  icon="el-icon-delete">删除</el-button>
+              <el-button type="danger" size="small"  icon="el-icon-delete" @click="handleDelete1(scope.row)">删除</el-button>
           </template>
         </el-table-column> 
 
@@ -100,11 +105,11 @@
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page="currentPage4"
+          :current-page="pageNum"
           :page-sizes="[5, 10, 15, 20]"
-          :page-size="10"
+          :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="20">
+          :total="total">
         </el-pagination>
       </div>
 
@@ -115,19 +120,19 @@
         width="40%"
         :close-on-click-modal="false" >
         <!-- 下面选择不同的导入方案-->
-        <el-tabs type="border-card">
-          <el-tab-pane label="单个添加">
+        <el-tabs type="border-card" v-model="activeName">
+          <el-tab-pane label="单个添加" name="single">
             
             <el-form ref="addForm" :model="addForm" label-width="100px">
               
               <el-form-item label="年级：">
-                <el-select v-model="addForm.region" placeholder="请选择年级">
-                  <el-option label="六三制小学一年级" value="6-3-1"></el-option>
-                  <el-option label="六三制小学二年级" value="6-3-2"></el-option>
-                  <el-option label="六三制小学三年级" value="6-3-3"></el-option>
-                  <el-option label="六三制小学四年级" value="6-3-4"></el-option>
-                  <el-option label="六三制小学五年级" value="6-3-5"></el-option>
-                  <el-option label="六三制小学六年级" value="6-3-6"></el-option>
+                <el-select v-model="addForm.grade" placeholder="请选择年级" @change="handleGradeChange1">
+                  <el-option
+                    v-for="grade in grades"
+                    :key="grade.id"
+                    :label="grade.name"
+                    :value="grade.id">
+                  </el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="入学年份：">
@@ -148,16 +153,19 @@
 
           </el-tab-pane>
 
-          <el-tab-pane label="批量添加" style="  text-align: center;">
+          <el-tab-pane label="批量添加" name="batch" style="  text-align: center;">
             <el-upload
               class="upload-demo"
               drag
-              action="https://jsonplaceholder.typicode.com/posts/"
               multiple
+              action="http://jsonplaceholder.typicode.com/posts/"
               :limit="1"
-              accept=".xls,.xlsx">
+              accept=".xls,.xlsx"
+              :on-success="handleExcelImportSuccess"
+              :on-error="handleExcelImportError"
+              :before-upload="beforeUpload">
               <i class="el-icon-upload"></i>
-              <div class="el-upload__tip" slot="tip">Excel文件格式以年级、班级名的顺序排列,年级规范为：六三制小学一年级</div>
+              <div class="el-upload__tip" slot="tip">Excel文件格式为字段名：年级，班级名，入学年份,其中年级名规范为：六三制小学一年级,班级名必须在一个学校内唯一，推荐加上入学年份</div>
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
               
             </el-upload>
@@ -169,7 +177,7 @@
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="dialogVisible1 = false">取消</el-button>
-            <el-button type="primary" @click="handleSubmit1()">确定</el-button>
+            <el-button type="primary" @click="handleSubmit1">确定</el-button>
           </span>
         </template>
       </el-dialog>
@@ -179,8 +187,9 @@
         title="点击修改信息"
         :visible.sync="dialogVisible2"
         width="60%"
-        :close-on-click-modal="false">
-          <el-table
+        destroy-on-close
+        :close-on-click-modal="false">  
+        <el-table
           ref="editTable"
           :data="editTableData"
           stripe
@@ -189,45 +198,39 @@
           <el-table-column
             prop="id"
             label="编号"
-            width="95">
+            width="125">
           </el-table-column>
           <el-table-column
             prop="name"
             label="姓名"
-            width="100">
-          </el-table-column>
-          <el-table-column
-            prop="number"
-            label="学籍号"
-            width="190">
-          </el-table-column>
-          <el-table-column
-            prop="password"
-            label="密码"
-            width="100">
+            width="150">
           </el-table-column>
           <el-table-column
             prop="grade"
             label="年级"
-            width="150">
+            width="190">
           </el-table-column>
           <el-table-column
             prop="klass"
             label="班级"
-            width="100">
+            width="180">
           </el-table-column>
-
+          <el-table-column fixed="right" label="操作">                         
+            <template slot-scope="scope">
+                <el-button type="danger" size="small"  icon="el-icon-delete" @click="handleDelete2(scope.row)">删除</el-button>
+            </template>
+          </el-table-column> 
         </el-table>
         <!-- 分页栏-->
-        <div style="padding:10px">
+        <div style="padding:10px" >
           <el-pagination
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="currentPage4"
+            @size-change="handleSizeChange2"
+            @current-change="handleCurrentChange2"
+            :current-page="pageNum2"
             :page-sizes="[5, 10, 15, 20]"
-            :page-size="10"
+            :page-size="pageSize2"
             layout="total, sizes, prev, pager, next, jumper"
-            :total="20">
+            :total="total2">
           </el-pagination>
         </div>
         <template #footer>
@@ -249,120 +252,33 @@ export default {
     return {
       //搜索栏要用的
       inputVal:"",
-      tableData: Array(8).fill().map(() => ({
-        name: "19班",
-        grade: "六三制小学一年级",
-        numberCount: "56",
-        teacher: " 孙岳平",
-        schoolId: 11111
-      })),
+      tableData: [],
+      total:0,
+      selectedSchoolId:'',
+      pageNum:1,
+      pageSize:5,
+      total2:0,
+      pageNum2:1,
+      pageSize2:5,
+      editId:'',
+      activeName:'single',
       selectedYear: new Date().getFullYear(), // 默认为当前年份
       years: this.generateYears(),
-      showTable:[],
+      grades:[],
       //初始隐藏两个表单
       dialogVisible1: false,
       dialogVisible2: false,
-      editTableData: Array(8).fill().map(() => ({
-        id: '111111',
-        name: '王胜国',
-        number:'202283290993',
-        password: '123456',
-        klass:'19班',
-        grade:'六三制小学一年级'
-      })),
+      editTableData: [],
       addForm:{
         name:'',
-        region:''
+        gradeId:'',
+        year:'',
+        schoolId:''
       },
 
       
       //为区域列表的数据
-      provinces: [
-        { id: 1, name: '北京市', cities: [
-          { id: 11, name: '北京市', counties: [
-            { id: 111, name: '东城区' ,schoolTypes:[
-                {id: 1111 ,name:'小学',schools:[
-                    {id:11111,name:'北京市东城区第一小学'},
-                    {id:11112,name:'北京市东城区第二小学'},
-                ]},{id: 1112 ,name:'初中',schools:[
-                    {id:11121,name:'北京市东城区第一初中'},
-                    {id:11122,name:'北京市东城区第二初中'},
-                ]}
-            ]},
-            { id: 112, name: '西城区' ,schoolTypes:[
-                {id: 1121 ,name:'小学',schools:[
-                    {id:11211,name:'北京市西城区第一小学'},
-                    {id:11212,name:'北京市西城区第二小学'},
-                ]},{id: 1122 ,name:'初中',schools:[
-                    {id:11221,name:'北京市西城区第一初中'},
-                    {id:11222,name:'北京市西城区第二初中'},
-                ]}
-            ]},
-          ]},
-          { id: 12, name: '朝阳区', counties: [
-            { id: 121, name: '望京街道' ,schoolTypes:[
-                {id: 1121 ,name:'小学',schools:[
-                    {id:12211,name:'北京市西城区第一小学'},
-                    {id:12212,name:'北京市西城区第二小学'},
-                ]},{id: 1222 ,name:'初中',schools:[
-                    {id:12221,name:'北京市西城区第一初中'},
-                    {id:12222,name:'北京市西城区第二初中'},
-                ]}
-            ]},
-            { id: 122, name: '三里屯街道' ,schoolTypes:[
-                {id: 1221 ,name:'小学',schools:[
-                    {id:12211,name:'北京市西城区第一小学'},
-                    {id:11212,name:'北京市西城区第二小学'},
-                ]},{id: 1222 ,name:'初中',schools:[
-                    {id:12221,name:'北京市西城区第一初中'},
-                    {id:12222,name:'北京市西城区第二初中'},
-                ]}
-            ]},
-          ]},
-        ]},
-        { id: 2, name: '上海市', cities: [
-          { id: 21, name: '上海市', counties: [
-            { id: 211, name: '黄浦区' ,schoolTypes:[
-                {id: 2121 ,name:'小学',schools:[
-                    {id:21211,name:'上海市黄浦区第一小学'},
-                    {id:21212,name:'上海市黄浦区第二小学'},
-                ]},{id: 2122 ,name:'初中',schools:[
-                    {id:21221,name:'上海市黄浦区第一初中'},
-                    {id:21222,name:'上海市黄浦区第二初中'},
-                ]}
-            ]},
-            { id: 212, name: '徐汇区' ,schoolTypes:[
-                {id: 2121 ,name:'小学',schools:[
-                    {id:21211,name:'上海市徐汇区第一小学'},
-                    {id:21212,name:'上海市徐汇区第二小学'},
-                ]},{id: 2122 ,name:'初中',schools:[
-                    {id:21221,name:'上海市徐汇区第一初中'},
-                    {id:21222,name:'上海市徐汇区第二初中'},
-                ]}
-            ]},
-          ]},
-          { id: 22, name: '浦东新区', counties: [
-            { id: 221, name: '陆家嘴街道' ,schoolTypes:[
-                {id: 2221 ,name:'小学',schools:[
-                    {id:22211,name:'上海市浦东新区第一小学'},
-                    {id:22212,name:'上海市浦东新区第二小学'},
-                ]},{id: 2222 ,name:'初中',schools:[
-                    {id:22221,name:'上海市浦东新区第一初中'},
-                    {id:22222,name:'上海市浦东新区第二初中'},
-                ]}
-            ]},
-            { id: 222, name: '世纪大道街道' ,schoolTypes:[
-                {id: 2221 ,name:'小学',schools:[
-                    {id:22211,name:'上海市世纪大道街道第一小学'},
-                    {id:22212,name:'上海市世纪大道街道第二小学'},
-                ]},{id: 2222 ,name:'初中',schools:[
-                    {id:22221,name:'上海市世纪大道街道第一初中'},
-                    {id:22222,name:'上海市世纪大道街道第二初中'},
-                ]}
-            ]},
-          ]},
-        ]},
-      ], // 省份数据
+      provinces: [], // 省份数据
       cities: [], // 城市数据
       counties: [], // 区/县数据
       schoolTypes:[],
@@ -375,13 +291,13 @@ export default {
 
     };
   },
+  created(){
+    //请求获取省份数据
+    this.getPronvince();
+    this.getGrades();
+  },
   watch: {
-    //用于实现搜索栏搜索的
-    inputVal(item1) {
-      if (item1 == "") {
-        this.tableData = this.showTable;
-      }
-    },
+    
   },
   computed: {
     // 计算属性，根据选择的学校过滤班级数据
@@ -403,59 +319,117 @@ export default {
     },
     //实现搜索栏多属性搜索的
     Search_table() {
-      const Search_List = [];
-      let res1 = this.inputVal;
-      const res = res1.replace(/\s/gi, "");
-      let searchArr = this.showTable;
-      searchArr.forEach((e) => {
-        let ID = e.ID;
-        let name= e.name;
-        let loginName= e.loginName;
-        let password= e.password;
-        let userGroup= e.userGroup;
-        let phone= e.phone;
-        if (ID.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
+      const selectedSchoolId=parseInt(this.selectedSchool,10);
+      const schoolId = this.schools.find(s => s.id === selectedSchoolId).id;
+      this.load(schoolId);
+    },
+    //让我们知道选了什么年级
+    handleGradeChange1(val){
+      let selectedGrade = this.grades.find(grade => grade.id === val);
+      if (selectedGrade) {
+        this.addForm.gradeId = selectedGrade.id;
+        this.addForm.gradeName = selectedGrade.name;
+      }
+    },
+    //主表里的删除
+    handleDelete1(row){
+      this.$confirm('确认删除该记录吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 调用后端删除接口
+        this.request.put('/klass/delete', {
+          id: row.id
+        }).then(res => {
+          if(res.code == '200'){
+            this.$message.success('删除班级数据成功！');
+            const selectedSchoolId=parseInt(this.selectedSchool,10);
+            const schoolId = this.schools.find(s => s.id === selectedSchoolId).id;
+            this.load(schoolId);
+          }else{
+            this.$message.error('删除班级数据失败，原因：'+res.msg);
           }
-        }
-        if (name.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (loginName.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (password.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (userGroup.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (phone.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
       });
-      this.tableData = Search_List;
-    },
-
-    // 当学校选择改变时，更新表格数据
-    onSchoolChange() {
-      // 你不需要在这里手动更新表格数据了，
-      // 因为 filteredTableData 计算属性会自动根据 selectedSchool 的变化更新
-
 
     },
+    beforeUpload(file) {
+      // 创建一个 FormData 对象来包装你的文件和数据
+      let formData = new FormData();
+      formData.append('file', file);
+      formData.append('id', new Blob([JSON.stringify(this.selectedSchoolId)], {
+        type: 'application/json'
+      }));
 
+      // 使用你的 axios 实例发送请求
+      this.request.post('/klass/batch-add',formData,{
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }).then(response => {
+        // 处理响应
+        this.handleExcelImportSuccess(response);
+      }).catch(error => {
+        // 处理错误
+        this.handleExcelImportError(error);
+      });
+
+      // 阻止 `el-upload` 组件的默认上传行为
+      return false;
+    },
+    //导入成功
+    handleExcelImportSuccess(response, file, fileList){ 
+      console.log("到了导入成功里面去了");
+      if(response.code=='200'){
+
+        this.$message.success("导入成功");
+        const selectedSchoolId=parseInt(this.selectedSchool,10);
+        const schoolId = this.schools.find(s => s.id === selectedSchoolId).id;
+        this.load(schoolId);
+      }else{
+        this.$message.error("导入失败，原因为："+response.msg);
+      }
+      
+    },
+    //导入失败
+    handleExcelImportError(err, file, fileList){ 
+      console.log(err);
+      this.$message.error("导入失败，原因为"+err);
+    },
+
+
+    //编辑里的删除
+    handleDelete2(row){
+      this.$confirm('确认删除该记录吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 调用后端删除接口
+        this.request.put('/student/klass-delete', {
+          id: row.id
+        }).then(res => {
+          if(res.code == '200'){
+            this.$message.success('修改学生所属班级成功！');
+            this.getStudents(this.editId);
+          }else{
+            this.$message.error('修改学生所属班级失败，原因：'+res.msg);
+          }
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
+      });
+
+    },
     //新增按钮跳出弹窗
     handleEdit1(){
       
@@ -464,16 +438,50 @@ export default {
 
     //新增用户表单提交前判断下数据格式是否正确
     handleSubmit1() {
-
-
+      this.addForm.year=this.selectedYear;
+      const selectedSchoolId=parseInt(this.selectedSchool,10);
+      this.addForm.schoolId=selectedSchoolId;
+      console.log("打印下"+this.activeName);
+      if(this.activeName == 'single'){
+        this.request.post("/klass/single-add",this.addForm).then(res=>{
+          if(res.code == '200'){
+            this.$message.success('新增班级数据成功！');
+            this.load(selectedSchoolId);
+          } else {
+            this.$message.error('新增班级数据失败，原因：' + res.msg);
+          }
+        })
+      }
       this.dialogVisible1 = false;  //关闭弹窗
     },
 
     //点击编辑按钮跳出弹窗填充数据
     handleEdit2(row) {
-      
-
+      // 将当前行数据复制到 editForm 中，避免直接修改表格数据
+      this.editId= { id: row.id }; 
+      this.getStudents(this.editId);
       this.dialogVisible2 = true;
+    },
+
+    //获取学生列表
+    getStudents(val){
+      this.request.get("/student/students",{
+        params:{
+          pageNum:this.pageNum2,
+          pageSize:this.pageSize2,
+          klassId:val.id
+        }
+      }
+      ).then(res=>{
+        if(res.code=='200'){
+          this.editTableData=res.data.records;
+          this.total2=res.data.total;
+        }else{
+          this.$message.error('获取全部省级地区数据失败，原因：'+res.msg);
+        }
+
+      })
+
     },
 
     //编辑用户弹窗确定提交的方法
@@ -486,52 +494,159 @@ export default {
     //当省份选择改变时 (onProvinceChange)，根据选择的省份过滤出对应的城市列表，并清空下级区域数据。
     onProvinceChange() {
       const selectedProvinceId = parseInt(this.selectedProvince, 10);
-      const selectedProvince = this.provinces.find(p => p.id === selectedProvinceId);
-      this.cities = selectedProvince ? selectedProvince.cities : [];
       this.counties = []; 
-      this.schoolTypes = [];
-      this.schools = [];
       this.selectedCity = ''; 
       this.selectedCounty = ''; 
-      this.selectedSchoolType = '';
-      this.selectedSchool = '';
+      this.getCity(selectedProvinceId);
     },
     //当城市选择改变时 (onCityChange)，根据选择的城市过滤出对应的区/县列表。
     onCityChange() {
       const selectedCityId = parseInt(this.selectedCity, 10);
-      const selectedCity = this.cities.find(c => c.id === selectedCityId);
-      this.counties = selectedCity ? selectedCity.counties : [];
-      this.schoolTypes = [];
-      this.schools = [];
       this.selectedCounty = ''; 
-      this.selectedSchoolType = '';
-      this.selectedSchool = '';
+      this.getCounty(selectedCityId);
     },
     //区县
     onCountyChange(){
-        const selectedCountyId = parseInt(this.selectedCounty, 10);
-        const selectedCounty = this.counties.find(c => c.id === selectedCountyId);
-        this.schoolTypes = selectedCounty ? selectedCounty.schoolTypes : [];
+        this.schoolTypes=[{
+          id:1,name:'小学'
+        },{
+          id:2,name:'初中'
+        },{
+          id:3,name:'中小学'
+        }
+        ];
         this.schools = [];
         this.selectedSchoolType = '';
         this.selectedSchool = '';
     },
     //学校类型
     onSchoolTypeChange(){
+        const selectedCountyId = parseInt(this.selectedCounty, 10);
         const selectedSchoolTypeId = parseInt(this.selectedSchoolType, 10);
         const selectedSchoolType = this.schoolTypes.find(s => s.id === selectedSchoolTypeId);
-        this.schools = selectedSchoolType ? selectedSchoolType.schools: [];
+        this.getSchools(selectedCountyId,selectedSchoolType.name)
         this.selectedSchool = '';
+    },
+    // 当学校选择改变时，更新表格数据
+    onSchoolChange() {
+      this.selectedSchoolId=parseInt(this.selectedSchool,10);
+      const schoolId = this.schools.find(s => s.id === this.selectedSchoolId).id;
+      this.load(schoolId);
     },
 
     //分页用的功能
-    handleCurrentChange() {},
-    handleSizeChange() {},
-    currentPage4() {}
+    handleCurrentChange(val) {
+      this.pageNum = val;   //获取当前第几页
+      const selectedSchoolId=parseInt(this.selectedSchool,10);
+      const schoolId = this.schools.find(s => s.id === selectedSchoolId).id;
+      this.load(schoolId);
+    },
+    handleSizeChange(val) {
+      this.pageSize = val;  //获取当前每页显示条数
+      const selectedSchoolId=parseInt(this.selectedSchool,10);
+      const schoolId = this.schools.find(s => s.id === selectedSchoolId).id;
+      this.load(schoolId);
+    },
+    //请求分页查询数据
+    load(val){
+      const schoolId = val;
+      this.request.get("/klass/page",{
+        params:{
+          pageNum:this.pageNum,
+          pageSize:this.pageSize,
+          str:this.inputVal,
+          schoolId:schoolId
+        }
+      }).then(res=>{
+        //console.log(res);
+        if(res.code=='200'){
+          console.log(res);
+          this.tableData=res.data.records;
+          this.total=res.data.total;
+        }else{
+          this.$message.error('获取全部用户数据失败，原因：'+res.msg);
+        }
+      })
+    },
+    //分页用的功能
+    handleCurrentChange2(val) {
+      this.pageNum2 = val;   //获取当前第几页
+      this.getStudents(this.editId);
+    },
+    handleSizeChange2(val) {
+      this.pageSize2 = val;  //获取当前每页显示条数
+      this.getStudents(this.editId);
+    },
+    //获取省份数据渲染省份下拉框
+    getPronvince(){
+      this.request.get("/region/provinces").then(res=>{
+        if(res.code=='200'){
+          this.provinces=res.data;
+        }else{
+          this.$message.error('获取全部省级地区数据失败，原因：'+res.msg);
+        }
+
+      })
+    },
+    getCity(val){
+      const selectedProvinceId = val;
+      this.request.get('/region/cities', { 
+        params:{
+          provinceId: selectedProvinceId 
+        }
+      }).then(res=>{
+        if(res.code=='200'){
+          //console.log(res);
+          this.cities=res.data;
+        }else{
+          this.$message.error('获取全部市级地区数据失败，原因：'+res.msg);
+        }
+      })
+    },
+    getCounty(val){
+      const selectedCityId = val;
+      this.request.get('/region/counties', { 
+        params:{
+          cityId: selectedCityId
+        }
+      }).then(res=>{
+        if(res.code=='200'){
+          console.log(res);
+          this.counties=res.data;
+        }else{
+          this.$message.error('获取全部县级地区数据失败，原因：'+res.msg);
+        }
+      })
+    },
+    getSchools(val1,val2){
+      const selectedCountyId =val1;
+      const selectedSchoolType=val2;
+      this.request.get('/school/schools', { 
+        params:{
+          countyId: selectedCountyId,
+          type: selectedSchoolType
+        }
+      }).then(res=>{
+        if(res.code=='200'){
+          //console.log(res);
+          this.schools=res.data;
+          console.log("schools是什么"+this.schools);
+        }else{
+          this.$message.error('获取当前地区全部学校数据失败，原因：'+res.msg);
+        }
+      })
+    },
+    getGrades(){
+      this.request.get("/grade/grades").then(res=>{
+        if(res.code=='200'){
+          this.grades=res.data;
+        }else{
+          this.$message.error('获取全部省级地区数据失败，原因：'+res.msg);
+        }
+
+      })
+    }
   },
-  //把tableData数值赋给showTable
-  created(){
-    this.showTable = [...this.tableData];
-  }
+  
 };
 </script>

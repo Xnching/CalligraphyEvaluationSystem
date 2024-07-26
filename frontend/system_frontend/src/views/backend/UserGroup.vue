@@ -502,7 +502,6 @@ export default {
     },
     //编辑表单中的确定方法
     handleConfirm(){
-      this.editForm.state = this.radio;
       this.editForm.menus = this.$refs.multipleTable.selection.map(row => Number(row.id));
       this.request.put("/user-group/update",this.editForm).then(res=>{
         if(res.code == '200'){

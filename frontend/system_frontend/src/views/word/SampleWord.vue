@@ -66,10 +66,17 @@
             </div>
         </div>
 
-        <div class="pagination">
-            <button :disabled="currentPage === 1" @click="onPageChange(currentPage - 1)">上一页</button>
-            <span>{{ currentPage }} / {{ totalPages }}</span>
-            <button :disabled="currentPage === totalPages" @click="onPageChange(currentPage + 1)">下一页</button>
+        <!-- 分页栏-->
+        <div style="padding:10px">
+            <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="pageNum"
+                :page-sizes="[20, 25, 30, 40]"
+                :page-size="pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="total">
+            </el-pagination>
         </div>
 
       
