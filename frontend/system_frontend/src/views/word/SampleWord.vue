@@ -24,7 +24,7 @@
             :value="item.value">
             </el-option>
         </el-select>
-        <el-select v-model="selectedEccentricity" filterable placeholder="请选择偏旁部首" style="width: 150px;margin-right: 20px;">
+        <el-select v-model="selectedEccentricity" filterable placeholder="请选择部首" style="width: 150px;margin-right: 20px;">
             <el-option
             v-for="item in eccentricityOptions"
             :key="item.value"
@@ -104,8 +104,8 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="偏旁部首：">
-                            <el-select v-model="addForm.selectedEccentricity" filterable placeholder="请选择偏旁部首" style="width: 150px;margin-right: 20px;">
+                        <el-form-item label="部首：">
+                            <el-select v-model="addForm.selectedEccentricity" filterable placeholder="请选择部首" style="width: 150px;margin-right: 20px;">
                                 <el-option
                                 v-for="item in eccentricityOptions"
                                 :key="item.value"
@@ -139,7 +139,7 @@
                     accept=".png,.jpeg,.jpg"
                     style=" text-align: center;">
                         <i class="el-icon-upload"></i>
-                        <div class="el-upload__text">将需要录入的字、偏旁部首的图片拖到此处，或<em>点击上传</em></div>
+                        <div class="el-upload__text">将需要录入的字、部首的图片拖到此处，或<em>点击上传</em></div>
                     </el-upload>
 
                 </el-tab-pane>
@@ -153,7 +153,7 @@
                     multiple
                     accept=".png,.jpeg,.jpg">
                         <i class="el-icon-upload"></i>
-                        <div class="el-upload__text">将需要录入的字、偏旁部首的图片拖到此处，或<em>点击上传</em></div>
+                        <div class="el-upload__text">将需要录入的字、部首的图片拖到此处，或<em>点击上传</em></div>
                     </el-upload>
 
                     <el-upload
@@ -165,7 +165,7 @@
                     accept=".xls,.xlsx">
                         <i class="el-icon-upload"></i>
                         <div class="el-upload__tip" slot="tip">Excel文件格式以对应字文件名，字名，结构，部首，年级，来源</div>
-                        <div class="el-upload__text">将需要录入的字、偏旁部首的对应的属性Excel拖到此处，或<em>点击上传</em></div>
+                        <div class="el-upload__text">将需要录入的字、部首的对应的属性Excel拖到此处，或<em>点击上传</em></div>
                     </el-upload>
 
                 </el-tab-pane>
@@ -196,7 +196,7 @@
                 <el-form-item label="结构所属：">
                     <el-input v-model="editForm.structure"></el-input>
                 </el-form-item>
-                <el-form-item label="偏旁部首拥有：">
+                <el-form-item label="部首拥有：">
                     <el-input v-model="editForm.eccentricity"></el-input>
                 </el-form-item>
                 <el-form-item label="年级：">

@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @TableName(value="eccentricity")
-public class Eccentricity {
+public class Radical {
     Integer id;
     String name;
     @TableField(value="updated_time")

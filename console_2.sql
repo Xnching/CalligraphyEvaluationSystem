@@ -5,7 +5,7 @@ use calligraphy_evaluation_system;
 #如无特殊需要，字段建议使用NOT NULL属性，可用默认值代替NULL。
 #自增字段类型必须是整型且必须为UNSIGNED，推荐类型为INT或BIGINT，并且自增字段必须是主键或者主键的一部分。------已解决
 #enum看看能不能都拆分成多个表-------已解决
-#前面全部改用偏旁部首，数据库中叫做部首eccentricity
+#前面全部改用偏旁部首，数据库中叫做部首radical
 
 CREATE TABLE user (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment'系统用户id',
@@ -29,11 +29,12 @@ create table user_group (
     state varchar(10) not null comment'状态',
     user_count int not null default 0 comment'该组内系统用户人数',
     description varchar(255) comment '描述',
+    delete_flag TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '用户组';
 #给用户组也增加逻辑删除
-ALTER TABLE user_group
-ADD COLUMN delete_flag TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）';
+# ALTER TABLE user_group
+# ADD COLUMN delete_flag TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）';
 
 INSERT INTO user_group (name, state, user_count, description) VALUES ('用户组1', '已激活', 10, '这是用户组1');
 INSERT INTO user_group (name, state, user_count, description) VALUES ('用户组2', '已激活', 20, '这是用户组2');
@@ -158,14 +159,14 @@ INSERT INTO user_group_permissions (user_group_id, permissions_id) VALUES (2, 2)
 INSERT INTO user_group_permissions (user_group_id, permissions_id) VALUES (2, 3);
 
 
-
-CREATE TABLE region (
-  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '区域id',
-  name VARCHAR(25) NOT NULL comment '区域名',
-  parent_id INT UNSIGNED DEFAULT NULL comment '上一级id',
-  level tinyINT NOT NULL comment '等级',
-  updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'
-)comment '区域';
+#
+# CREATE TABLE region (
+#   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '区域id',
+#   name VARCHAR(25) NOT NULL comment '区域名',
+#   parent_id INT UNSIGNED DEFAULT NULL comment '上一级id',
+#   level tinyINT NOT NULL comment '等级',
+#   updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'
+# )comment '区域';
 
 CREATE TABLE grade(
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '学制年级id',
@@ -244,7 +245,7 @@ create table klass(
     grade_id int UNSIGNED comment '所属年级id',
     school_id int UNSIGNED not null comment '所属学校id',
     delete_flag TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）',
-    year varchar(4) not null default curdate() comment '入学年份',
+    year YEAR NOT NULL DEFAULT 2024 COMMENT '入学年份',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '班级';
 #班级表加个入校年份，创建时间作为不了入校年份，所以下面的没有执行，上面表已修改
@@ -453,7 +454,7 @@ create table homework_submission(
     teacher_feedback varchar(255) comment '教师评语',
     content varchar(255) comment'作业作品内容url',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
-)comment '作品作业';
+)comment '作业作品';
 #作业id改成作业作品id，上表已更改
 
 create table student_do_homework(
@@ -556,12 +557,13 @@ INSERT INTO stroke (name) VALUES
 ('竖提');
 
 
-create table eccentricity (
+create table radical (
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '偏旁id',
     name varchar(25) not null comment '偏旁名',
     updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'
-)comment '偏旁';
-INSERT INTO eccentricity (name) VALUES
+)comment '部首';
+
+INSERT INTO radical (name) VALUES
 ('丨'), ('亅'), ('丿'), ('乛'), ('一'), ('乙'), ('乚'), ('丶'),
 ('八'), ('勹'), ('匕'), ('冫'), ('卜'), ('厂'), ('刀'), ('刂'), ('儿'), ('二'), ('匚'), ('阝'), ('丷'), ('几'), ('卩'), ('冂'), ('力'), ('冖'), ('凵'), ('人'), ('亻'), ('入'), ('十'), ('厶'), ('亠'), ('匸'), ('讠'), ('廴'), ('又'),
 ('艹'), ('屮'), ('彳'), ('巛'), ('川'), ('辶'), ('寸'), ('大'), ('飞'), ('干'), ('工'), ('弓'), ('廾'), ('广'), ('己'), ('彐'), ('彑'), ('巾'), ('口'), ('马'), ('门'), ('宀'), ('女'), ('犭'), ('山'), ('彡'), ('尸'), ('饣'), ('士'), ('扌'), ('氵'), ('纟'), ('巳'), ('土'), ('囗'), ('兀'), ('夕'), ('小'), ('忄'), ('幺'), ('弋'), ('尢'), ('夂'), ('子'),
@@ -605,12 +607,13 @@ create table template_word(
     calligrapher varchar(15) not null comment '书写的书法家名',
     structure_id int UNSIGNED not null comment '结构id',
     font_id int UNSIGNED not null comment '字体id',
-    eccentricity_id int UNSIGNED not null comment '偏旁id',
+    radical_id int UNSIGNED not null comment '偏旁id',
     content varchar(255) comment'模板字图片url',
     importer varchar(25) comment'导入人',
     grade_id int UNSIGNED not null comment '学制年级id',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '模板字';
+# alter table template_word add column grade_id int UNSIGNED comment '所属年级id';
 #已更改上表font
 
 create table copybook(
@@ -623,7 +626,7 @@ create table copybook(
     grade_id int unsigned comment '学制年级',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '字帖';
-alter table copybook add grade_system_id int  comment '学制年级id';
+# alter table copybook add column grade_id int UNSIGNED comment '所属年级id';
 #已更改上表font
 
 create table sample_word(
@@ -631,11 +634,14 @@ create table sample_word(
     name varchar(15) not null comment '样本字名',
     structure_id int UNSIGNED not null comment '结构id',
     font_id int UNSIGNED not null comment '字体id',
-    eccentricity_id int UNSIGNED not null comment '偏旁id',
+    radical_id int UNSIGNED not null comment '偏旁id',
+     grade_id int UNSIGNED comment '所属年级id',
     content varchar(255) comment'字帖图片url',
     source varchar(50) comment '来源',
+    importer varchar(25) comment'导入人',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '样本字';
+#  alter table sample_word add column importer varchar(25) comment'导入人';
 #已更改上表font
 
 create table feedback(
@@ -671,15 +677,15 @@ create table announcement_content(
 )comment '公告内容';
 
 #对话记录是暂时的，即用完就删，故存html，，，，，客服对话记录删了，不要了，不要客服了
-create table chat(
-    id bigint unsigned AUTO_INCREMENT PRIMARY KEY comment '对话记录id',
-    sender_id int not null comment '发送人id',
-    sender_type enum('教师','学生','管理员'),
-    receiver_id int not null comment '接收人id',
-    state varchar(25) not null comment '状态',
-    content varchar(2000) comment '对话记录内容html',
-    created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
-)comment '客服对话记录';
+# create table chat(
+#     id bigint unsigned AUTO_INCREMENT PRIMARY KEY comment '对话记录id',
+#     sender_id int not null comment '发送人id',
+#     sender_type enum('教师','学生','管理员'),
+#     receiver_id int not null comment '接收人id',
+#     state varchar(25) not null comment '状态',
+#     content varchar(2000) comment '对话记录内容html',
+#     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
+# )comment '客服对话记录';
 
 #此处把属性question和answer改为q和a
 create table question(
@@ -794,16 +800,16 @@ create table calligraphy_facts(
     updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'
 )comment '书法知识类型';
 
-create table calligraphy_resources(
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '书法知识类型id',
-    name VARCHAR(100) NOT NULL comment '书法知识类型名',
-    first_type_id int UNSIGNED not null comment '第一类型id',
-    second_type_id int UNSIGNED not null comment '第二类型id',
-    custom_type varchar(255) comment '自定义类型',
-    content varchar(255) not null comment '资源文件url',
-    created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
-)comment '书法知识资源';
-drop table calligraphy_resources;#删了是因为分成下面两个表了
+# create table calligraphy_resources(
+#     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '书法知识类型id',
+#     name VARCHAR(100) NOT NULL comment '书法知识类型名',
+#     first_type_id int UNSIGNED not null comment '第一类型id',
+#     second_type_id int UNSIGNED not null comment '第二类型id',
+#     custom_type varchar(255) comment '自定义类型',
+#     content varchar(255) not null comment '资源文件url',
+#     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
+# )comment '书法知识资源';
+# drop table calligraphy_resources;#删了是因为分成下面两个表了
 
 create table article_resources(
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '文章id',
@@ -832,6 +838,8 @@ create table video_collection(
     first_type_id int UNSIGNED not null comment '第一类型id',
     second_type_id int UNSIGNED not null comment '第二类型id',
     custom_type varchar(255) comment '自定义类型',
+    picture_url varchar(255) comment'封面url',
+    summary varchar(1000) comment '简介',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '视频合集表';
 #加简介加封面

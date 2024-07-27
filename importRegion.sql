@@ -13,7 +13,6 @@ id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '区域id',
   area_name VARCHAR(25) NOT NULL comment '区域名',
   adcode int(11) DEFAULT NULL COMMENT '地区编码',
   citycode varchar(11) DEFAULT NULL COMMENT '城市编码'
-
 );
 CREATE TABLE `sys_position` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
