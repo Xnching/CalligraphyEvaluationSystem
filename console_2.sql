@@ -177,27 +177,27 @@ CREATE TABLE grade(
 )comment '学制年级';
 INSERT INTO grade (name, parent_id, level) VALUES
 ('六三制小学', NULL, 1),
-('一年级', 1, 2),
-('二年级', 1, 2),
-('三年级', 1, 2),
-('四年级', 1, 2),
-('五年级', 1, 2),
-('六年级', 1, 2),
+('六三制小学一年级', 1, 2),
+('六三制小学二年级', 1, 2),
+('六三制小学三年级', 1, 2),
+('六三制小学四年级', 1, 2),
+('六三制小学五年级', 1, 2),
+('六三制小学六年级', 1, 2),
 ('六三制初中', NULL, 1),
-('初一', 8, 2),
-('初二', 8, 2),
-('初三', 8, 2),
+('六三制初中初一', 8, 2),
+('六三制初中初二', 8, 2),
+('六三制初中初三', 8, 2),
 ('五四制小学', NULL, 1),
-('一年级', 12, 2),
-('二年级', 12, 2),
-('三年级', 12, 2),
-('四年级', 12, 2),
-('五年级', 12, 2),
+('五四制小学一年级', 12, 2),
+('五四制小学二年级', 12, 2),
+('五四制小学三年级', 12, 2),
+('五四制小学四年级', 12, 2),
+('五四制小学五年级', 12, 2),
 ('五四制初中', NULL, 1),
-('初一', 18, 2),
-('初二', 18, 2),
-('初三', 18, 2),
-('初四', 18, 2);
+('五四制初中初一', 18, 2),
+('五四制初中初二', 18, 2),
+('五四制初中初三', 18, 2),
+('五四制初中初四', 18, 2);
 
 create table school(
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '学校id',
@@ -524,6 +524,23 @@ create table font(
     updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'
 )comment '字体';
 #字体已改成font
+INSERT INTO font (name) VALUES
+('楷体-赵淑安'),
+('楷体-李明'),
+('楷体-王华'),
+('楷体-张磊'),
+('楷体-刘洋'),
+('楷体-陈磊'),
+('楷体-杨洋'),
+('楷体-黄磊'),
+('楷体-周华'),
+('楷体-吴磊'),
+('楷体-郑洋'),
+('楷体-冯华'),
+('楷体-陈洋'),
+('楷体-楚磊'),
+('楷体-魏洋');
+
 
 create table stroke (
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '笔画id',
@@ -604,7 +621,7 @@ INSERT INTO structure (name) VALUES
 create table template_word(
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '模板字id',
     name varchar(15) not null comment '模板字名',
-    calligrapher varchar(15) not null comment '书写的书法家名',
+    author varchar(15) not null comment '书写的书法家名,即作者',
     structure_id int UNSIGNED not null comment '结构id',
     font_id int UNSIGNED not null comment '字体id',
     radical_id int UNSIGNED not null comment '偏旁id',
@@ -615,6 +632,37 @@ create table template_word(
 )comment '模板字';
 # alter table template_word add column grade_id int UNSIGNED comment '所属年级id';
 #已更改上表font
+INSERT INTO template_word (name, structure_id, radical_id, grade_id, font_id,content, author, importer) VALUES
+('样本字1', 1, 1, 1,1, '/images/word/1.png', '学生作品', '导入人1'),
+('样本字2', 2, 2, 2,1, '/images/word/2.png', '竞赛作品', '导入人2'),
+('样本字3', 3, 3, 3,1, '/images/word/3.png', '社会取得', '导入人3'),
+('样本字4', 4, 4, 4,1, '/images/word/4.png', '学生作品', '导入人4'),
+('样本字5', 5, 5, 5,1, '/images/word/5.png', '竞赛作品', '导入人5'),
+('样本字6', 6, 6, 6,1, '/images/word/6.png', '社会取得', '导入人1'),
+('样本字7', 7, 7, 7,1, '/images/word/7.png', '学生作品', '导入人2'),
+('样本字8', 8, 8, 8,1, '/images/word/8.png', '竞赛作品', '导入人3'),
+('样本字9', 9, 9, 9,1, '/images/word/9.png', '社会取得', '导入人4'),
+('样本字10', 10, 1, 1,1, '/images/word/10.png', '学生作品', '导入人5'),
+('样本字11', 1, 3, 4, 1,'/images/word/11.png', '竞赛作品', '导入人1'),
+('样本字12', 2, 4, 5, 1,'/images/word/12.png', '社会取得', '导入人2'),
+('样本字13', 3, 5, 6, 1,'/images/word/13.png', '学生作品', '导入人3'),
+('样本字14', 4, 6, 7, 1,'/images/word/14.png', '竞赛作品', '导入人4'),
+('样本字15', 5, 7, 8, 1,'/images/word/15.png', '社会取得', '导入人5'),
+('样本字16', 6, 8, 9, 1,'/images/word/16.png', '学生作品', '导入人1'),
+('样本字17', 7, 9, 10,1, '/images/word/17.png', '竞赛作品', '导入人2'),
+('样本字18', 8, 10, 1,1, '/images/word/18.png', '社会取得', '导入人3'),
+('样本字19', 9, 1, 2, 1,'/images/word/19.png', '学生作品', '导入人4'),
+('样本字20', 10, 2, 3,1, '/images/word/20.png', '竞赛作品', '导入人5'),
+('样本字21', 1, 3, 4, 1,'/images/word/21.png', '社会取得', '导入人1'),
+('样本字22', 2, 4, 5, 1,'/images/word/22.png', '学生作品', '导入人2'),
+('样本字23', 3, 5, 6, 1,'/images/word/23.png', '竞赛作品', '导入人3'),
+('样本字24', 4, 6, 7, 1,'/images/word/24.png', '社会取得', '导入人4'),
+('样本字25', 5, 7, 8, 1,'/images/word/25.png', '学生作品', '导入人5'),
+('样本字26', 6, 8, 9, 1,'/images/word/26.png', '竞赛作品', '导入人1'),
+('样本字27', 7, 9, 10,1, '/images/word/27.png', '社会取得', '导入人2'),
+('样本字28', 8, 10, 1,1, '/images/word/28.png', '学生作品', '导入人3'),
+('样本字29', 10, 1, 2,1, '/images/word/29.png', '竞赛作品', '导入人4'),
+('样本字30', 10, 2, 3,1, '/images/word/30.png', '社会取得', '导入人5');
 
 create table copybook(
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '字帖id',
@@ -633,9 +681,8 @@ create table sample_word(
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '样本字id',
     name varchar(15) not null comment '样本字名',
     structure_id int UNSIGNED not null comment '结构id',
-    font_id int UNSIGNED not null comment '字体id',
     radical_id int UNSIGNED not null comment '偏旁id',
-     grade_id int UNSIGNED comment '所属年级id',
+    grade_id int UNSIGNED comment '所属年级id',
     content varchar(255) comment'字帖图片url',
     source varchar(50) comment '来源',
     importer varchar(25) comment'导入人',
@@ -643,6 +690,38 @@ create table sample_word(
 )comment '样本字';
 #  alter table sample_word add column importer varchar(25) comment'导入人';
 #已更改上表font
+INSERT INTO sample_word (name, structure_id, radical_id, grade_id, content, source, importer) VALUES
+('样本字1', 1, 1, 1, '/images/word/1.png', '学生作品', '导入人1'),
+('样本字2', 2, 2, 2, '/images/word/2.png', '竞赛作品', '导入人2'),
+('样本字3', 3, 3, 3, '/images/word/3.png', '社会取得', '导入人3'),
+('样本字4', 4, 4, 4, '/images/word/4.png', '学生作品', '导入人4'),
+('样本字5', 5, 5, 5, '/images/word/5.png', '竞赛作品', '导入人5'),
+('样本字6', 6, 6, 6, '/images/word/6.png', '社会取得', '导入人1'),
+('样本字7', 7, 7, 7, '/images/word/7.png', '学生作品', '导入人2'),
+('样本字8', 8, 8, 8, '/images/word/8.png', '竞赛作品', '导入人3'),
+('样本字9', 9, 9, 9, '/images/word/9.png', '社会取得', '导入人4'),
+('样本字10', 10, 1, 1, '/images/word/10.png', '学生作品', '导入人5'),
+('样本字11', 1, 3, 4, '/images/word/11.png', '竞赛作品', '导入人1'),
+('样本字12', 2, 4, 5, '/images/word/12.png', '社会取得', '导入人2'),
+('样本字13', 3, 5, 6, '/images/word/13.png', '学生作品', '导入人3'),
+('样本字14', 4, 6, 7, '/images/word/14.png', '竞赛作品', '导入人4'),
+('样本字15', 5, 7, 8, '/images/word/15.png', '社会取得', '导入人5'),
+('样本字16', 6, 8, 9, '/images/word/16.png', '学生作品', '导入人1'),
+('样本字17', 7, 9, 10, '/images/word/17.png', '竞赛作品', '导入人2'),
+('样本字18', 8, 10, 1, '/images/word/18.png', '社会取得', '导入人3'),
+('样本字19', 9, 1, 2, '/images/word/19.png', '学生作品', '导入人4'),
+('样本字20', 10, 2, 3, '/images/word/20.png', '竞赛作品', '导入人5'),
+('样本字21', 1, 3, 4, '/images/word/21.png', '社会取得', '导入人1'),
+('样本字22', 2, 4, 5, '/images/word/22.png', '学生作品', '导入人2'),
+('样本字23', 3, 5, 6, '/images/word/23.png', '竞赛作品', '导入人3'),
+('样本字24', 4, 6, 7, '/images/word/24.png', '社会取得', '导入人4'),
+('样本字25', 5, 7, 8, '/images/word/25.png', '学生作品', '导入人5'),
+('样本字26', 6, 8, 9, '/images/word/26.png', '竞赛作品', '导入人1'),
+('样本字27', 7, 9, 10, '/images/word/27.png', '社会取得', '导入人2'),
+('样本字28', 8, 10, 1, '/images/word/28.png', '学生作品', '导入人3'),
+('样本字29', 10, 1, 2, '/images/word/29.png', '竞赛作品', '导入人4'),
+('样本字30', 10, 2, 3, '/images/word/30.png', '社会取得', '导入人5');
+
 
 create table feedback(
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '反馈id',

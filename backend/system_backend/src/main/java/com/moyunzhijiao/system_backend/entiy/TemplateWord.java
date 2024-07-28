@@ -12,7 +12,7 @@ public class TemplateWord {
     @TableId(value = "id",type = IdType.AUTO)
     Integer id;
     String name;
-    String calligrapher;
+    String author;
     @TableField(value="structure_id")
     Integer structureId;
     @TableField(value="font_id")
@@ -21,6 +21,8 @@ public class TemplateWord {
     Integer radicalId;
     String content;     //图片的url
     String importer;
+    @TableField(exist = false)
+    String fileName;
     @TableField(value="grade_id")
     Integer gradeId;
     @TableField(value="created_time")

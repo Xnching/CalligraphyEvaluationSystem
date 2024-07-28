@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName(value="eccentricity")
+@TableName(value="radical")
 public class Radical {
     Integer id;
     String name;

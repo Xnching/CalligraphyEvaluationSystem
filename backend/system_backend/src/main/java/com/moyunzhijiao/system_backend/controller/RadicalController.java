@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/backend/eccentricity")
+@RequestMapping("/api/backend/radical")
 public class RadicalController {
 
     @Autowired
     RadicalService radicalService;
-    @GetMapping("/eccentricities")
-    public Result findAllEccentricities(){
+    @GetMapping("/radicals")
+    public Result findAllRadicals(){
         List<Radical> list = radicalService.list();
         return Result.success(list);
     }

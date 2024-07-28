@@ -9,14 +9,14 @@
             @keyup.enter.native="Search_table()"
             clearable>
             </el-input>
-            <el-button style="margin-left:20px ;margin-right:535px" type="primary">搜索</el-button>
+            <el-button style="margin-left:20px ;margin-right:535px" type="primary" @click="Search_table">搜索</el-button>
         </div>
       <!-- 下面为表格的筛选-->
       <div style="text-align: left;margin-left: 30px;margin-top: 10px;display: flex">
         
         <!--下面是属性选择器 ，可以手动输入搜索-->
         
-        <el-select v-model="selectedFont" filterable placeholder="请选择字体" style="width: 150px;margin-right: 20px;">
+        <el-select v-model="selectedFont" filterable placeholder="请选择字体" @change="selectChange" clearable style="width: 150px;margin-right: 20px;">
             <el-option
             v-for="item in fontoptions"
             :key="item.value"
@@ -24,7 +24,7 @@
             :value="item.value">
             </el-option>
         </el-select>
-        <el-select v-model="selectedStructure" filterable placeholder="请选择结构" style="width: 150px;margin-right: 20px;">
+        <el-select v-model="selectedStructure" filterable placeholder="请选择结构" @change="selectChange" clearable style="width: 150px;margin-right: 20px;">
             <el-option
             v-for="item in structureOptions"
             :key="item.value"
@@ -32,7 +32,7 @@
             :value="item.value">
             </el-option>
         </el-select>
-        <el-select v-model="selectedEccentricity" filterable placeholder="请选择偏旁部首" style="width: 150px;margin-right: 20px;">
+        <el-select v-model="selectedEccentricity" filterable placeholder="请选择部首" @change="selectChange" clearable style="width: 150px;margin-right: 20px;">
             <el-option
             v-for="item in eccentricityOptions"
             :key="item.value"
@@ -40,7 +40,7 @@
             :value="item.value">
             </el-option>
         </el-select>
-        <el-select v-model="selectedGrade" filterable placeholder="请选择年级" style="width: 150px;margin-right: 20px;">
+        <el-select v-model="selectedGrade" filterable placeholder="请选择年级" @change="selectChange" clearable style="width: 150px;margin-right: 20px;">
             <el-option
             v-for="item in gradeOptions"
             :key="item.value"
@@ -48,7 +48,7 @@
             :value="item.value">
             </el-option>
         </el-select>
-        <el-select v-model="selectedAuthor" filterable placeholder="请选择作者" style="width: 150px;margin-right: 20px;">
+        <el-select v-model="selectedAuthor" filterable placeholder="请选择作者" @change="selectChange" clearable style="width: 150px;margin-right: 20px;">
             <el-option
             v-for="item in authorOptions"
             :key="item.value"
@@ -56,20 +56,27 @@
             :value="item.value">
             </el-option>
         </el-select>
-        <el-button type="primary" @click="handleEdit1" style="margin-left: auto; margin-right: 120px;">新增模板字<i class="el-icon-circle-plus"></i></el-button>
+        <el-button type="primary" @click="handleAdd" style="margin-left: auto; margin-right: 120px;">新增模板字<i class="el-icon-circle-plus"></i></el-button>
       </div>
         
         <!--下面是图片展示区域-->  
         <div class="image-grid"> 
-            <div v-for="image in paginatedImages" :key="image.id" class="image-item">
-                <img :src="image.src" :alt="image.title" @click="handleEdit2(image)">
+            <div v-for="image in images" :key="image.id" class="image-item">
+                <img :src="image.content" :alt="image.name" @click="handleEdit1(image)">
             </div>
         </div>
 
-        <div class="pagination">
-            <button :disabled="currentPage === 1" @click="onPageChange(currentPage - 1)">上一页</button>
-            <span>{{ currentPage }} / {{ totalPages }}</span>
-            <button :disabled="currentPage === totalPages" @click="onPageChange(currentPage + 1)">下一页</button>
+         <!-- 分页栏-->
+         <div style="padding:10px">
+            <el-pagination
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                :current-page="pageNum"
+                :page-sizes="[20, 25, 30, 40]"
+                :page-size="pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="total">
+            </el-pagination>
         </div>
 
       
@@ -80,53 +87,52 @@
         :visible.sync="dialogVisible1"
         width="40%"
         :close-on-click-modal="false" >
-
-            <el-tabs type="border-card">
+            <el-tabs type="border-card" v-model="activeName">
                     <!--单个添加-->
-                    <el-tab-pane label="单个添加">
+                    <el-tab-pane label="单个添加" name="single">
                         <el-form ref="addForm" :model="addForm" label-width="100px">
                             <el-form-item label="字名：">
                                 <el-input v-model="addForm.name"></el-input>
                             </el-form-item>
                             <el-form-item label="字体：">
-                                <el-select v-model="addForm.selectedFont" filterable placeholder="请选择字体" style="width: 150px;margin-right: 20px;">
+                                <el-select v-model="addForm.fontId" filterable placeholder="请选择字体" style="width: 150px;margin-right: 20px;">
                                     <el-option
                                     v-for="item in fontoptions"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value">
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="结构：">
-                                <el-select v-model="addForm.selectedStructure" filterable placeholder="请选择结构" style="width: 150px;margin-right: 20px;">
+                                <el-select v-model="addForm.structureId" filterable placeholder="请选择结构" style="width: 150px;margin-right: 20px;">
                                     <el-option
                                     v-for="item in structureOptions"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value">
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
                                     </el-option>
                                 </el-select>
                                 
                             </el-form-item>
-                            <el-form-item label="偏旁部首：">
-                                <el-select v-model="addForm.selectedEccentricity" filterable placeholder="请选择偏旁部首" style="width: 150px;margin-right: 20px;">
+                            <el-form-item label="部首：">
+                                <el-select v-model="addForm.radicalId" filterable placeholder="请选择部首" style="width: 150px;margin-right: 20px;">
                                     <el-option
                                     v-for="item in eccentricityOptions"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value">
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
                             <el-form-item label="年级：">
-                                <el-select v-model="addForm.selectedGrade" filterable placeholder="请选择年级"
+                                <el-select v-model="addForm.gradeId" filterable placeholder="请选择年级"
                                 style="width: 150px;margin-right: 20px;">
                                     <el-option
                                     v-for="item in gradeOptions"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value">
+                                    :key="item.id"
+                                    :label="item.name"
+                                    :value="item.id">
                                     </el-option>
                                 </el-select>
                             </el-form-item>
@@ -138,39 +144,48 @@
                         <el-upload
                         class="upload-demo"
                         drag
-                        action="https://jsonplaceholder.typicode.com/posts/"
+                        action="https://jsonplaceholsts/"
                         multiple
                         :limit="1"
                         accept=".png,.jpeg,.jpg"
-                        style=" text-align: center;">
+                        style=" text-align: center;"
+                        :on-success="handleExcelImportSuccess"
+                        :on-error="handleExcelImportError"
+                        :auto-upload="false">
                             <i class="el-icon-upload"></i>
-                            <div class="el-upload__text">将需要录入的字、偏旁部首的图片拖到此处，或<em>点击上传</em></div>
+                            <div class="el-upload__text">将需要录入的字、部首的图片拖到此处，或<em>点击上传</em></div>
                         </el-upload>
 
                     </el-tab-pane>
 
                     <!--批量添加-->
-                    <el-tab-pane label="批量添加" style=" text-align: center;">
+                    <el-tab-pane label="批量添加" style=" text-align: center;" name="batch">
                         <el-upload
                         class="upload-demo"
                         drag
-                        action="https://jsonplaceholder.typicode.com/posts/"
+                        action="httpsicode.com/posts/"
                         multiple
-                        accept=".png,.jpeg,.jpg">
+                        accept=".png,.jpeg,.jpg"
+                        :auto-upload="false"
+                        :on-success="handleExcelImportSuccess"
+                        :on-error="handleExcelImportError">
                             <i class="el-icon-upload"></i>
-                            <div class="el-upload__text">将需要录入的字、偏旁部首的图片拖到此处，或<em>点击上传</em></div>
+                            <div class="el-upload__text">将需要录入的字、部首的图片拖到此处，或<em>点击上传</em></div>
                         </el-upload>
 
                         <el-upload
                         class="upload-demo"
                         drag
-                        action="https://jsonplaceholder.typicode.com/posts/"
+                        action="https://json.com/posts/"
                         multiple
                         :limit="1"
-                        accept=".xls,.xlsx">
+                        accept=".xls,.xlsx"
+                        :auto-upload="false"
+                        :on-success="handleExcelImportSuccess"
+                        :on-error="handleExcelImportError">
                             <i class="el-icon-upload"></i>
-                            <div class="el-upload__tip" slot="tip">Excel文件格式以对应字文件名，字名，字体，结构，偏旁部首，年级，作者</div>
-                            <div class="el-upload__text">将需要录入的字、偏旁部首的对应的属性Excel拖到此处，或<em>点击上传</em></div>
+                            <div class="el-upload__tip" slot="tip">格式以对应字文件名，字名，字体，结构，部首，年级，作者</div>
+                            <div class="el-upload__text">将需要录入的字、部首的对应的属性Excel拖到此处，或<em>点击上传</em></div>
                         </el-upload>
 
                     </el-tab-pane>
@@ -191,25 +206,58 @@
         title="该模板字详细信息"
         :visible.sync="dialogVisible2"
         width="30%"
+        destroy-on-close
         :close-on-click-modal="false" 
         style=" text-align: center;">
-            <img v-if="selectedImage" :src="selectedImage.src" :alt="selectedImage.title" style="width: 100%;">
+            <img v-if="selectedImage" :src="selectedImage.content" :alt="selectedImage.name" style="width: 100%;">
             <el-form :model="editForm" label-width="120px">
                 <el-form-item label="模板字名：">
-                    <el-input v-model="editForm.name"></el-input>
+                    <el-input v-model="editForm.name" :disabled="!isEditing"></el-input>
                 </el-form-item>
-                <el-form-item label="字体所属：">
-                    <el-input v-model="editForm.font"></el-input>
-                </el-form-item>
-                <el-form-item label="结构所属：">
-                    <el-input v-model="editForm.structure"></el-input>
-                </el-form-item>
-                <el-form-item label="偏旁部首拥有：">
-                    <el-input v-model="editForm.eccentricity"></el-input>
-                </el-form-item>
-                <el-form-item label="年级：">
-                    <el-input v-model="editForm.grade"></el-input>
-                </el-form-item>
+                <el-form-item label="字体：">
+										<el-select v-model="editForm.fontId" filterable placeholder="请选择字体" 
+										:disabled="!isEditing" style="width: 150px;margin-right: 20px;">
+												<el-option
+												v-for="item in fontOptions"
+												:key="item.id"
+												:label="item.name"
+												:value="item.id">
+												</el-option>
+										</el-select>
+								</el-form-item>
+                <el-form-item label="结构：">
+										<el-select v-model="editForm.structureId" filterable placeholder="请选择结构" 
+										:disabled="!isEditing" style="width: 150px;margin-right: 20px;">
+												<el-option
+												v-for="item in structureOptions"
+												:key="item.id"
+												:label="item.name"
+												:value="item.id">
+												</el-option>
+										</el-select>
+								</el-form-item>
+								<el-form-item label="部首：">
+										<el-select v-model="editForm.radicalId" filterable placeholder="请选择部首" 
+										:disabled="!isEditing" style="width: 150px;margin-right: 20px;">
+												<el-option
+												v-for="item in radicalOptions"
+												:key="item.id"
+												:label="item.name"
+												:value="item.id">
+												</el-option>
+										</el-select>
+								</el-form-item>
+								<el-form-item label="年级：">
+										<el-select v-model="editForm.gradeId" filterable placeholder="请选择年级"
+										:disabled="!isEditing" style="width: 150px;margin-right: 20px;">
+												<el-option
+												v-for="item in gradeOptions"
+												:key="item.id"
+												:label="item.name"
+												:value="item.id">
+												</el-option>
+										</el-select>
+								</el-form-item>
                 <el-form-item label="作者：">
                     <el-input v-model="editForm.author"></el-input>
                 </el-form-item>

@@ -1,5 +1,7 @@
 package com.moyunzhijiao.system_backend.entiy;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -14,12 +16,12 @@ public class SampleWord {
     String name;
     @TableField(value="structure_id")
     Integer structureId;
-    @TableField(value="font_id")
-    Integer fontId;
     @TableField(value="radical_id")
     Integer radicalId;
     String content;     //图片的url
     String importer;
+    @TableField(exist = false)
+    String fileName;
     @TableField(value="grade_id")
     Integer gradeId;
     String source;
