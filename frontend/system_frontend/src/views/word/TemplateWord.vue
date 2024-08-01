@@ -18,42 +18,42 @@
         
         <el-select v-model="selectedFont" filterable placeholder="请选择字体" @change="selectChange" clearable style="width: 150px;margin-right: 20px;">
             <el-option
-            v-for="item in fontoptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+            v-for="item in fontOptions"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
             </el-option>
         </el-select>
         <el-select v-model="selectedStructure" filterable placeholder="请选择结构" @change="selectChange" clearable style="width: 150px;margin-right: 20px;">
             <el-option
             v-for="item in structureOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
             </el-option>
         </el-select>
-        <el-select v-model="selectedEccentricity" filterable placeholder="请选择部首" @change="selectChange" clearable style="width: 150px;margin-right: 20px;">
+        <el-select v-model="selectedRadical" filterable placeholder="请选择部首" @change="selectChange" clearable style="width: 150px;margin-right: 20px;">
             <el-option
-            v-for="item in eccentricityOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+            v-for="item in radicalOptions"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
             </el-option>
         </el-select>
         <el-select v-model="selectedGrade" filterable placeholder="请选择年级" @change="selectChange" clearable style="width: 150px;margin-right: 20px;">
             <el-option
             v-for="item in gradeOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+            :key="item.id"
+            :label="item.name"
+            :value="item.id">
             </el-option>
         </el-select>
         <el-select v-model="selectedAuthor" filterable placeholder="请选择作者" @change="selectChange" clearable style="width: 150px;margin-right: 20px;">
             <el-option
             v-for="item in authorOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
+            :key="item"
+            :label="item"
+            :value="item">
             </el-option>
         </el-select>
         <el-button type="primary" @click="handleAdd" style="margin-left: auto; margin-right: 120px;">新增模板字<i class="el-icon-circle-plus"></i></el-button>
@@ -97,7 +97,7 @@
                             <el-form-item label="字体：">
                                 <el-select v-model="addForm.fontId" filterable placeholder="请选择字体" style="width: 150px;margin-right: 20px;">
                                     <el-option
-                                    v-for="item in fontoptions"
+                                    v-for="item in fontOptions"
                                     :key="item.id"
                                     :label="item.name"
                                     :value="item.id">
@@ -118,7 +118,7 @@
                             <el-form-item label="部首：">
                                 <el-select v-model="addForm.radicalId" filterable placeholder="请选择部首" style="width: 150px;margin-right: 20px;">
                                     <el-option
-                                    v-for="item in eccentricityOptions"
+                                    v-for="item in radicalOptions"
                                     :key="item.id"
                                     :label="item.name"
                                     :value="item.id">
@@ -144,6 +144,7 @@
                         <el-upload
                         class="upload-demo"
                         drag
+                        ref="singleImage"
                         action="https://jsonplaceholsts/"
                         multiple
                         :limit="1"
@@ -162,6 +163,7 @@
                     <el-tab-pane label="批量添加" style=" text-align: center;" name="batch">
                         <el-upload
                         class="upload-demo"
+                        ref="batchImages"
                         drag
                         action="httpsicode.com/posts/"
                         multiple
@@ -176,6 +178,7 @@
                         <el-upload
                         class="upload-demo"
                         drag
+                        ref="batchExcelFile"
                         action="https://json.com/posts/"
                         multiple
                         :limit="1"
@@ -259,16 +262,20 @@
 										</el-select>
 								</el-form-item>
                 <el-form-item label="作者：">
-                    <el-input v-model="editForm.author"></el-input>
+                    <el-input v-model="editForm.author" :disabled="!isEditing"></el-input>
                 </el-form-item>
                 <el-form-item label="导入人：">
-                    <el-input v-model="editForm.source"></el-input>
+                    <el-input v-model="editForm.importer" :disabled="true"></el-input>
                 </el-form-item>
             </el-form>
             <template #footer>
-            <span class="dialog-footer">
-                <el-button type="danger" @click="handleSubmit2()">删除</el-button>
-            </span>
+							<span class="dialog-footer">
+								<el-button @click="handleCancel">取消</el-button>
+								<el-button type="primary" @click="isEditing ? handleSubmit2() : handleEdit2()">
+									{{ isEditing ? '确定' : '编辑' }}
+								</el-button>
+									<el-button type="danger" @click="handleDelete()">删除</el-button>
+							</span>
             </template>
         </el-dialog>
 
@@ -280,165 +287,310 @@
 
 <script>
 export default {
-    data() {
-        return {
-            eccentricityOptions: [{
-            value: '选项1',
-            label: '草字头'
-            }, {
-            value: '选项2',
-            label: '三点水'
-            }, {
-            value: '选项3',
-            label: '绞丝旁'
-            }],
-            structureOptions: [{
-            value: '选项1',
-            label: '上下结构'
-            }, {
-            value: '选项2',
-            label: '左右结构'
-            }, {
-            value: '选项3',
-            label: '前后结构'
-            }],
-            fontoptions: [{
-            value: '选项1',
-            label: '楷体-王国胜'
-            }, {
-            value: '选项2',
-            label: '楷体-陆终至'
-            }, {
-            value: '选项3',
-            label: '楷体-战易维'
-            }],
-            gradeOptions: [{
-            value: '选项1',
-            label: '一年级'
-            }, {
-            value: '选项2',
-            label: '二年级'
-            }, {
-            value: '选项3',
-            label: '三年级'
-            }],
-            authorOptions:[{
-            value: '选项1',
-            label: '王朔之'
-            }, {
-            value: '选项2',
-            label: '李伟'
-            }, {
-            value: '选项3',
-            label: '朴鞑法'
-            }],
-            selectedEccentricity:'',
-            selectedStructure:'',
-            selectedFont:'',
-            selectedGrade:'',
-            selectedAuthor:'',
-            //初始隐藏两个表单
-            dialogVisible1: false,
-            dialogVisible2: false,
-            currentPage: 1,
-            imagesPerPage: 20,
-            showModal: false,
-            selectedImage: null,
-            
-            images: [],
-            
-            addForm:{
-                name:'',
-                author:'',
-                selectedFont:'',
-                selectedEccentricity:'',
-                selectedStructure:'',
-                selectedGrade:'',
-            },
-            editForm:{
-                name:'佰',
-                structure:'左右结构',
-                grade:'五年级',
-                eccentricity:'单人旁',
-                source:'孙昭展',
-                author:'庆册一',
-                font:'楷体-鞣天源',
-            },
+  data() {
+    return {
+      pageNum:1,
+      pageSize:20,
+      total:0,
+      radicalOptions: [],
+      structureOptions: [],
+      gradeOptions: [],
+      authorOptions:[],
+      selectedRadical:'',
+      selectedStructure:'',
+      selectedFont:'',
+      selectedGrade:'',
+      user:localStorage.getItem("user")?JSON.parse(localStorage.getItem("user")):{},
+      selectedAuthor:'',
+      //初始隐藏两个表单
+      dialogVisible1: false,
+      dialogVisible2: false,
+      isEditing:false,
+      showModal: false,
+      selectedImage: null,
+      inputVal:'',
+      images: [],
+      activeName:'single',
+      fontOptions:[],
+      addForm:{
+          name:'',
+          structureId:'',
+          gradeId:'',
+          radicalId:'',
+          author:'',
+          importer:'',
+          fontId:'',
+      },
+      editForm:{
+          id:'',
+          name:'',
+          content:'',
+          structureId:'',
+          gradeId:'',
+          radicalId:'',
+          fontId:'',
+          author:'',
+          importer:'',
+      },
 
-        };
-    },
-    watch: {
-        
-        
-    },
-    computed: {
-        // 计算总页数
-        totalPages() {
-            // 使用 Math.ceil() 向上取整，确保即使图片数量无法整除每页数量也能显示所有图片
-            return Math.ceil(this.images.length / this.imagesPerPage);
-        },
-        // 计算当前页需要显示的图片列表
-        paginatedImages() {
-            // 计算起始索引，(currentPage - 1) * imagesPerPage
-            const startIndex = (this.currentPage - 1) * this.imagesPerPage;
-            // 计算结束索引，startIndex + imagesPerPage
-            const endIndex = startIndex + this.imagesPerPage;
-            // 使用 slice() 方法截取需要显示的图片数组片段
-            return this.images.slice(startIndex, endIndex);
-        },
-    },
-    mounted() {
-        // 在组件挂载后生成 images 数组
-        for (let i = 1; i <= 35; i++) {
-        this.images.push({
-            id: i,
-            src: `/images/word/${i}.png`,
-            title: `图片标题${i}`,
-            description: `图片描述${i}`,
-        });
-        }
-    },
-
-    methods: {
-    
-    
-
-
-
-    //新增按钮跳出弹窗
-    handleEdit1(){
+    };
+  },
+  created() {
+    this.getGrades();
+    this.getAuthor();
+    this.getRadical();
+    this.getStructure();
+    this.getFont();
+    this.load();
       
+  },
+  
+  
+
+  methods: {
+    Search_table(){
+			this.load();
+		},
+    //新增按钮跳出弹窗
+    handleAdd(){
+      // 重置表单
+    this.addForm = {
+      name:'',
+      structureId:'',
+      gradeId:'',
+      radicalId:'',
+      author:'',
+      importer:'',
+      fontId:'',
+    };
+
+    // 清空上传的文件列表
+    if (this.$refs.singleImage) {
+        this.$refs.singleImage.clearFiles();
+    }
+    if (this.$refs.batchImages) {
+        this.$refs.batchImages.clearFiles();
+    }
+    if (this.$refs.batchExcelFile) {
+        this.$refs.batchExcelFile.clearFiles();
+    }
       this.dialogVisible1 = true;
     },
+		selectChange(){
+			this.load();
+		},
 
     //新增用户表单提交前判断下数据格式是否正确
     handleSubmit1() {
-
-
+			if (this.activeName === 'single') {
+            this.uploadSingle();
+        } else if (this.activeName === 'batch') {
+            this.uploadBatch();
+        }
       this.dialogVisible1 = false;  //关闭弹窗
+    },
+		//单个添加
+		uploadSingle() {
+			console.log("发了没");
+			let formData = new FormData();
+			this.addForm.importer=this.user.name;
+			
+			formData.append('file', this.$refs.singleImage.uploadFiles[0].raw);
+			console.log("有没有文件");
+			console.log(this.$refs.singleImage.uploadFiles[0].raw);
+			formData.append('templateWord', JSON.stringify(this.addForm));
+			this.request.post('/template-word/single-add', formData, {
+					headers: {
+							'Content-Type': 'multipart/form-data'
+					}
+			}).then(response => {
+					this.handleExcelImportSuccess(response);
+			}).catch(error => {
+					this.handleExcelImportError(error);
+			});
+    },
+		//批量添加
+    uploadBatch() {
+			let formDatas = new FormData();
+			let images = this.$refs.batchImages.uploadFiles;
+			for (let i = 0; i < images.length; i++) {
+					formDatas.append('images', images[i].raw);
+			}
+			let importer = this.user.name; // 
+			
+    	formDatas.append('importer', importer);
+			formDatas.append('excelFile', this.$refs.batchExcelFile.uploadFiles[0].raw);
+			console.log("看下批量添加有importer吗");
+			console.log(importer);
+			console.log("看下批量添加有文件吗");
+			console.log(this.$refs.batchExcelFile.uploadFiles[0].raw);
+			this.request.post('/template-word/batch-add', formDatas, {
+					headers: {
+							'Content-Type': 'multipart/form-data'
+					}
+			}).then(response => {
+					this.handleExcelImportSuccess(response);
+			}).catch(error => {
+					this.handleExcelImportError(error);
+			});
     },
 
     //点击编辑按钮跳出弹窗填充数据
-    handleEdit2(image) {
+    handleEdit1(image) {
       // 将选中的图片数据赋值给 selectedImage
       this.selectedImage = image;
-
+			this.editForm=image;
+			this.isEditing=false;
       this.dialogVisible2 = true;
     },
-
+    //导入成功
+    handleExcelImportSuccess(response, file, fileList){ 
+      //console.log("到了导入成功里面去了");
+      if(response.code=='200'){
+        this.$message.success("导入成功");
+        this.load();
+      }else{
+        this.$message.error("导入失败，原因为："+response.msg);
+      }
+    },
+    //导入失败
+    handleExcelImportError(err, file, fileList){ 
+      //console.log(err);
+      this.$message.error("导入失败，原因为"+err);
+    },
+    //编辑弹窗里的编辑事件
+    handleEdit2(){
+      this.isEditing = true;
+    },
     //编辑用户弹窗确定提交的方法
-    handleSubmit2() {
+    handleDelete() {
       // 在此处处理删除逻辑
-      
-      this.dialogVisible2 = false; // 关闭弹窗
+			this.$confirm('确认删除该记录吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 调用后端删除接口
+				console.log("看看是否有id"+this.editForm.id);
+        this.request.put('/template-word/delete', {
+          id: this.editForm.id
+        }).then(res => {
+          if(res.code == '200'){
+            this.$message.success('删除样本字数据成功！');
+            this.load();
+						this.isEditing=false;
+      			this.dialogVisible2 = false; // 关闭弹窗
+          }else{
+            this.$message.error('删除样本字数据失败，原因：'+res.msg);
+          }
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
+      });
     },
+		//编辑弹窗里的取消
+		handleCancel(){
+			this.dialogVisible2=false;
+		},
+		//编辑弹窗里的确认提交
+		handleSubmit2(){
+			this.editForm.importer=this.user.name;
+			this.request.put("/template-word/update",this.editForm).then(res=>{
+        if(res.code == '200'){
+          this.$message.success('修改样本字数据成功！');
+          this.load();
+        } else {
+          this.$message.error('修改样本字数据失败，原因：' + res.msg);
+        }
+      })
+      this.isEditing = false;
+		},
 
-
-    // 处理页码变化事件
-    onPageChange(page) {
-        // 更新当前页码
-        this.currentPage = page;
+    //分页用的功能
+    handleCurrentChange(val) {
+      this.pageNum = val;   //获取当前第几页
+      this.load();
     },
+    handleSizeChange(val) {
+      this.pageSize = val;  //获取当前每页显示条数
+      this.load();
+    },
+    //请求分页查询数据
+    load(){
+      this.request.get("/template-word/page",{
+        params:{
+          pageNum:this.pageNum,
+          pageSize:this.pageSize,
+          str:this.inputVal,
+					structureId:this.selectedStructure,
+					radicalId:this.selectedRadical,
+					gradeId:this.selectedGrade,
+					author:this.selectedAuthor,
+					fontId:this.selectedFont
+        }
+      }).then(res=>{
+        if(res.code=='200'){
+					console.log(res);
+          this.images=res.data.records;
+          this.total=res.data.total;
+        }else{
+          this.$message.error('获取全部用户数据失败，原因：'+res.msg);
+        }
+      })
+    },
+		getRadical(){
+      this.request.get("/radical/radicals").then(res=>{
+        if(res.code=='200'){
+          this.radicalOptions=res.data;
+        }else{
+          this.$message.error('获取全部部首数据失败，原因：'+res.msg);
+        }
+
+      })
+    },
+		getStructure(){
+      this.request.get("/structure/structures").then(res=>{
+        if(res.code=='200'){
+          this.structureOptions=res.data;
+        }else{
+          this.$message.error('获取全部字体数据失败，原因：'+res.msg);
+        }
+
+      })
+    },
+		getGrades(){
+      this.request.get("/grade/grades").then(res=>{
+        if(res.code=='200'){
+          this.gradeOptions=res.data;
+        }else{
+          this.$message.error('获取全部年级数据失败，原因：'+res.msg);
+        }
+
+      })
+    },
+		getAuthor(){
+			this.request.get("/template-word/authors").then(res=>{
+        if(res.code=='200'){
+          this.authorOptions=res.data;
+        }else{
+          this.$message.error('获取全部作者数据失败，原因：'+res.msg);
+        }
+
+      })
+		},
+    getFont(){
+      this.request.get("/font/fonts").then(res=>{
+        if(res.code=='200'){
+          this.fontOptions=res.data;
+        }else{
+          this.$message.error('获取全部字体数据失败，原因：'+res.msg);
+        }
+
+      })
+    }
 
     
   },

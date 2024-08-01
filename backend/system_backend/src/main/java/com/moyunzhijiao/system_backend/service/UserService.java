@@ -148,4 +148,14 @@ public class UserService extends ServiceImpl<UserMapper,User> {
         User user = convertToEntity(userDTO);
         userMapper.insert(user);
     }
+
+
+    public String getNameById(String id){
+        User user = getById(id);
+        if (user != null) {
+            return user.getName();
+        } else {
+            return null;
+        }
+    }
 }

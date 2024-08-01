@@ -7,11 +7,20 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName(value="stroke")
-public class Stroke {
+@TableName(value="copybook")
+public class Copybook {
     @TableId(value = "id",type = IdType.AUTO)
     Integer id;
     String name;
-    @TableField(value="updated_time")
-    String updatedTime;
+    String author;
+    @TableField(value="font_id")
+    Integer fontId;
+    String content;     //图片的url
+    String importer;
+    @TableField(exist = false)
+    String fileName;
+    @TableField(value="grade_id")
+    Integer gradeId;
+    @TableField(value="created_time")
+    String createdTime;
 }

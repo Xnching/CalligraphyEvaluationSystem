@@ -542,6 +542,7 @@ INSERT INTO font (name) VALUES
 ('楷体-魏洋');
 
 
+
 create table stroke (
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '笔画id',
     name varchar(25) not null comment '笔画名',
@@ -630,7 +631,7 @@ create table template_word(
     grade_id int UNSIGNED not null comment '学制年级id',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '模板字';
-# alter table template_word add column grade_id int UNSIGNED comment '所属年级id';
+# alter table template_word add column author varchar(15) not null comment '书写的书法家名,即作者';
 #已更改上表font
 INSERT INTO template_word (name, structure_id, radical_id, grade_id, font_id,content, author, importer) VALUES
 ('样本字1', 1, 1, 1,1, '/images/word/1.png', '学生作品', '导入人1'),
@@ -676,6 +677,38 @@ create table copybook(
 )comment '字帖';
 # alter table copybook add column grade_id int UNSIGNED comment '所属年级id';
 #已更改上表font
+INSERT INTO copybook (name, author, font_id, importer, content, grade_id) VALUES
+('字帖1', '作者1', 1, '导入人1', '/images/copybook/1.jpg', 2),
+('字帖2', '作者2', 2, '导入人2', '/images/copybook/2.jpg', 2),
+('字帖3', '作者3', 3, '导入人3', '/images/copybook/3.jpg', 2),
+('字帖4', '作者4', 4, '导入人4', '/images/copybook/4.jpg', 2),
+('字帖5', '作者5', 5, '导入人5', '/images/copybook/5.jpg', 2),
+('字帖6', '作者6', 6, '导入人6', '/images/copybook/6.jpg', 2),
+('字帖7', '作者7', 7, '导入人7', '/images/copybook/7.jpg', 2),
+('字帖8', '作者8', 8, '导入人8', '/images/copybook/8.jpg', 2),
+('字帖9', '作者9', 9, '导入人9', '/images/copybook/9.jpg', 2),
+('字帖10', '作者10', 1, '导入人10', '/images/copybook/1.jpg', 3),
+('字帖11', '作者11', 1, '导入人11', '/images/copybook/2.jpg', 3),
+('字帖12', '作者12', 1, '导入人12', '/images/copybook/3.jpg', 3),
+('字帖13', '作者13', 1, '导入人13', '/images/copybook/4.jpg', 3),
+('字帖14', '作者14', 1, '导入人14', '/images/copybook/5.jpg', 3),
+('字帖15', '作者15', 1, '导入人15', '/images/copybook/6.jpg', 3),
+('字帖16', '作者16', 1, '导入人16', '/images/copybook/7.jpg', 3),
+('字帖17', '作者17', 1, '导入人17', '/images/copybook/8.jpg', 3),
+('字帖18', '作者18', 1, '导入人18', '/images/copybook/9.jpg', 3),
+('字帖19', '作者19', 1, '导入人19', '/images/copybook/1.jpg', 3),
+('字帖20', '作者20', 2, '导入人20', '/images/copybook/2.jpg', 3),
+('字帖21', '作者21', 2, '导入人21', '/images/copybook/3.jpg', 3),
+('字帖22', '作者22', 2, '导入人22', '/images/copybook/4.jpg', 3),
+('字帖23', '作者23', 2, '导入人23', '/images/copybook/5.jpg', 3),
+('字帖24', '作者24', 2, '导入人24', '/images/copybook/6.jpg', 3),
+('字帖25', '作者25', 2, '导入人25', '/images/copybook/7.jpg', 3),
+('字帖26', '作者26', 2, '导入人26', '/images/copybook/8.jpg', 3),
+('字帖27', '作者27', 2, '导入人27', '/images/copybook/9.jpg', 3),
+('字帖28', '作者28', 2, '导入人28', '/images/copybook/1.jpg', 3),
+('字帖29', '作者29', 2, '导入人29', '/images/copybook/2.jpg', 3),
+('字帖30', '作者30', 3, '导入人30', '/images/copybook/3.jpg', 3);
+
 
 create table sample_word(
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '样本字id',
@@ -786,6 +819,12 @@ create table competition(
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '竞赛';
 
+create table klass_competition(
+    klass_id int UNSIGNED not null comment '班级id',
+    competition_id int UNSIGNED not null comment '竞赛id',
+    primary key (competition_id,klass_id)
+)comment '班级报名竞赛表';
+
 create table competition_requirements(
     competition_id int UNSIGNED not null primary key comment '竞赛id',
     requirements varchar(2000) not null comment '竞赛要求',
@@ -878,6 +917,14 @@ create table calligraphy_facts(
     level tinyINT NOT NULL comment '等级',
     updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'
 )comment '书法知识类型';
+INSERT INTO calligraphy_facts (name, parent_id, level) VALUES
+('教学指导', NULL, 1),
+('教学指导', 1, 2),
+('字的书写', 1, 2),
+('书法知识', null, 1),
+('名家作品', 4, 2),
+('汉字', 4, 2),
+('人物传记', 4, 2);
 
 # create table calligraphy_resources(
 #     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '书法知识类型id',
@@ -890,28 +937,39 @@ create table calligraphy_facts(
 # )comment '书法知识资源';
 # drop table calligraphy_resources;#删了是因为分成下面两个表了
 
-create table article_resources(
+create table article(
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '文章id',
     name VARCHAR(100) NOT NULL comment '文章名',
     first_type_id int UNSIGNED not null comment '第一类型id',
     second_type_id int UNSIGNED not null comment '第二类型id',
-    custom_type varchar(255) comment '自定义类型',
-    content varchar(255) not null comment '资源文件url',
+    tag varchar(355) comment '自定义类型',
+    is_recommended tinyint(1) not null DEFAULT 0 COMMENT'1代表是推荐作品，0代表不是推荐作品',
+    picture_url varchar(255) comment'封面url',
+    importer varchar(25) comment'导入人',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '书法知识文章表';
 
-create table video_resources(
+CREATE TABLE article_contents (
+    id INT PRIMARY KEY,
+    content TEXT
+)comment '书法知识文章内容表';
+
+create table video(
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '视频id',
     name VARCHAR(100) NOT NULL comment '视频名',
     first_type_id int UNSIGNED not null comment '第一类型id',
     second_type_id int UNSIGNED not null comment '第二类型id',
-    custom_type varchar(255) comment '自定义类型',
+    tag varchar(255) comment '自定义类型',
+    is_recommended tinyint(1) not null DEFAULT 0 COMMENT'1代表是推荐作品，0代表不是推荐作品',
     collection_id int UNSIGNED comment '所属合集id',
     content varchar(255) not null comment '资源文件url',
+    picture_url varchar(255) comment'封面url',
+    summary varchar(1000) comment '简介',
+    importer varchar(25) comment'导入人',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '书法知识视频表';
 
-create table video_collection(
+create table collection(
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '合集id',
     name VARCHAR(100) NOT NULL comment '合集名',
     first_type_id int UNSIGNED not null comment '第一类型id',

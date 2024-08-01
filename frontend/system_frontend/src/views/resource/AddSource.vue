@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-tabs v-model="activeName">
+    <el-tabs v-model="activeName" @tab-click="handleClick">
       <!--添加视频面板-->
       <el-tab-pane label="视频添加" name="video" style="width: 70%;">
         <el-form ref="videoForm" :model="videoData" label-width="160px">
@@ -8,18 +8,17 @@
             <el-upload
               class="upload-demo"
               action="#"
-              :on-success="handleFileUploadSuccess"
-              :before-upload="beforeUpload"
-              :file-list="videoData.coverList"
+              ref="videoImage"
+              :on-success="handleExcelImportSuccess"
+              :on-error="handleExcelImportError"
               multiple
               drag
               :limit="1"
-              :on-exceed="handleExceed"
               :auto-upload="false"
               accept=".jpg,.jpeg,.png">
               <i class="el-icon-upload"></i>
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-              <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+              <div class="el-upload__tip" slot="tip">只能上传jpg/png文件</div>
             </el-upload>
           </el-form-item>
           <el-form-item label="视频文件添加：">
@@ -27,35 +26,34 @@
             <el-upload
               class="upload-demo"
               action="#"
-              :on-success="handleFileUploadSuccess"
-              :before-upload="beforeUpload"
-              :file-list="videoData.coverList"
+              ref="video"
+              :on-success="handleExcelImportSuccess"
+              :on-error="handleExcelImportError"
               multiple
               drag
               :limit="1"
               accept=".mp4,.mov,.wmv,.flv,.avi,.avchd,.webm,.mkv"
-              :on-exceed="handleExceed"
               :auto-upload="false">
               <i class="el-icon-upload"></i>
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-              <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+              <div class="el-upload__tip" slot="tip">只能上传视频文件</div>
             </el-upload>
           </el-form-item>
           <el-form-item label="视频标题：">
-            <el-input v-model="videoData.title" size="small"></el-input>
+            <el-input v-model="videoData.name" size="small"></el-input>
           </el-form-item>
           <el-form-item label="视频简介：">
-            <el-input type= "textarea" v-model="videoData.intro" size="small"></el-input>
+            <el-input type= "textarea" v-model="videoData.summary" size="small"></el-input>
           </el-form-item>
           <el-form-item label="视频书法知识类型：">
-            <el-select v-model="videoData.knowledgeType">
-              <el-option label="书法知识:" value="书法知识"></el-option>
-              <el-option label="教学指导:" value="教学指导"></el-option>
+            <el-select v-model="videoData.firstTypeId"  @change="onFirstChange1">
+              <el-option label="教学指导" value="1"></el-option>
+              <el-option label="书法知识" value="4"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="详细类型：">
-            <el-select v-model="videoData.detailType">
-              <el-option v-for="type in detailTypes" :key="type.value" :label="type.label" :value="type.value"></el-option>
+            <el-select v-model="videoData.secondTypeId" v-if="secondTypes1.length">
+              <el-option v-for="type in secondTypes1" :key="type.id" :label="type.name" :value="type.id"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="添加标签：">
@@ -82,7 +80,7 @@
           <el-form-item label="是否为推荐：">
             <el-switch
               style="display: block"
-              v-model="recommendedValue2"
+              v-model="videoData.isRecommended"
               active-color="#13ce66"
               inactive-color="#ff4949"
               active-text="推荐"
@@ -91,42 +89,41 @@
           </el-form-item>
           <el-form-item>
 
-            <el-button>清空</el-button>
+            <el-button @click="clear1">清空</el-button>
             <el-button type="primary" @click="handleSubmit1">确认添加</el-button>
           </el-form-item>
         </el-form>
       </el-tab-pane>
 
       <!--添加文章面板-->
-      <el-tab-pane label="文章添加" name="second" style="width: 70%;">
-        <el-form ref="videoForm" :model="videoData" label-width="160px">
+      <el-tab-pane label="文章添加" name="article" style="width: 70%;">
+        <el-form ref="articleForm" :model="articleData" label-width="160px">
           <el-form-item label="文章封面添加：">
             <el-upload
               class="upload-demo"
               action="#"
-              :on-success="handleFileUploadSuccess"
-              :before-upload="beforeUpload"
-              :file-list="videoData.coverList"
+              ref="articleImage"
+              :on-success="handleExcelImportSuccess"
+              :on-error="handleExcelImportError"
               multiple
               drag
               :limit="1"
-              :on-exceed="handleExceed"
               :auto-upload="false"
               accept=".jpg,.jpeg,.png">
               <i class="el-icon-upload"></i>
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-              <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+              <div class="el-upload__tip" slot="tip">只能上传jpg/png文件</div>
             </el-upload>
           </el-form-item>
           <el-form-item label="文章书法知识类型：">
-            <el-select v-model="videoData.knowledgeType">
-              <el-option label="书法知识:" value="书法知识"></el-option>
-              <el-option label="教学指导:" value="教学指导"></el-option>
+            <el-select v-model="articleData.firstTypeId" @change="onFirstChange2">
+              <el-option label="教学指导" value="1"></el-option>
+              <el-option label="书法知识" value="4"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="详细类型：">
-            <el-select v-model="videoData.detailType">
-              <el-option v-for="type in detailTypes" :key="type.value" :label="type.label" :value="type.value"></el-option>
+            <el-select v-model="articleData.secondTypeId" v-if="secondTypes2.length">
+              <el-option v-for="type in secondTypes2" :key="type.id" :label="type.name" :value="type.id"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="添加标签：">
@@ -150,15 +147,15 @@
             <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
           </el-form-item>
           <el-form-item label="文章标题：">
-            <el-input v-model="videoData.title" size="small"></el-input>
+            <el-input v-model="articleData.name" size="small"></el-input>
           </el-form-item>
           <el-form-item label="文章内容：">
-            <wang-editor></wang-editor>
+            <wang-editor ref="myEditor" v-model="valueHtml"></wang-editor>
           </el-form-item>
           <el-form-item label="是否为推荐：">
             <el-switch
               style="display: block"
-              v-model="recommendedValue2"
+              v-model="articleData.isRecommended"
               active-color="#13ce66"
               inactive-color="#ff4949"
               active-text="推荐"
@@ -166,8 +163,8 @@
             </el-switch>
           </el-form-item>
           <el-form-item>
-            <el-button>清空</el-button>
-            <el-button type="primary" @click="handleSubmit1">确认添加</el-button>
+            <el-button @click="clear2">清空</el-button>
+            <el-button type="primary" @click="handleSubmit2">确认添加</el-button>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -190,65 +187,200 @@ export default {
       activeName: 'video',
       currentPage: 'video',
       videoData: {
-        title: '',
-        knowledgeType: '',
-        detailType: '',
-        customType: '',
-        tags: [],
-        coverList: [], // 用来保存封面图片的列表
-        videoList: [] // 用来保存视频文件的列表
+        name: '',
+        summary:'',
+        firstTypeId: '',
+        secondTypeId: '',
+        tag: '',
+        isRecommended:'false',
       },
-      detailTypes: [ // 详细类型的选项
-        { label: '书法作品', value: '书法作品' },
-        { label: '汉字', value: '汉字' },
-        { label: '人物传记', value: '人物传记' },
-        { label: '文化', value: '文化' }
-      ],
+      articleData:{
+        name:'',
+        firstTypeId: '',
+        secondTypeId: '',
+        tag: '',
+        isRecommended:'false',
+      },
+      secondTypes1: [],
+      secondTypes2: [],
       dynamicTags: [],
       inputVisible: false,
       inputValue: '',
-      recommendedValue2:false,
-      recommendedValue1:false,
+      valueHtml:'',
     };
   },
   methods: {
-    showPage(page) {
-      this.currentPage = page;
-      this.$refs[page === 'video' ? 'videoForm' : 'textForm'].resetFields(); // 重置表单字段
-    },
-    handleFileUploadSuccess(response, file, fileList) {
-      // 处理封面图片上传成功后的逻辑
-    },
-    beforeUpload(file) {
-      // 上传封面图片前的逻辑处理，比如文件大小和类型检查
-      const isJPG = file.type === 'image/jpeg';
-      const isLt2M = file.size / 1024 / 1024 < 2;
-      if (!isJPG) {
-        this.$message.error('上传封面图片只能是 JPG 格式!');
+    //导入成功
+    handleExcelImportSuccess(response, file, fileList){ 
+      //console.log("到了导入成功里面去了");
+      if(response.code=='200'){
+        this.$message.success("导入成功");
+      }else{
+        this.$message.error("导入失败，原因为："+response.msg);
       }
-      if (!isLt2M) {
-        this.$message.error('上传封面图片大小不能超过 2MB!');
+    },
+    //导入失败
+    handleExcelImportError(err, file, fileList){ 
+      //console.log(err);
+      this.$message.error("导入失败，原因为"+err);
+    },
+    onFirstChange1(){
+      const firstTypeId = parseInt(this.videoData.firstTypeId,10);
+      this.getSecond1(firstTypeId);
+      this.videoData.secondTypeId='';
+    },
+
+    onFirstChange2(){
+      const firstTypeId = parseInt(this.articleData.firstTypeId,10);
+      this.getSecond2(firstTypeId);
+      this.articleData.secondTypeId='';
+    },
+    getSecond1(val){
+      console.log("打印下值多少"+val);
+      this.request.get("/calligraphy-facts/seconds",{
+        params: {
+          id: val
+        }
+      }).then(res => {
+        if(res.code == '200'){
+          this.secondTypes1= res.data;
+        }else{
+          this.$message.error('获取二级类型失败，原因：'+res.msg);
+        }
+      });
+      return null;
+    },
+    getSecond2(val){
+      console.log("打印下值多少"+val);
+      this.request.get("/calligraphy-facts/seconds",{
+        params: {
+          id: val
+        }
+      }).then(res => {
+        if(res.code == '200'){
+          this.secondTypes2=res.data;
+        }else{
+          this.$message.error('获取二级类型失败，原因：'+res.msg);
+        }
+      });
+      return null;
+    },
+    clear1(){
+      // 重置videoData对象
+      this.videoData = {
+        name: '',
+        summary: '',
+        firstTypeId: null,
+        secondTypeId: null,
+        isRecommended: false
+      };
+
+      // 清空已上传的文件
+      this.$refs.videoImage.clearFiles();
+      this.$refs.video.clearFiles();
+
+      // 清空标签
+      this.dynamicTags = [];
+    },
+    clear2(){
+      console.log("为什么没情况");
+      // 重置articleData对象
+      this.articleData = {
+        name: '',
+        firstTypeId: null,
+        secondTypeId: null,
+        isRecommended: false
+      };
+
+      // 清空已上传的文件
+      this.$refs.articleImage.clearFiles();
+
+      // 清空标签
+      this.dynamicTags = [];
+    },
+    handleClick(){
+      if(this.activeName=='video'){
+        this.clear2();
       }
-      return isJPG && isLt2M;
+      if(this.activeName=='article'){
+        this.clear1();
+      }
+      
     },
-    handleExceed(files, fileList) {
-      this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+    handleSubmit1(){
+      this.$confirm('确认添加该记录吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 调用后端接口
+        this.videoData.tag = this.dynamicTags.join('@');
+        let formData = new FormData();
+        formData.append('videoData', JSON.stringify(this.videoData));
+        formData.append('image',this.$refs.videoImage.uploadFiles[0].raw);
+        formData.append('videoFile',this.$refs.video.uploadFiles[0].raw);
+        
+        this.request.post('/video/add',formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+					}
+        }).then(response => {
+            this.handleExcelImportSuccess(response);
+        }).catch(error => {
+            this.handleExcelImportError(error);
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消添加'
+        });          
+      });
     },
-    handleVideoUploadSuccess(response, file, fileList) {
-      // 处理视频文件上传成功后的逻辑
+    handleSubmit2(){
+      this.$confirm('确认添加该记录吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        console.log("看看有没有");
+        this.articleData.tag = this.dynamicTags.join('@');
+        console.log("看看有没有");
+        // 尝试获取HTML内容
+        console.log("看下组件");
+        console.log(this.$refs.myEditor);
+        let htmlContent = this.$refs.myEditor.valueHtml;
+        console.log("看看有没有");
+        console.log(htmlContent);
+        let formData = new FormData();
+        formData.append('content',JSON.stringify(htmlContent));
+        console.log("看看有没有");
+
+        formData.append('article',JSON.stringify(this.articleData));
+        console.log("看看有没有");
+
+        formData.append('image',this.$refs.articleImage.uploadFiles[0].raw)
+        console.log(formData);
+
+        // 调用后端删除接口
+        this.request.post('/article/add',formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then(res => {
+          if(res.code == '200'){
+              this.$message.success('添加文章成功！');
+          }else{
+              this.$message.error('添加文章失败，原因：'+res.msg);
+          }
+        });
+      }).catch(() => {
+        this.$message({
+            type: 'info',
+            message: '已取消添加'
+        });          
+      });
     },
-    beforeVideoUpload(file) {
-      // 视频文件上传前的逻辑处理，比如文件大小和类型检查
-    },
-    submitVideo() {
-      // 提交视频表单数据（与之前一致）
-    },
-    submitText() {
-      // 提交文章表单数据（与之前一致）
-    },
-    cancel() {
-      // 重置表单数据（与之前一致）
-    },
+
 
 
     //自定义标签的方法

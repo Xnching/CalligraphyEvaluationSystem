@@ -447,9 +447,7 @@ export default {
       //console.log("到了导入成功里面去了");
       if(response.code=='200'){
         this.$message.success("导入成功");
-        const selectedSchoolId=parseInt(this.selectedSchool,10);
-        const schoolId = this.schools.find(s => s.id === selectedSchoolId).id;
-        this.load(schoolId);
+        this.load();
       }else{
         this.$message.error("导入失败，原因为："+response.msg);
       }
@@ -493,9 +491,13 @@ export default {
 		handleCancel(){
 			this.dialogVisible2=false;
 		},
+    //编辑弹窗里的编辑事件
+    handleEdit2(){
+      this.isEditing = true;
+    },
 		//编辑弹窗里的确认提交
 		handleSubmit2(){
-			this.editForm.importer=user.name;
+			this.editForm.importer=this.user.name;
 			this.request.put("/sample-word/update",this.editForm).then(res=>{
         if(res.code == '200'){
           this.$message.success('修改样本字数据成功！');

@@ -9,15 +9,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_backend.common.Constants;
+import com.moyunzhijiao.system_backend.controller.dto.CopybookDTO;
 import com.moyunzhijiao.system_backend.controller.dto.TemplateWordDTO;
-import com.moyunzhijiao.system_backend.entiy.TemplateWord;
+import com.moyunzhijiao.system_backend.entiy.Copybook;
 import com.moyunzhijiao.system_backend.entiy.TemplateWord;
 import com.moyunzhijiao.system_backend.exception.ServiceException;
-import com.moyunzhijiao.system_backend.mapper.TemplateWordMapper;
-import com.moyunzhijiao.system_backend.mapper.TemplateWordMapper;
+import com.moyunzhijiao.system_backend.mapper.CopybookMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -26,82 +25,75 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class TemplateWordService extends ServiceImpl<TemplateWordMapper, TemplateWord> {
+public class CopybookService extends ServiceImpl<CopybookMapper, Copybook> {
     @Autowired
-    TemplateWordMapper templateWordMapper;
-
+    CopybookMapper copybookMapper;
+    @Autowired
+    FontService fontService;
     @Autowired
     GradeService gradeService;
 
-    @Autowired
-    RadicalService radicalService;
-
-    @Autowired
-    StructureService structureService;
-    @Autowired
-    FontService fontService;
     public List<String> listAuthors() {
-        QueryWrapper<TemplateWord> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<Copybook> queryWrapper = new QueryWrapper<>();
         queryWrapper.select("distinct author");
-        return templateWordMapper.selectObjs(queryWrapper).stream()
+        return copybookMapper.selectObjs(queryWrapper).stream()
                 .map(Object::toString)
                 .collect(Collectors.toList());
     }
 
-    public IPage<TemplateWord> selectPage(IPage<TemplateWord> page, String str, Integer structureId, Integer radicalId, Integer gradeId, Integer fontId, String author) {
-        QueryWrapper<TemplateWord> queryWrapper = new QueryWrapper<>();
+    public List<String> listImporter() {
+        QueryWrapper<Copybook> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("distinct importer");
+        return copybookMapper.selectObjs(queryWrapper).stream()
+                .map(Object::toString)
+                .collect(Collectors.toList());
+    }
+
+    public IPage<Copybook> selectPage(IPage<Copybook> page, String str, Integer fontId, Integer gradeId, String author, String importer) {
+        QueryWrapper<Copybook> queryWrapper = new QueryWrapper<>();
         queryWrapper.like("name",str);
         queryWrapper.like("author",author);
+        queryWrapper.like("importer",importer);
         System.out.println("让我们看看查询条件是什么str："+str);
-        System.out.println("让我们看看查询条件是什么structureId："+structureId);
-        System.out.println("让我们看看查询条件是什么radicalId："+radicalId);
         System.out.println("让我们看看查询条件是什么gradeId："+gradeId);
         System.out.println("让我们看看查询条件是什么author："+author);
-        if(ObjectUtil.isNotNull(structureId)){
-            queryWrapper.eq("structure_id",structureId);
-        }
         if(ObjectUtil.isNotNull(gradeId)){
             queryWrapper.eq("grade_id",gradeId);
-        }
-        if(ObjectUtil.isNotNull(radicalId)){
-            queryWrapper.eq("radical_id",radicalId);
         }
         if(ObjectUtil.isNotNull(fontId)){
             queryWrapper.eq("font_id",fontId);
         }
         // 使用Mapper的selectPage方法执行查询
-        return templateWordMapper.selectPage(page, queryWrapper);
+        return copybookMapper.selectPage(page, queryWrapper);
+
     }
 
-    public void deleteWord(String id) {
-        int rows = templateWordMapper.deleteById(id);
+    public void deleteCopybook(String id) {
+        int rows = copybookMapper.deleteById(id);
         if(rows!=1){
             throw new ServiceException(Constants.CODE_400,"删除参数错误！");
         }
     }
 
-    public void addTemplateWord(TemplateWord templateWord) {
-        templateWordMapper.insert(templateWord);
+    public void addCopybook(Copybook copybook) {
+        copybookMapper.insert(copybook);
     }
 
-    @Transactional
-    public List<TemplateWord> readExcelFile(MultipartFile excelFile) {
+    public List<Copybook> readExcelFile(MultipartFile excelFile) {
         // 读取Excel文件中的数据
-        List<TemplateWord> templateWords = new ArrayList<>();
+        List<Copybook> copybooks = new ArrayList<>();
         try {
-            EasyExcel.read(excelFile.getInputStream(), TemplateWordDTO.class, new AnalysisEventListener<TemplateWordDTO>() {
+            EasyExcel.read(excelFile.getInputStream(), CopybookDTO.class, new AnalysisEventListener<CopybookDTO>() {
                 @Override
-                public void invoke(TemplateWordDTO data, AnalysisContext context) {
+                public void invoke(CopybookDTO data, AnalysisContext context) {
                     //可以在此处检查
                     data.setGradeId(gradeService.getIdByField(data.getGrade()));
-                    data.setRadicalId(radicalService.getIdByField(data.getRadical()));
-                    data.setStructureId(structureService.getIdByField(data.getStructure()));
-                    System.out.println("让我们看看字体到底出了什么问题，打印data："+data.toString());
+                    System.out.println("让我们看看字体到底出了什么问题，打印data："+data);
                     System.out.println("让我们看看字体到底出了什么问题，打印font："+data.getFont());
                     data.setFontId(fontService.getIdByField(data.getFont()));
                     System.out.println("让我们看看字体到底出了什么问题，打印fontId："+data.getFontId());
-                    TemplateWord tmp = convertToEntity(data);
-                    templateWords.add(tmp);
+                    Copybook tmp = convertToEntity(data);
+                    copybooks.add(tmp);
                 }
                 @Override
                 public void doAfterAllAnalysed(AnalysisContext context) {
@@ -112,20 +104,21 @@ public class TemplateWordService extends ServiceImpl<TemplateWordMapper, Templat
             throw new ServiceException(Constants.CODE_500,"系统错误");
             // 处理读取Excel文件的错误
         }
-        return templateWords;
+        return copybooks;
     }
 
-    public TemplateWord findTemplateWordByFileName(List<TemplateWord> templateWords, String fileName) {
-        for (TemplateWord templateWord : templateWords) {
-            if (templateWord.getFileName().equals(fileName)) {
-                return templateWord;
+    private Copybook convertToEntity(CopybookDTO data) {
+        Copybook copybook = new Copybook();
+        BeanUtil.copyProperties(data,copybook);
+        return copybook;
+    }
+
+    public Copybook findCopybookByFileName(List<Copybook> copybooks, String fileName) {
+        for (Copybook copybook : copybooks){
+            if(copybook.getFileName().equals(fileName)){
+                return copybook;
             }
         }
         return null;
-    }
-    public TemplateWord convertToEntity(TemplateWordDTO templateWordDTO){
-        TemplateWord templateWord = new TemplateWord();
-        BeanUtil.copyProperties(templateWordDTO,templateWord);
-        return templateWord;
     }
 }
