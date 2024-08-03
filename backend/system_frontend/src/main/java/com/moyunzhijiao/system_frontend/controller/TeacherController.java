@@ -16,6 +16,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @Tag(name = "教师接口")
-@RequestMapping("/api/frontend/teacher")
+@RequestMapping("/ciep")
 public class TeacherController {
     @Autowired
     TeacherService teacherService;
@@ -50,7 +52,7 @@ public class TeacherController {
     @Parameters({
             @Parameter(name = "type",description = "请求类型",in = ParameterIn.PATH)
     })
-    @GetMapping("/information")
+    @GetMapping("/my-info")
     public Result findInformation(@RequestHeader("token") String token){
         //解码token
         DecodedJWT jwt = JWT.decode(token);
@@ -65,7 +67,7 @@ public class TeacherController {
             @Parameter(name = "type",description = "请求类型",in = ParameterIn.PATH),
             @Parameter(name = "token",description = "请求token",required = true,in = ParameterIn.HEADER),
     })
-    @GetMapping("/question-and-feedback")
+    @GetMapping("/help-center")
     public Result findQAF(@RequestHeader("token") String token,@RequestParam String type){
         int t = Integer.valueOf(type);
         //解码token
@@ -85,7 +87,7 @@ public class TeacherController {
         return Result.success(qafdto);
     }
     @Operation(summary = "更新用户信息")
-    @PutMapping("/update")
+    @PutMapping("/my-info")
     public Result updateTeacher(@RequestBody TeacherDTO teacherDTO){
         teacherService.updateInformation(teacherDTO);
         return Result.success();
@@ -96,7 +98,12 @@ public class TeacherController {
             @Parameter(name = "token",description = "请求token",required = true,in = ParameterIn.HEADER),
             @Parameter(name = "avator",description = "文件名称",required = true,in = ParameterIn.DEFAULT, content = @Content(mediaType = "multipart/form-data"))
     })
-    @PostMapping("/update-avator")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "成功"),
+            @ApiResponse(responseCode = "400", description = "请求错误"),
+            @ApiResponse(responseCode = "500", description = "服务器错误")
+    })
+    @PostMapping("/avator")
     public Result updateAvator(@RequestHeader("token") String token,@RequestPart("avator")MultipartFile avator){
         if(avator.isEmpty()){
             return Result.error(Constants.CODE_400,"文件为空！");
