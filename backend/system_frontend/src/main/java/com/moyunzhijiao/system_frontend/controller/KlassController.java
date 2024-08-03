@@ -11,6 +11,6 @@ public class KlassController {
 
     @GetMapping("/class-detail")
     public Result findStudentPageByKlassId(){
-
+        return new Result();
     }
 }

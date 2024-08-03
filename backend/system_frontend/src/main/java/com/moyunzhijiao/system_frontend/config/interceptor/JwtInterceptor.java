@@ -31,7 +31,7 @@ public class JwtInterceptor implements HandlerInterceptor {
     private TeacherService teacherService;
     @Override
     public boolean preHandle(HttpServletRequest request , HttpServletResponse response, Object handler) throws Exception{
-        String token = request.getHeader("token");
+        String token = request.getHeader("authorization");
         if(!(handler instanceof HandlerMethod)){
             return true;
         }
