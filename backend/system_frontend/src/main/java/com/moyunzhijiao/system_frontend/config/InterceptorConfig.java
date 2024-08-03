@@ -16,7 +16,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry){
         registry.addInterceptor(jwtInterceptor())
                 .addPathPatterns("/**")     //拦截所有请求，通过判断token是否合法来决定是否登录
-                .excludePathPatterns("/api/frontend/teacher/login","/api/frontend/student/login",
+                .excludePathPatterns("/ciep/login","/api/frontend/student/login",
                         "/doc.html", "/**/import", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**",
                         "/webjars/**", "/swagger-ui/**"); // 放行Knife4j相关路径
 
