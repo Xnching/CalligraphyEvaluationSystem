@@ -1,5 +1,6 @@
 package com.moyunzhijiao.system_backend.controller;
 
+import cn.hutool.core.lang.UUID;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -56,7 +57,7 @@ public class SampleWordController {
         if (!file.isEmpty()) {
             System.out.println("让我们看看sampleStr是什么");
             SampleWord sampleWord = JSONUtil.toBean(sampleWordStr, SampleWord.class);
-            String fileName = file.getOriginalFilename();
+            String fileName = UUID.randomUUID() + "-" +file.getOriginalFilename();
             // 获取项目的根目录
             File projectRoot = new File(System.getProperty("user.dir"));
             // 构造文件的路径
@@ -94,7 +95,7 @@ public class SampleWordController {
 
         for (MultipartFile image : images) {
             if (!image.isEmpty()) {
-                String fileName = image.getOriginalFilename();
+                String fileName = UUID.randomUUID() + "-" +image.getOriginalFilename();
                 // 构造文件的路径
                 String filePath = projectRoot.getParentFile().getParent() + "/frontend/system_frontend/public/images/word/" + fileName;
                 String tempPath = "/images/word/"+fileName;

@@ -1,4 +1,4 @@
-package com.moyunzhijiao.system_backend.common;
+package com.moyunzhijiao.system_frontend.common;
 
 public interface Constants {
     String CODE_200="200"; //成功

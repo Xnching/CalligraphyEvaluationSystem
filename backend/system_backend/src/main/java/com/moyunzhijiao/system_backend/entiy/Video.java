@@ -19,8 +19,6 @@ public class Video {
     String tag;
     @TableField(value="is_recommended")
     boolean isRecommended;
-    @TableField(value="collection_id")
-    Integer collectionId;
     String content;
     String summary;
     String importer;

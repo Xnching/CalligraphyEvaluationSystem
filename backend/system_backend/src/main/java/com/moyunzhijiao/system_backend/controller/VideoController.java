@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -70,5 +71,11 @@ public class VideoController {
         video.setImporter(userService.getNameById(userId));
         videoService.updateById(video);
         return Result.success();
+    }
+
+    @GetMapping("/videos")
+    public Result findAllVideos(){
+        List<Video> list = videoService.getAllVideos();
+        return Result.success(list);
     }
 }

@@ -1,4 +1,4 @@
-package com.moyunzhijiao.system_backend.config;
+package com.moyunzhijiao.system_frontend.config;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 //配置文件
 @Configuration
-@MapperScan("com.moyunzhijiao.system_backend.mapper")
+@MapperScan("com.moyunzhijiao.system_frontend.mapper")
 public class MyBatisPlusConfig {
 
     //下面为配置分页插件的使用例子

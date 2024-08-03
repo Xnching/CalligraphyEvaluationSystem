@@ -1,30 +1,33 @@
-package com.moyunzhijiao.system_backend.controller;
+package com.moyunzhijiao.system_frontend.controller;
 
-import cn.hutool.core.util.StrUtil;
-import com.moyunzhijiao.system_backend.common.Constants;
-import com.moyunzhijiao.system_backend.common.Result;
-import com.moyunzhijiao.system_backend.controller.dto.StudentDTO;
-import com.moyunzhijiao.system_backend.service.StudentService;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.moyunzhijiao.system_frontend.common.Result;
+import com.moyunzhijiao.system_frontend.service.StudentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/backend")
+@Tag(name = "学生接口")
+@RequestMapping("/api/frontend/student")
 public class StudentController {
     @Autowired
-    private StudentService studentService;
+    StudentService studentService;
 
     @PostMapping("/login")
-    public Result login(@RequestBody StudentDTO studentDTO){
-        String login_id = studentDTO.getLoginId();
-        String password = studentDTO.getPassword();
-        //调用hutool工具中的StrUtil函数实现用户名和密码是否为空的判断
-        if(StrUtil.isBlank(login_id) || StrUtil.isBlank(password)){
-            return Result.error(Constants.CODE_400,"参数错误");
-        }
-        StudentDTO dto = studentService.login(studentDTO);
-        return Result.success(dto);
+    public Result login(){
+
+        return Result.success();
+    }
+
+    @GetMapping("/information")
+    public Result findInformation(@RequestHeader("token") String token){
+        //解码token
+        DecodedJWT jwt = JWT.decode(token);
+        // 从载荷中获取用户 ID
+        String studentId = jwt.getAudience().get(0);
+
+        return Result.success();
     }
 }

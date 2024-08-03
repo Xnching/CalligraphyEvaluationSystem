@@ -1,5 +1,6 @@
-package com.moyunzhijiao.system_backend.common;
+package com.moyunzhijiao.system_frontend.common;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,10 +8,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "后端除文件外固定返回结果")
 public class Result {
-    private String code;//运行结果
-    private String msg;//告诉前端错误的原因
-    private Object data;//后台所携带的数据
+    @Schema(description = "运行结果")
+    private String code;
+    @Schema(description = "告诉前端错误的原因")
+    private String msg;
+    @Schema(description = "后台所携带的数据")
+    private Object data;
 
     public static Result success(){//无参返回正确
         return new Result(Constants.CODE_200, "",null);

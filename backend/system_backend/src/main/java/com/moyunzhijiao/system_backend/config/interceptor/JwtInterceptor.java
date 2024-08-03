@@ -41,7 +41,7 @@ public class JwtInterceptor implements HandlerInterceptor {
             userId = JWT.decode(token).getAudience().get(0);
         } catch (JWTDecodeException e) {
             e.printStackTrace();
-            String errMsg = "token验证失败，请重新登录";
+            String errMsg = "token验证失败，请重新登录录";
             throw new ServiceException(Constants.CODE_401,errMsg);
         }
         //根据token中的userId查询数据库

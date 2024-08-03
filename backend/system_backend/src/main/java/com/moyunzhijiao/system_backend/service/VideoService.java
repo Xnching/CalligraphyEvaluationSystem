@@ -1,5 +1,6 @@
 package com.moyunzhijiao.system_backend.service;
 
+import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class VideoService extends ServiceImpl<VideoMapper, Video> {
@@ -24,8 +26,8 @@ public class VideoService extends ServiceImpl<VideoMapper, Video> {
     @Transactional
     public void addVideo(MultipartFile image, MultipartFile videoFile, Video video) {
         File projectRoot = new File(System.getProperty("user.dir"));
-        String videoFileName = videoFile.getOriginalFilename();
-        String imageFileName = image.getOriginalFilename();
+        String videoFileName = UUID.randomUUID() + "-" +videoFile.getOriginalFilename();
+        String imageFileName = UUID.randomUUID() + "-" +image.getOriginalFilename();
         String videoFilePath = projectRoot.getParentFile().getParent()+ "/frontend/system_frontend/public/videos/" + videoFileName;
         String imageFilePath = projectRoot.getParentFile().getParent()+ "/frontend/system_frontend/public/images/videoPicture/" + imageFileName;
         String tempVideoFilePath = "/videos/" + videoFileName;
@@ -49,7 +51,6 @@ public class VideoService extends ServiceImpl<VideoMapper, Video> {
     public IPage<Video> selectPage(IPage<Video> page, String str, Integer secondTypeId, boolean isRecommended) {
         QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
         queryWrapper.like("name",str);
-        queryWrapper.like("summary",str);
         queryWrapper.like("tag",str);
         if(ObjectUtil.isNotEmpty(secondTypeId)){
             queryWrapper.eq("second_type_id",secondTypeId);
@@ -62,5 +63,11 @@ public class VideoService extends ServiceImpl<VideoMapper, Video> {
 
     public void deleteVideo(String id) {
         videoMapper.deleteById(id);
+    }
+
+    public List<Video> getAllVideos() {
+        QueryWrapper<Video> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("id","name");
+        return list(queryWrapper);
     }
 }

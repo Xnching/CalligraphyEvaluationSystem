@@ -1,4 +1,4 @@
-package com.moyunzhijiao.system_backend.config.interceptor;
+package com.moyunzhijiao.system_frontend.config.interceptor;
 
 import cn.hutool.core.util.StrUtil;
 import com.auth0.jwt.JWT;
@@ -6,10 +6,12 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.moyunzhijiao.system_backend.common.Constants;
-import com.moyunzhijiao.system_backend.entiy.Student;
-import com.moyunzhijiao.system_backend.exception.ServiceException;
-import com.moyunzhijiao.system_backend.service.StudentService;
+import com.moyunzhijiao.system_frontend.common.Constants;
+import com.moyunzhijiao.system_frontend.entity.Student;
+import com.moyunzhijiao.system_frontend.entity.Teacher;
+import com.moyunzhijiao.system_frontend.exception.ServiceException;
+import com.moyunzhijiao.system_frontend.service.StudentService;
+import com.moyunzhijiao.system_frontend.service.TeacherService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +20,17 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /*
-* 拦截器，拦截token
-* */
+ * 拦截器，拦截token
+ * */
 @Component
 public class JwtInterceptor implements HandlerInterceptor {
     @Autowired
-    private StudentService userService;
+    private StudentService studentService;
 
+    @Autowired
+    private TeacherService teacherService;
     @Override
-    public boolean preHandle(HttpServletRequest request , HttpServletResponse response,Object handler) throws Exception{
+    public boolean preHandle(HttpServletRequest request , HttpServletResponse response, Object handler) throws Exception{
         String token = request.getHeader("token");
         if(!(handler instanceof HandlerMethod)){
             return true;
@@ -41,16 +45,22 @@ public class JwtInterceptor implements HandlerInterceptor {
             userId = JWT.decode(token).getAudience().get(0);
         } catch (JWTDecodeException e) {
             e.printStackTrace();
-            String errMsg = "token验证失败，请重新登录";
+            String errMsg = "token验证失败，请重新登录录";
             throw new ServiceException(Constants.CODE_401,errMsg);
         }
         //根据token中的userId查询数据库
-        Student user = userService.getById(userId);
-        if(user == null){
+        Student student = studentService.getById(userId);
+        Teacher teacher = teacherService.getById(userId);
+        if(student == null&& teacher==null){
             throw new ServiceException(Constants.CODE_401,"用户不存在，请重新登录");
         }
         // 用户密码加签验证 token
-        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(user.getPassword())).build();
+        JWTVerifier jwtVerifier;
+        if (student != null) {
+            jwtVerifier = JWT.require(Algorithm.HMAC256(student.getPassword())).build();
+        } else {
+            jwtVerifier = JWT.require(Algorithm.HMAC256(teacher.getPassword())).build();
+        }
         try {
             jwtVerifier.verify(token);  //验证token
         } catch (JWTVerificationException e) {

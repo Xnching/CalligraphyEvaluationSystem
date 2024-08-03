@@ -10,10 +10,7 @@
         <el-form :model="articleData">
           <h1>文章内容：</h1>
           <el-form-item >
-            <WangEditor class="editor"
-              ref="myEditor"
-              v-model="valueHtml">
-            </WangEditor>
+            <div v-html="sanitizedContent"></div>
           </el-form-item>
           
           <el-row :gutter="20">
@@ -128,13 +125,9 @@
   </div>
 </template>
 <script>
-import WangEditor from '@/components/wangEditor.vue';
 
 export default {
   name:"ArticleTab",
-  components:{
-    WangEditor
-  },
   data() {
     return {
       inputVal:"",
@@ -167,6 +160,7 @@ export default {
       pageSize:20,
       total:0,
       valueHtml:'',
+      sanitizedContent: ''
     };
   },
   created(){
@@ -183,14 +177,9 @@ export default {
     handleEdit1(image) {
       // 将选中的图片数据赋值给 selectedImage
       this.articleData = image;
+      this.sanitizedContent = this.$options.filters.sanitize(this.articleData.content);
       this.dialogVisible = true;
       this.isEditing = false;
-      this.$nextTick(() => {
-        this.$nextTick(() => {
-          console.log(this.$refs.myEditor); // 检查引用是否正确
-          this.$refs.myEditor.valueHtml = this.articleData.content;
-        });
-      });
     },
     //开始编辑
     handleEdit2() {
@@ -277,7 +266,7 @@ export default {
         }
       })
     },
-    getSecond1(val){
+    getSecond(val){
       console.log("打印下值多少"+val);
       this.request.get("/calligraphy-facts/seconds",{
         params: {

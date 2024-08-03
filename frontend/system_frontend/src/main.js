@@ -6,6 +6,7 @@ import router from './router'
 import './assets/gloable.css'       //添加优化侧边栏样式
 import request from '@/utils/request'
 import store from './store/index'
+import DOMPurify from 'dompurify';
 
 Vue.config.productionTip = false
 Vue.use(ElementUI);
@@ -17,3 +18,8 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app')
+
+
+Vue.filter('sanitize', function (value) {
+  return DOMPurify.sanitize(value);
+});

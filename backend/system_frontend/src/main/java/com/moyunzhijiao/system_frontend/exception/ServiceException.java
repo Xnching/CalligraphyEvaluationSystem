@@ -1,10 +1,10 @@
-package com.moyunzhijiao.system_backend.exception;
+package com.moyunzhijiao.system_frontend.exception;
 
 import lombok.Getter;
 
 /*
-* 自定义的异常
-* */
+ * 自定义的异常
+ * */
 @Getter
 public class ServiceException extends RuntimeException{
     private String code;

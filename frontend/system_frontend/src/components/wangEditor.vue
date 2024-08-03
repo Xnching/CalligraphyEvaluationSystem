@@ -3,7 +3,7 @@ import '../../node_modules/@wangeditor/editor/dist/css/style.css' // 引入 css
 
 import { onBeforeUnmount, ref, shallowRef, onMounted } from 'vue'
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
-
+import request from '@/utils/request';
 export default {
   components: { Editor, Toolbar },
   setup() {
@@ -18,8 +18,50 @@ export default {
       
     })
 
-    const toolbarConfig = {}
-    const editorConfig = { placeholder: '请输入内容...' }
+    const toolbarConfig = {
+      excludeKeys: [
+        'insertVideo',
+        'uploadVideo',
+        'group-video']
+    }
+    const editorConfig = {
+      placeholder: '请输入内容...',
+      MENU_CONF: {
+        // 所有的菜单配置，都要在 MENU_CONF 属性下
+        // 配置上传图片
+        uploadImage: {
+          server: request.defaults.baseURL + '/file/image',
+          // form-data fieldName，后端接口参数名称，默认值wangeditor-uploaded-image
+          fieldName: "file",
+          // 其他配置项
+          maxFileSize: 10 * 1024 * 1024, // 2MB
+          maxNumberOfFiles: 5,
+          allowedFileTypes: ['image/jpeg', 'image/png', 'image/gif'],
+          // 自定义上传参数
+          meta: {
+              token: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).token : ''
+          },
+          // 自定义上传头部
+          headers: {
+            'Authorization': 'Bearer ' + (localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).token : '')
+          },
+          // 上传成功后的回调函数
+          onSuccess: (file, res) => {
+              console.log('上传成功', res);
+          },
+          // 上传失败后的回调函数
+          onFailed: (file, res) => {
+              console.log('上传失败', res);
+          },
+          // 上传错误后的回调函数
+          onError: (file, err, res) => {
+              console.log('上传错误', err, res);
+          }
+        }
+      }
+    };
+    const token = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).token : '';
+    console.log('Token:', token);
 
     // 组件销毁时，也及时销毁编辑器
     onBeforeUnmount(() => {

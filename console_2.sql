@@ -961,7 +961,6 @@ create table video(
     second_type_id int UNSIGNED not null comment '第二类型id',
     tag varchar(255) comment '自定义类型',
     is_recommended tinyint(1) not null DEFAULT 0 COMMENT'1代表是推荐作品，0代表不是推荐作品',
-    collection_id int UNSIGNED comment '所属合集id',
     content varchar(255) not null comment '资源文件url',
     picture_url varchar(255) comment'封面url',
     summary varchar(1000) comment '简介',
@@ -974,12 +973,21 @@ create table collection(
     name VARCHAR(100) NOT NULL comment '合集名',
     first_type_id int UNSIGNED not null comment '第一类型id',
     second_type_id int UNSIGNED not null comment '第二类型id',
-    custom_type varchar(255) comment '自定义类型',
+    tag varchar(255) comment '标签',
     picture_url varchar(255) comment'封面url',
     summary varchar(1000) comment '简介',
+    is_recommended tinyint(1) not null DEFAULT 0 COMMENT'1代表是推荐作品，0代表不是推荐作品',
+    importer varchar(25) comment'导入人',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '视频合集表';
 #加简介加封面
+
+create table video_Collection(
+    video_id int UNSIGNED not null comment '视频id',
+    collection_id int UNSIGNED not null comment '合集id',
+    sequence int UNSIGNED not null comment '合集顺序',
+    primary key (video_id,collection_id)
+)comment '视频和和合集关系表';
 
 create table protocol (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '协议id',

@@ -1,6 +1,6 @@
-package com.moyunzhijiao.system_backend.exception;
+package com.moyunzhijiao.system_frontend.exception;
 
-import com.moyunzhijiao.system_backend.common.Result;
+import com.moyunzhijiao.system_frontend.common.Result;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;

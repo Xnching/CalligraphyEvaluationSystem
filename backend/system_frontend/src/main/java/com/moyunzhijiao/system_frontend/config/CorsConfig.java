@@ -1,12 +1,10 @@
-package com.moyunzhijiao.system_backend.config;
-
+package com.moyunzhijiao.system_frontend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-
 
 //用于跨域设置,此处配置后就能实现前后端分离中的数据跨域链接
 @Configuration
