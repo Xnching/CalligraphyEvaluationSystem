@@ -85,7 +85,7 @@ public class TeacherController {
         return Result.success(qafdto);
     }
     @Operation(summary = "更新用户信息")
-    @PostMapping("/update")
+    @PutMapping("/update")
     public Result updateTeacher(@RequestBody TeacherDTO teacherDTO){
         teacherService.updateInformation(teacherDTO);
         return Result.success();
