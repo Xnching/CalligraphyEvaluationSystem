@@ -22,26 +22,26 @@ public class ConfigService {
     private static String baseUrl;
 
     //FileController里的也要改
-    private static String avatorFilePath;
-    private static String avatorUrl;
-    private static final String AVATOR_BASE_URL = "/upload/images/avator";
+    private static String avatarFilePath;
+    private static String avatarUrl;
+    private static final String AVATAR_BASE_URL = "/upload/images/avatar";
     @PostConstruct
     public void init() {
         baseUrl = serverProtocol + "://" + serverIp + ":" + serverPort;
         File projectRoot = new File(System.getProperty("user.dir"));
         //头像文件路径
-        avatorFilePath = projectRoot.getParentFile().getParent()+"/resources/image/avator/";
+        avatarFilePath = projectRoot.getParentFile().getParent()+"/resources/image/avatar/";
         //头像接口url
-        avatorUrl = baseUrl+AVATOR_BASE_URL;
+        avatarUrl = baseUrl+AVATAR_BASE_URL;
     }
     public static String getBaseUrl() {
         return baseUrl;
     }
-    public static String getAvatorFilePath(){
-        return avatorFilePath;
+    public static String getAvatarFilePath(){
+        return avatarFilePath;
     }
-    public static String getAvatorUrl(){
-        return avatorUrl;
+    public static String getAvatarUrl(){
+        return avatarUrl;
     }
 
 

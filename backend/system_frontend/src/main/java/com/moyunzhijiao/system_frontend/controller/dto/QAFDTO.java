@@ -31,6 +31,15 @@ public class QAFDTO {
     public static class Item {
         private String title;
         private String content;
+        private String type;
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
 
         // Getters and Setters
         public String getTitle() {

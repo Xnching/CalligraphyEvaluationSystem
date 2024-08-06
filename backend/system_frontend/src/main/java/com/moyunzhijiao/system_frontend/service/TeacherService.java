@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class TeacherService extends ServiceImpl<TeacherMapper, Teacher> {
@@ -28,40 +29,44 @@ public class TeacherService extends ServiceImpl<TeacherMapper, Teacher> {
     RegionService regionService;
     public TeacherDTO getInformation(Integer teacherId) {
         TeacherDTO teacherDTO = teacherMapper.selectInformation(teacherId);
+        String grade = teacherDTO.getGrade();
+        grade = StrUtil.removeAll(grade,"六三制");
+        grade = StrUtil.removeAll(grade,"五四制");
+        teacherDTO.setGrade(grade);
         teacherDTO.setArea(regionService.selectAllNameById(teacherDTO.getRegionId()));
         return teacherDTO;
     }
 
     @Transactional
-    public void updateAvator(Integer teacherId, MultipartFile avator) {
+    public String updateAvatar(Integer teacherId, MultipartFile avatar) {
         Teacher teacher = teacherMapper.selectById(teacherId);
 
         //找到旧的文件名
-        String oldUrl = teacher.getPictureUrl();
+        String oldUrl = teacher.getAvatar();
         String oldFileName = StrUtil.subAfter(oldUrl, "/", true);
         // 获取项目根目录
-        String avatorFilePath = ConfigService.getAvatorFilePath();
-        String oldImageFilePath = avatorFilePath + oldFileName;
+        String avatarFilePath = ConfigService.getAvatarFilePath();
+        String oldImageFilePath = avatarFilePath + oldFileName;
         File oldImageFile = new File(oldImageFilePath);
         //尝试删除旧的文件
         if (oldImageFile.exists()) {
             oldImageFile.delete();
         }
         //更新文件
-        String newOriginalFileName = avator.getOriginalFilename();
+        String newOriginalFileName = avatar.getOriginalFilename();
         String newImageFileName = UUID.randomUUID()+"-"+newOriginalFileName;
-        String newImageFilePath = avatorFilePath+newImageFileName;
-        String newImageFileUrl = ConfigService.getAvatorUrl()+newImageFileName;
+        String newImageFilePath = avatarFilePath+newImageFileName;
+        String newImageFileUrl = ConfigService.getAvatarUrl()+"/"+newImageFileName;
         File newImageDest = new File(newImageFilePath);
         try {
-            avator.transferTo(newImageDest);
-            teacher.setPictureUrl(newImageFileUrl);
+            avatar.transferTo(newImageDest);
+            teacher.setAvatar(newImageFileUrl);
             teacherMapper.updateById(teacher);
         } catch (IOException e) {
             e.printStackTrace();
             throw new ServiceException(Constants.CODE_500, "系统保存文件失败");
         }
-
+        return teacher.getAvatar();
     }
 
     public TeacherDTO login(TeacherDTO teacherDTO) {
@@ -78,7 +83,9 @@ public class TeacherService extends ServiceImpl<TeacherMapper, Teacher> {
         }
         if(one!=null){
             BeanUtil.copyProperties(one,teacherDTO);
-            String token = TokenUtils.checkToken(teacherDTO.getToken(),one.getId().toString(),one.getPassword());
+            System.out.println("让我们看下密码是多少"+one.getPassword());
+            String token = TokenUtils.checkToken(teacherDTO.getToken(),one.getId().toString(),"教师",one.getPassword());
+            System.out.println("让我们看看token是多少"+token);
             teacherDTO.setToken(token);
             return teacherDTO;
         }else {
@@ -99,9 +106,16 @@ public class TeacherService extends ServiceImpl<TeacherMapper, Teacher> {
         }
     }
 
+    /*
+    * 转化为存到数据库的实体类
+    * */
     private Teacher convertToEntity(TeacherDTO teacherDTO){
         Teacher teacher = new Teacher();
         BeanUtil.copyProperties(teacherDTO,teacher);
         return teacher;
+    }
+    public String getNameById(Integer teacherId){
+        Teacher teacher = teacherMapper.selectById(teacherId);
+        return teacher.getName();
     }
 }

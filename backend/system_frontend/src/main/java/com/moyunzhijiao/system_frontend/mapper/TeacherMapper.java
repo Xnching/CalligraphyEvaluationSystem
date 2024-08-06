@@ -6,9 +6,15 @@ import com.moyunzhijiao.system_frontend.entity.Teacher;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 public interface TeacherMapper extends BaseMapper<Teacher> {
-    @Select("select teacher.*,school.name as school ,school.region_id as regionId " +
-            "from teacher left join school on teacher.school_id = school.id " +
-            "where teacher.id = #{teacherId} ")
-    public TeacherDTO selectInformation(@Param("teacherId")Integer teacherId);
+    @Select("SELECT teacher.*,teacher.school_id as schoolId, school.name AS school, school.region_id AS regionId, GROUP_CONCAT(DISTINCT grade.name) AS grade " +
+            "FROM teacher " +
+            "LEFT JOIN school ON teacher.school_id = school.id " +
+            "LEFT JOIN klass ON klass.teacher_id = teacher.id " +
+            "LEFT JOIN grade ON klass.grade_id = grade.id " +
+            "WHERE teacher.id = #{teacherId} " +
+            "GROUP BY teacher.id, school.name, school.region_id")
+    public TeacherDTO selectInformation(@Param("teacherId") Integer teacherId);
 }

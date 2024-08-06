@@ -17,6 +17,8 @@ public class TeacherDTO {
     String area;
     @Schema(description = "所在学校，没有所在年级")
     String school;
+    Integer schoolId;
+    String grade;
     String avatar;  //头像url
     @Schema(description = "此为所在地区的id")
     Integer regionId;

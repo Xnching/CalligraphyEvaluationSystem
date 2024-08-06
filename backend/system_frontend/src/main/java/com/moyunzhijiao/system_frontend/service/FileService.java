@@ -9,8 +9,8 @@ import java.nio.file.Paths;
 
 @Service
 public class FileService {
-    public Resource loadAvatorAsResource(String filename) {
-        String imageFilePath = ConfigService.getAvatorFilePath() + filename;
+    public Resource loadAvatarAsResource(String filename) {
+        String imageFilePath = ConfigService.getAvatarFilePath() + filename;
         try {
             Resource resource = new UrlResource(Paths.get(imageFilePath).toUri().toURL());
             if (resource.exists() || resource.isReadable()) {

@@ -1,6 +1,6 @@
 server:
   port: 8085
-  ip: localhost
+  ip: 192.168.43.250
   protocol: http
 spring:
   datasource:
@@ -15,6 +15,13 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
+  jackson:
+    # yyyy-MM-dd HH:mm:ss 格式
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      # 毫秒时间戳格式
+      write-dates-as-timestamps: true
 mybatis:
   mapper-locations: classpath:mapper/*.xml   #
 #

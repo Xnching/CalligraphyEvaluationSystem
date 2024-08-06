@@ -1,6 +1,6 @@
 use calligraphy_evaluation_system;
 #INT：如无特殊需要，存放整型数字使用UNSIGNED INT型，整型字段后的数字代表显示长度。比如 id int(11) NOT NULL
-#DATETIME：所有需要精确到时间(时分秒)的字段均使用DATETIME,不要使用TIMESTAMP类型。----------已改
+#DATETIME：所有需要精确到时间(时分秒)的字段均使用DATETIME,不要使用TIMESTAMP类型。created和updatedtime用timestamp----------已改
 #对于精确浮点型数据存储，需要使用DECIMAL，严禁使用FLOAT和DOUBLE。
 #如无特殊需要，字段建议使用NOT NULL属性，可用默认值代替NULL。
 #自增字段类型必须是整型且必须为UNSIGNED，推荐类型为INT或BIGINT，并且自增字段必须是主键或者主键的一部分。------已解决
@@ -245,7 +245,7 @@ create table klass(
     grade_id int UNSIGNED comment '所属年级id',
     school_id int UNSIGNED not null comment '所属学校id',
     delete_flag TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）',
-    year YEAR NOT NULL DEFAULT 2024 COMMENT '入学年份',
+    year varchar(4) NOT NULL DEFAULT 2024 COMMENT '入学年份',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '班级';
 #班级表加个入校年份，创建时间作为不了入校年份，所以下面的没有执行，上面表已修改
@@ -405,12 +405,7 @@ VALUES
 ('教师30', '工号30', '密码30', '身份证号30', '女', '电话30', '邮箱30', 2, 3, '头像url30', 0);
 
 
-#教师和系统模板再来一个关系表，用于表示该教师常用的系统模板有哪些，已成为下表
-create table teacher_system_template(
-    teacher_id int UNSIGNED not null comment '教师id',
-    system_template_id int UNSIGNED not null comment '系统模板id',
-    primary key (teacher_id,system_template_id)
-);
+
 
 
 CREATE TABLE academic_year (
@@ -442,10 +437,14 @@ create table homework(
     word_count int not null comment '字数',
     requirements varchar(500) comment '作业要求',
     deadline datetime not null comment '截止时间',
+    difficulty tinyint(1) not null comment '难度',
+    target ENUM('个人', '集体') comment '发布对象',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '作业';
+
 #front改成font，上表已改
 
+#创建作业的时候要给每个学生都创建一个空的作业作品
 create table homework_submission(
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '作业作品id',
     system_score tinyint comment '系统评分',
@@ -453,24 +452,39 @@ create table homework_submission(
     teacher_score tinyint comment '教师得分',
     teacher_feedback varchar(255) comment '教师评语',
     content varchar(255) comment'作业作品内容url',
+    homework_id int UNSIGNED not null comment '作业id',
+    student_id int UNSIGNED not null comment '学生id',
+    state tinyint(1) not null default 0 comment '学生是否完成作业',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '作业作品';
 #作业id改成作业作品id，上表已更改
 
-create table student_do_homework(
-    homework_id int UNSIGNED not null comment '作业id',
-    student_id int UNSIGNED not null comment '学生id',
-    homework_submission int UNSIGNED not null comment '作业作品id',
-    primary key (student_id,homework_id)
-)comment '学生作业表';
+
+# create table student_homework(
+#     homework_id int UNSIGNED not null comment '作业id',
+#     student_id int UNSIGNED not null comment '学生id',
+#     primary key (student_id,homework_id)
+# )comment '通过此查找个人作业，个人作业表';
+#
 create table klass_homework(
     homework_id int UNSIGNED not null comment '作业id',
     klass_id int UNSIGNED not null comment '班级id',
     primary key (klass_id,homework_id)
-)comment '班级作业表';
+)comment '集体作业表';
 #student_id 要和消息一样改成学生和班级的id，然后下面来个类型,已分成两表
 #作业作品id去掉，在作业作品里加一个作业id，上两表已修改，，，，，上面两表的结果是已经思考过了的
 #下面主要是为了查询，查询的同时还需要往学生作业表中添加，表示该学生有作业了
+#2024/8/5，布置作业时，自动创建作业作品，取消掉个人作业表，保留集体作业表
+
+create table teacher_homework(
+    teacher_id int UNSIGNED not null comment '教师id',
+    homework_id int UNSIGNED not null comment '作业id',
+    template_id int UNSIGNED not null comment '模板id',
+    template_type enum('自定义','系统') comment '模板类型',
+    primary key (teacher_id,homework_id)
+)comment '教师对作业的布置，同时记录是否使用了模板';
+#教师、模板、作业之间有联系了，，，如果是通过已有作业来创建的，就把已有作业的东西复制到模板里成为自定义模板
+
 
 create table custom_template(
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '模板id',
@@ -500,16 +514,7 @@ create table system_template(
 )comment '系统模板';
 #已更改上表font，字体id可能要考虑要不要去掉，因为字帖模板，详细类型也要改，笔画去掉，未操作删改
 
-create table teacher_homework(
-    teacher_id int UNSIGNED not null comment '教师id',
-    homework_id int UNSIGNED not null comment '作业id',
-    template_id int UNSIGNED not null comment '模板id',
-    template_type enum('自定义','系统') comment '模板类型',
-    target ENUM('个人', '集体') comment '发布对象',
-    difficulty enum('1','2','3','4','5') not null comment '难度',
-    primary key (teacher_id,homework_id)
-)comment '教师对作业的布置，同时记录是否使用了模板';
-#教师、模板、作业之间有联系了，，，如果是通过已有作业来创建的，就把已有作业的东西复制到模板里成为自定义模板
+
 create table student_create_homework(
     student_id int UNSIGNED not null comment '学生id',
     homework_id int UNSIGNED not null comment '作业id',

@@ -17,8 +17,10 @@ public class Feedback {
     String providerType;
     String state;
     String type;
+    @TableField(exist = false)
+    String content;     //反馈内容
     @TableField("provider_phone")
-    String providerPhone;
+    String phone;
     @TableField("created_time")
     String createdTime;
 

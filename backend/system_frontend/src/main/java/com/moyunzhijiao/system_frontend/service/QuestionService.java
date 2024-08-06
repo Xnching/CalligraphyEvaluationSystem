@@ -18,6 +18,7 @@ public class QuestionService extends ServiceImpl<QuestionMapper, Question> {
             QAFDTO.Item item = new QAFDTO.Item();
             item.setTitle(question.getQ());
             item.setContent(question.getA());
+            item.setType("问题类型");
             return item;
         }).toList();
         QAFDTO qafdto = new QAFDTO();

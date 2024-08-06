@@ -33,7 +33,7 @@ public class Teacher {
 
     String gender;
 
-    String pictureUrl;
+    String avatar;
 
     @TableField("delete_flag")
     boolean deleteFlag;

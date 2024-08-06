@@ -24,10 +24,10 @@ public class FileController {
     FileService fileService;
 
     @Operation(summary = "获取头像,所有文件都存储在了与前后端文件同级的resources里了")
-    @GetMapping("/images/avator/{filename:.+}")
+    @GetMapping("/images/avatar/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveAvator(@PathVariable String filename){
-        Resource resource = fileService.loadAvatorAsResource(filename);
+    public ResponseEntity<Resource> serveAvatar(@PathVariable String filename){
+        Resource resource = fileService.loadAvatarAsResource(filename);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                 .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
