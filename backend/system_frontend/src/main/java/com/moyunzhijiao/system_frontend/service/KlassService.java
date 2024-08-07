@@ -7,18 +7,17 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_frontend.common.Constants;
 import com.moyunzhijiao.system_frontend.controller.dto.KlassDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.KlassDetailDTO;
-import com.moyunzhijiao.system_frontend.controller.dto.QAFDTO;
-import com.moyunzhijiao.system_frontend.entity.Homework;
+import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import com.moyunzhijiao.system_frontend.entity.Klass;
 import com.moyunzhijiao.system_frontend.entity.Student;
 import com.moyunzhijiao.system_frontend.exception.ServiceException;
-import com.moyunzhijiao.system_frontend.mapper.HomeworkMapper;
 import com.moyunzhijiao.system_frontend.mapper.KlassMapper;
+import com.moyunzhijiao.system_frontend.service.homework.HomeworkService;
+import com.moyunzhijiao.system_frontend.service.homework.KlassHomeworkService;
+import com.moyunzhijiao.system_frontend.service.homework.TeacherHomeworkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -45,11 +44,11 @@ public class KlassService extends ServiceImpl<KlassMapper, Klass> {
     public IPage<KlassDTO> getKlassByTeacher(Integer type, Integer currentPage,Integer pageSize,Integer teacherId,Integer schoolId, String grade, String klass,String year) {
         IPage<KlassDTO> page =new Page<>(currentPage,pageSize);
         Integer total;
-        switch (type){
+        switch (type){      //1已添加，0未添加
             case 1:
                 page = klassMapper.selectKlassByTeacherOwn(page,teacherId,schoolId,grade,klass,year);
                 total = klassMapper.countKlassByTeacherOwn(teacherId,schoolId,grade,klass,year);
-                page.setTotal(total);
+                page.setTotal(total);       //有时候total需要判null
                 break;
             case 0:
                 page = klassMapper.selectKlassByTeacherNotOwn(page,teacherId,schoolId,grade,klass,year);
@@ -62,18 +61,27 @@ public class KlassService extends ServiceImpl<KlassMapper, Klass> {
         return page;
     }
 
+    /*
+     * 删除一个教师教授的班级
+     * */
     public void deleteKlassOfTeacher(Integer klassId) {
         Klass klass = klassMapper.selectById(klassId);
         klass.setTeacherId(0);
         klassMapper.updateById(klass);
     }
 
+    /*
+    * 添加一个教师教授的班级
+    * */
     public void addKlassOfTeacher(Integer teacherId, Integer klassId) {
         Klass klass = klassMapper.selectById(klassId);
         klass.setTeacherId(teacherId);
         klassMapper.updateById(klass);
     }
 
+    /*
+    * 教师的获取班级详情，其中有学生列表有作业列表和班级的信息
+    * */
     public KlassDetailDTO getKlassDetaiList(Integer classId, Integer currentPage, Integer pageSize) {
         //设置查询条件
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();

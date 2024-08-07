@@ -9,6 +9,9 @@ import java.nio.file.Paths;
 
 @Service
 public class FileService {
+    /*
+    * 加载头像
+    * */
     public Resource loadAvatarAsResource(String filename) {
         String imageFilePath = ConfigService.getAvatarFilePath() + filename;
         try {

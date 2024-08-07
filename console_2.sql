@@ -484,7 +484,14 @@ create table teacher_homework(
     primary key (teacher_id,homework_id)
 )comment '教师对作业的布置，同时记录是否使用了模板';
 #教师、模板、作业之间有联系了，，，如果是通过已有作业来创建的，就把已有作业的东西复制到模板里成为自定义模板
-
+#上面是错的，加了个教师、自定义模板的关系表,每使用一次记得把使用次数增加
+create table teacher_template(
+    teacher_id int UNSIGNED not null comment '教师id',
+    template_id int UNSIGNED not null comment '模板id',
+    count int default 0 comment '使用次数',
+    primary key (teacher_id,template_id)
+);
+#每发布一次作业时记得把使用次数增加
 
 create table custom_template(
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '模板id',
@@ -499,7 +506,11 @@ create table custom_template(
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '自定义模板';
 #已更改上表font
-
+create table custom_template_image(
+    custom_template_id int UNSIGNED  comment '模板id',
+    picture_url varchar(255) not null comment '图片url',
+    primary key (custom_template_id,picture_url)
+);
 create table system_template(
     id int AUTO_INCREMENT PRIMARY KEY comment '模板id',
     name varchar(50) not null comment '模板名',
@@ -513,7 +524,11 @@ create table system_template(
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '系统模板';
 #已更改上表font，字体id可能要考虑要不要去掉，因为字帖模板，详细类型也要改，笔画去掉，未操作删改
-
+create table system_template_image(
+    system_template_id int UNSIGNED comment '模板id',
+    picture_url varchar(255) not null comment '图片url',
+    primary key (system_template_id,picture_url)
+);
 
 create table student_create_homework(
     student_id int UNSIGNED not null comment '学生id',
@@ -1080,6 +1095,7 @@ create table tea_works_collection(
     teacher_id int UNSIGNED not null comment '教师id',
     submission_id int UNSIGNED not null comment '作品id',
     submission_type enum('作业作品','优秀竞赛作品','优秀作业作品'),
+    created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间',
     primary key (teacher_id,submission_id,submission_type)
 )comment '教师的作品收藏';
 
@@ -1109,12 +1125,14 @@ create table knowledge_collection(
 )comment '知识收藏';
 
 create table outstanding_competition(
-    submissions_id int UNSIGNED primary key comment '竞赛作品id',
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '消息id',
+    submissions_id int UNSIGNED not null comment '竞赛作品id',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '优秀竞赛作品';
 
 create table outstanding_homework(
-    submissions_id int UNSIGNED primary key comment '作业作品id',
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '消息id',
+    submissions_id int UNSIGNED not null comment '作业作品id',
     state varchar(50) comment '状态',
     recommender_id int UNSIGNED not null comment '推荐教师id',
     reviewer_id int UNSIGNED not null comment '评审人id即系统用户id',

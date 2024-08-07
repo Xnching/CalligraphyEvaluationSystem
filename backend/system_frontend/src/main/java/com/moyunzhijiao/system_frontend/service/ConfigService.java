@@ -11,19 +11,20 @@ import java.io.File;
 @Getter
 public class ConfigService {
     @Value("${server.protocol}")
-    private String serverProtocol;
+    private String serverProtocol;      //协议，例如http
 
     @Value("${server.ip}")
-    private String serverIp;
+    private String serverIp;            //服务器ip地址
 
     @Value("${server.port}")
-    private String serverPort;
+    private String serverPort;          //端口
 
     private static String baseUrl;
 
     //FileController里的也要改
     private static String avatarFilePath;
     private static String avatarUrl;
+    //头像的API接口
     private static final String AVATAR_BASE_URL = "/upload/images/avatar";
     @PostConstruct
     public void init() {

@@ -8,9 +8,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moyunzhijiao.system_frontend.common.Constants;
 import com.moyunzhijiao.system_frontend.common.Result;
 import com.moyunzhijiao.system_frontend.controller.dto.HomeworkDTO;
-import com.moyunzhijiao.system_frontend.entity.Homework;
-import com.moyunzhijiao.system_frontend.service.HomeworkService;
-import com.moyunzhijiao.system_frontend.service.TeacherHomeworkService;
+import com.moyunzhijiao.system_frontend.entity.homework.Homework;
+import com.moyunzhijiao.system_frontend.service.homework.HomeworkService;
+import com.moyunzhijiao.system_frontend.service.homework.TeacherHomeworkService;
 import com.moyunzhijiao.system_frontend.service.note.KlassNoteReceiveService;
 import com.moyunzhijiao.system_frontend.service.note.StudentNoteReceiveService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 @RestController
@@ -46,20 +49,14 @@ public class HomeworkController {
 
     @Operation(summary = "延迟作业")
     @PostMapping("/ciep/postpone")
-    public Result postponeHomework(@RequestBody Map<String, String> request){
+    public Result postponeHomework(@RequestBody Map<String, String> request) throws ParseException {
         String homeworkId = request.get("homeworkId");
         String newDate = request.get("newDate");
-        Homework homework = null;
-        try {
-            homework = homeworkService.getById(homeworkId);
-        } catch (Exception e) {
-            return Result.error(Constants.CODE_401,"没找到目标作业！");
-        }
-        try {
-            homework.setDeadline(Timestamp.valueOf(newDate));
-        } catch (Exception e) {
-            return Result.error(Constants.CODE_401,"时间格式不正确！");
-        }
+        Homework homework ;
+        homework = homeworkService.getById(homeworkId);
+        //字符串能直接修改数据库的时间数据类型
+        homework.setDeadline(newDate);
+        homeworkService.updateById(homework);
         return Result.success();
     }
 
@@ -71,15 +68,15 @@ public class HomeworkController {
         Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
         Integer homeworkId = Integer.valueOf(request.get("homeworkId"));
         //检查作业
-        if(homeworkId==-1|| BeanUtil.isEmpty(homeworkId)){
+        if(homeworkId==-1){
             return Result.error(Constants.CODE_401,"未指定作业！");
         }
-        Integer stuId = Integer.valueOf(request.get("stuId"));
-        Integer type = Integer.valueOf(request.get("type"));
+        int stuId = Integer.parseInt(request.get("stuId"));
+        int type = Integer.parseInt(request.get("type"));
         try {
             if (stuId!=-1){
                 studentNoteReceiveService.urgeHomeworkSingle(teacherId,stuId,homeworkId);
-            } else if(stuId==-1) {
+            } else {
                 switch (type){
                     case 0:
                         klassNoteReceiveService.urgeHomework(teacherId,homeworkId);
@@ -92,9 +89,17 @@ public class HomeworkController {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return Result.error(Constants.CODE_500,"系统错误，催促失败！");
         }
         return Result.success();
     }
+
+
+//    @GetMapping("/ciep/class-homework-detail")
+//    public Result detailInKlass(@RequestHeader("authorization") String token
+//            , @RequestParam Integer homeworkId, @RequestParam Integer currentPage, @RequestParam Integer pageSize){
+//
+//    }
 
 }

@@ -8,7 +8,7 @@ import com.moyunzhijiao.system_frontend.common.Result;
 import com.moyunzhijiao.system_frontend.controller.dto.KlassDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.KlassDetailDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.StuInKlassDTO;
-import com.moyunzhijiao.system_frontend.service.HomeworkSubmissionService;
+import com.moyunzhijiao.system_frontend.service.homework.HomeworkSubmissionService;
 import com.moyunzhijiao.system_frontend.service.KlassService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,7 +31,7 @@ public class KlassController {
 
     @Operation(summary = "查找已添加的班级和未添加的班级")
     @Parameters({
-            @Parameter(name = "type", description = "类型", required = true, in = ParameterIn.QUERY),
+            @Parameter(name = "type", description = "类型，1已添加，0未添加", required = true, in = ParameterIn.QUERY),
             @Parameter(name = "currentPage", description = "当前页码", required = true, in = ParameterIn.QUERY),
             @Parameter(name = "pageSize", description = "每页显示的记录数", required = true, in = ParameterIn.QUERY),
             @Parameter(name = "year", description = "年份", required = false, in = ParameterIn.QUERY),

@@ -27,9 +27,13 @@ public class TeacherService extends ServiceImpl<TeacherMapper, Teacher> {
     TeacherMapper teacherMapper;
     @Autowired
     RegionService regionService;
+    /*
+    * 获取一个教师的个人信息
+    * */
     public TeacherDTO getInformation(Integer teacherId) {
         TeacherDTO teacherDTO = teacherMapper.selectInformation(teacherId);
         String grade = teacherDTO.getGrade();
+        //去除年级里的六三制和五四制字词（保存在了数据库里）
         grade = StrUtil.removeAll(grade,"六三制");
         grade = StrUtil.removeAll(grade,"五四制");
         teacherDTO.setGrade(grade);
@@ -37,6 +41,9 @@ public class TeacherService extends ServiceImpl<TeacherMapper, Teacher> {
         return teacherDTO;
     }
 
+    /*
+    * 更新教师的头像
+    * */
     @Transactional
     public String updateAvatar(Integer teacherId, MultipartFile avatar) {
         Teacher teacher = teacherMapper.selectById(teacherId);
@@ -56,10 +63,13 @@ public class TeacherService extends ServiceImpl<TeacherMapper, Teacher> {
         String newOriginalFileName = avatar.getOriginalFilename();
         String newImageFileName = UUID.randomUUID()+"-"+newOriginalFileName;
         String newImageFilePath = avatarFilePath+newImageFileName;
+        //传给前端的后端的API接口
         String newImageFileUrl = ConfigService.getAvatarUrl()+"/"+newImageFileName;
         File newImageDest = new File(newImageFilePath);
         try {
+            //保存文件
             avatar.transferTo(newImageDest);
+            //保存数据到数据库
             teacher.setAvatar(newImageFileUrl);
             teacherMapper.updateById(teacher);
         } catch (IOException e) {
@@ -83,9 +93,7 @@ public class TeacherService extends ServiceImpl<TeacherMapper, Teacher> {
         }
         if(one!=null){
             BeanUtil.copyProperties(one,teacherDTO);
-            System.out.println("让我们看下密码是多少"+one.getPassword());
             String token = TokenUtils.checkToken(teacherDTO.getToken(),one.getId().toString(),"教师",one.getPassword());
-            System.out.println("让我们看看token是多少"+token);
             teacherDTO.setToken(token);
             return teacherDTO;
         }else {

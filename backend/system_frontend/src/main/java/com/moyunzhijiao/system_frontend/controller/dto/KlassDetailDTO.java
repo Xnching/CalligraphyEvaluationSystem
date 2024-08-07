@@ -1,11 +1,10 @@
 package com.moyunzhijiao.system_frontend.controller.dto;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.moyunzhijiao.system_frontend.entity.Homework;
+import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

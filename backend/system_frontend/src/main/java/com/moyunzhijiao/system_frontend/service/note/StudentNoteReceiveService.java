@@ -1,13 +1,13 @@
 package com.moyunzhijiao.system_frontend.service.note;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.moyunzhijiao.system_frontend.entity.Homework;
+import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import com.moyunzhijiao.system_frontend.entity.note.Note;
 import com.moyunzhijiao.system_frontend.entity.note.NoteContent;
 import com.moyunzhijiao.system_frontend.entity.note.StudentNoteReceive;
 import com.moyunzhijiao.system_frontend.mapper.note.StudentNoteReceiveMapper;
-import com.moyunzhijiao.system_frontend.service.HomeworkService;
-import com.moyunzhijiao.system_frontend.service.HomeworkSubmissionService;
+import com.moyunzhijiao.system_frontend.service.homework.HomeworkService;
+import com.moyunzhijiao.system_frontend.service.homework.HomeworkSubmissionService;
 import com.moyunzhijiao.system_frontend.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
