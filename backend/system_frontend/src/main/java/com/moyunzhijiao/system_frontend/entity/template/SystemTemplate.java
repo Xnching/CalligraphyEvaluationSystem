@@ -19,6 +19,8 @@ public class SystemTemplate {
     String detailType ;     //enum ('偏旁','结构','笔画'),
     @TableField("font_id")
     Integer fontId;
+    @TableField(exist = false)
+    String font;
     @TableField("creator_id")
     Integer creatorId ;
     Integer difficulty ;

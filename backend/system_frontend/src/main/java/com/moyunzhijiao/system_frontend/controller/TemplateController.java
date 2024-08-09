@@ -18,7 +18,6 @@ import com.moyunzhijiao.system_frontend.service.collection.TeaWorksCollectionSer
 import com.moyunzhijiao.system_frontend.service.homework.TeacherHomeworkService;
 import com.moyunzhijiao.system_frontend.service.template.CustomTemplateService;
 import com.moyunzhijiao.system_frontend.service.template.SystemTemplateService;
-import com.moyunzhijiao.system_frontend.service.template.TeacherTemplateService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -37,8 +36,7 @@ public class TemplateController {
     TeacherHomeworkService teacherHomeworkService;
     @Autowired
     TeaWorksCollectionService teaWorksCollectionService;
-    @Autowired
-    TeacherTemplateService teacherTemplateService;
+
 
     @Operation(summary = "获取一个教师的已保存的模板，即自定义模板和所有的系统模板")
     @GetMapping("/ciep/added-template-list")
@@ -48,6 +46,7 @@ public class TemplateController {
         // 从载荷中获取用户 ID
         Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
         TeacherTemplateDTO teacherTemplateDTO = new TeacherTemplateDTO();
+        System.out.println("看看:"+type);
         switch (type){
             //就一个分页查询内容，没法全要
             case 0:
@@ -59,7 +58,7 @@ public class TemplateController {
                 teacherTemplateDTO.setSystem(systemTemplateService.getByTeacher(teacherId,currentPage,pageSize));
                 break;
             case 2:     //获取教师保存的自定义模板
-                teacherTemplateDTO.setSelf(teacherTemplateService.getByTeacher(teacherId,currentPage,pageSize));
+                teacherTemplateDTO.setSelf(customTemplateService.getByTeacher(teacherId,currentPage,pageSize));
                 break;
             default:
                 return Result.error(Constants.CODE_401,"type错误！");
@@ -80,7 +79,7 @@ public class TemplateController {
                 return Result.error(Constants.CODE_400,"一个分页查询数据不准要多个分页数据！");
             case 1:     //获取系统字帖
                 IPage<Copybook> copybookIPage = new Page<>(currentPage,pageSize);
-                copybookIPage = copybookService.page(copybookIPage);
+                copybookIPage = copybookService.getPageAndFont(copybookIPage);
                 return Result.success(copybookIPage);
             case 2:     //获取该教师已有作业
                 IPage<Homework> homeworkIPage = new Page<>(currentPage,pageSize);
@@ -128,11 +127,8 @@ public class TemplateController {
     * */
     @Operation(summary = "删除一个教师的自定义模板")
     @PostMapping("/ciep/template")
-    public Result deleteTemplateOfTeacher(@RequestHeader("authorization") String token, @RequestParam Integer templateId){
-        DecodedJWT jwt = JWT.decode(token);
-        // 从载荷中获取用户 ID
-        Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
-        teacherTemplateService.deleteTemplateOfTeacher(teacherId,templateId);
+    public Result deleteTemplateOfTeacher( @RequestParam Integer templateId){
+        customTemplateService.deleteTemplateOfTeacher(templateId);
         return Result.success();
     }
 }

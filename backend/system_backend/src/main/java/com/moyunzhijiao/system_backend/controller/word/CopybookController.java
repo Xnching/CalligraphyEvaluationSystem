@@ -1,11 +1,13 @@
 package com.moyunzhijiao.system_backend.controller.word;
 
+import cn.hutool.core.lang.UUID;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moyunzhijiao.system_backend.common.Constants;
 import com.moyunzhijiao.system_backend.common.Result;
 import com.moyunzhijiao.system_backend.entiy.word.Copybook;
+import com.moyunzhijiao.system_backend.service.ConfigService;
 import com.moyunzhijiao.system_backend.service.word.CopybookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -61,18 +63,16 @@ public class CopybookController {
     @PostMapping("/single-add")
     public Result singleAddWord(@RequestPart("copybook") String copybookStr,@RequestPart("file") MultipartFile file){
         if (!file.isEmpty()) {
-            System.out.println("让我们看看sampleStr是什么");
             Copybook copybook = JSONUtil.toBean(copybookStr, Copybook.class);
-            String fileName = file.getOriginalFilename();
-            // 获取项目的根目录
-            File projectRoot = new File(System.getProperty("user.dir"));
+            String fileName = UUID.randomUUID()+"-"+file.getOriginalFilename();
+
             // 构造文件的路径
-            String filePath = projectRoot.getParentFile().getParent() + "/frontend/system_frontend/public/images/copybook/" + fileName;
-            String tempPath = "/images/copybook/"+fileName;
+            String filePath = ConfigService.getCopybookFilePath() + fileName;
+            String url = ConfigService.getCopybookUrl()+"/"+fileName;
             File dest = new File(filePath);
             try {
                 file.transferTo(dest);
-                copybook.setContent(tempPath);
+                copybook.setContent(url);
                 copybookService.addCopybook(copybook);
                 return Result.success();
             } catch (IOException e) {
@@ -96,23 +96,24 @@ public class CopybookController {
             return Result.error(Constants.CODE_400,"Excel文件中没有数据");
         }
 
-        // 获取项目的根目录
-        File projectRoot = new File(System.getProperty("user.dir"));
 
         for (MultipartFile image : images) {
             if (!image.isEmpty()) {
-                String fileName = image.getOriginalFilename();
+                String fileName = UUID.randomUUID()+"-"+image.getOriginalFilename();
                 // 构造文件的路径
-                String filePath = projectRoot.getParentFile().getParent() + "/frontend/system_frontend/public/images/copybook/" + fileName;
-                String tempPath = "/images/copybook/"+fileName;
+                String filePath = ConfigService.getCopybookFilePath()+ fileName;
+                String url = ConfigService.getCopybookUrl()+"/"+fileName;
                 File dest = new File(filePath);
                 try {
                     image.transferTo(dest);
-                    Copybook copybook = copybookService.findCopybookByFileName(copybooks, fileName);
-
+                    System.out.println("文件图片的名字"+image.getOriginalFilename());
+                    Copybook copybook = copybookService.findCopybookByFileName(copybooks, image.getOriginalFilename());
+                    System.out.println("找到了吗");
                     if (copybook != null) {
-                        copybook.setContent(tempPath);
+                        System.out.println("找到了吗");
+                        copybook.setContent(url);
                         copybook.setImporter(importer);
+                        System.out.println("保存了吗");
                         copybookService.addCopybook(copybook);
                     }
                 } catch (IOException e) {

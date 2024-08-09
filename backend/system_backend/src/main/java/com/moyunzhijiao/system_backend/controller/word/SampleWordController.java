@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moyunzhijiao.system_backend.common.Constants;
 import com.moyunzhijiao.system_backend.common.Result;
 import com.moyunzhijiao.system_backend.entiy.word.SampleWord;
+import com.moyunzhijiao.system_backend.service.ConfigService;
 import com.moyunzhijiao.system_backend.service.word.SampleWordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -58,15 +59,13 @@ public class SampleWordController {
             System.out.println("让我们看看sampleStr是什么");
             SampleWord sampleWord = JSONUtil.toBean(sampleWordStr, SampleWord.class);
             String fileName = UUID.randomUUID() + "-" +file.getOriginalFilename();
-            // 获取项目的根目录
-            File projectRoot = new File(System.getProperty("user.dir"));
             // 构造文件的路径
-            String filePath = projectRoot.getParentFile().getParent() + "/frontend/system_frontend/public/images/word/" + fileName;
-            String tempPath = "/images/word/"+fileName;
+            String filePath = ConfigService.getSampleWordFilePath() + fileName;
+            String url = ConfigService.getSampleWordUrl()+"/"+fileName;
             File dest = new File(filePath);
             try {
                 file.transferTo(dest);
-                sampleWord.setContent(tempPath);
+                sampleWord.setContent(url);
                 sampleWordService.addSampleWord(sampleWord);
                 return Result.success();
             } catch (IOException e) {
@@ -90,22 +89,19 @@ public class SampleWordController {
             return Result.error(Constants.CODE_400,"Excel文件中没有数据");
         }
 
-        // 获取项目的根目录
-        File projectRoot = new File(System.getProperty("user.dir"));
-
         for (MultipartFile image : images) {
             if (!image.isEmpty()) {
                 String fileName = UUID.randomUUID() + "-" +image.getOriginalFilename();
                 // 构造文件的路径
-                String filePath = projectRoot.getParentFile().getParent() + "/frontend/system_frontend/public/images/word/" + fileName;
-                String tempPath = "/images/word/"+fileName;
+                String filePath = ConfigService.getSampleWordFilePath() + fileName;
+                String url = ConfigService.getSampleWordUrl()+"/"+fileName;
                 File dest = new File(filePath);
                 try {
                     image.transferTo(dest);
-                    SampleWord sampleWord = sampleWordService.findSampleWordByFileName(sampleWords, fileName);
+                    SampleWord sampleWord = sampleWordService.findSampleWordByFileName(sampleWords, image.getOriginalFilename());
 
                     if (sampleWord != null) {
-                        sampleWord.setContent(tempPath);
+                        sampleWord.setContent(url);
                         sampleWord.setImporter(importer);
                         sampleWordService.addSampleWord(sampleWord);
                     }

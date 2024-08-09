@@ -39,7 +39,7 @@
             :value="item">
             </el-option>
         </el-select>
-        <el-select v-model="selectedImporter" filterable placeholder="请选择作者" @change="selectChange" clearable style="width: 150px;margin-right: 20px;">
+        <el-select v-model="selectedImporter" filterable placeholder="请选择导入人" @change="selectChange" clearable style="width: 150px;margin-right: 20px;">
             <el-option
             v-for="item in importerOptions"
             :key="item"
@@ -241,13 +241,15 @@ export default {
       isEditing:false,
       pageSize:10,
       total:0,
-      fontoptions: [],
+      fontOptions: [],
+      authorOptions:[],
       gradeOptions: [],
       sourceManOptions: [],
       selectedFont:'',
       selectedGrade:'',
       selectedAuthor:'',
       selectedSourceMan:'',
+      inputVal:'',
       //初始隐藏两个表单
       dialogVisible1: false,
       dialogVisible2: false,
@@ -255,6 +257,8 @@ export default {
       imagesPerPage: 10,
       showModal: false,
       selectedImage: null,
+      selectedImporter:null,
+      importerOptions:'',
       user:localStorage.getItem("user")?JSON.parse(localStorage.getItem("user")):{},
       images: [],
       activeName:'single',
@@ -450,6 +454,7 @@ export default {
       })
       this.isEditing = false;
 		},
+    
 
     //分页用的功能
     handleCurrentChange(val) {
@@ -507,7 +512,7 @@ export default {
     getImporter(){
 			this.request.get("/copybook/importers").then(res=>{
         if(res.code=='200'){
-          this.authorOptions=res.data;
+          this.importerOptions=res.data;
         }else{
           this.$message.error('获取全部作者数据失败，原因：'+res.msg);
         }

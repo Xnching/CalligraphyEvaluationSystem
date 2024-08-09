@@ -9,26 +9,26 @@ import org.apache.ibatis.annotations.Select;
 public interface CustomTemplateMapper extends BaseMapper<CustomTemplate> {
     @Select("SELECT " +
             "    ct.* " +
-            "    COUNT(th.homework_id) AS usageFrequency " +
             "FROM  " +
-            "    custom_template ct " +
-            "INNER JOIN  " +
-            "    teacher_homework th ON ct.id = th.template_id " +
-            "WHERE  " +
-            "    th.teacher_id = #{teacherId} AND th.template_type = '自定义' " +
-            "GROUP BY  " +
-            "    ct.id ")
+            "    custom_template ct WHERE ct.creator_id = #{teacherId} ")
     IPage<CustomTemplate> selectByTeacher(IPage<CustomTemplate> page, @Param("teacherId") Integer teacherId);
 
     @Select("SELECT " +
             "    count(*) " +
             "FROM  " +
-            "    custom_template ct " +
-            "INNER JOIN  " +
-            "    teacher_homework th ON ct.id = th.template_id " +
-            "WHERE  " +
-            "    th.teacher_id = #{teacherId} AND th.template_type = '自定义' " +
-            "GROUP BY  " +
-            "    ct.* ")
+            "    custom_template ct WHERE  " +
+            "    ct.creator_id = #{teacherId} ")
     Integer countByTeacher(@Param("teacherId") Integer teacherId);
+
+
+    //下面是有teacher_template时候的表
+//    @Select("select ct.* , tt.count as usageFrequency " +
+//            "from teacher_template tt left join custom_template ct on tt.template_id = ct.id " +
+//            "where tt.teacher_id = #{teacherId}")
+//    IPage<CustomTemplate> selectByTeacher(IPage<CustomTemplate> page, @Param("teacherId") Integer teacherId);
+//
+//    @Select("select count(*) " +
+//            "from teacher_template tt left join custom_template ct on tt.template_id = ct.id " +
+//            "where tt.teacher_id = #{teacherId}")
+//    Integer countByTeacher(Integer teacherId);
 }

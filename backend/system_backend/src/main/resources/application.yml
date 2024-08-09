@@ -1,5 +1,7 @@
 server:
   port: 8084
+  ip: 192.168.43.250
+  protocol: http
 spring:
   datasource:
     username: root2

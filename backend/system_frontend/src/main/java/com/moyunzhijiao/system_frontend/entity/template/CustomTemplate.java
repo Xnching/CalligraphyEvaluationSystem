@@ -19,6 +19,8 @@ public class CustomTemplate {
     String detailType ;     //enum ('偏旁','结构','笔画'),
     @TableField("font_id")
     Integer fontId;
+    @TableField(exist = false)
+    String font;
     @TableField("creator_id")
     Integer creatorId ;
     Integer difficulty ;
@@ -28,8 +30,9 @@ public class CustomTemplate {
     String createdTime;
     @TableField(exist = false)
     String templateType="自定义";
-    @TableField(exist = false)
-    Integer usageFrequency;
+    @TableField("usage_frequency")
+    Integer usageFrequency;     //使用次数
     @TableField(exist = false)
     List<String> imgs;
+    Integer count;
 }

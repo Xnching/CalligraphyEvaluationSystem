@@ -53,9 +53,6 @@ public class CopybookService extends ServiceImpl<CopybookMapper, Copybook> {
         queryWrapper.like("name",str);
         queryWrapper.like("author",author);
         queryWrapper.like("importer",importer);
-        System.out.println("让我们看看查询条件是什么str："+str);
-        System.out.println("让我们看看查询条件是什么gradeId："+gradeId);
-        System.out.println("让我们看看查询条件是什么author："+author);
         if(ObjectUtil.isNotNull(gradeId)){
             queryWrapper.eq("grade_id",gradeId);
         }
@@ -87,11 +84,9 @@ public class CopybookService extends ServiceImpl<CopybookMapper, Copybook> {
                 public void invoke(CopybookDTO data, AnalysisContext context) {
                     //可以在此处检查
                     data.setGradeId(gradeService.getIdByField(data.getGrade()));
-                    System.out.println("让我们看看字体到底出了什么问题，打印data："+data);
-                    System.out.println("让我们看看字体到底出了什么问题，打印font："+data.getFont());
                     data.setFontId(fontService.getIdByField(data.getFont()));
-                    System.out.println("让我们看看字体到底出了什么问题，打印fontId："+data.getFontId());
                     Copybook tmp = convertToEntity(data);
+                    System.out.println("让我们看下原始文件名是多少："+tmp.getFileName());
                     copybooks.add(tmp);
                 }
                 @Override

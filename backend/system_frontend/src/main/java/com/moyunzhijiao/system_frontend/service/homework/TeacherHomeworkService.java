@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_frontend.common.Constants;
 import com.moyunzhijiao.system_frontend.controller.dto.HomeworkDTO;
+import com.moyunzhijiao.system_frontend.entity.TemplateWord;
 import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import com.moyunzhijiao.system_frontend.entity.homework.TeacherHomework;
 import com.moyunzhijiao.system_frontend.exception.ServiceException;
@@ -67,5 +68,18 @@ public class TeacherHomeworkService extends ServiceImpl<TeacherHomeworkMapper, T
         total=total == null ? 0:total;
         page.setTotal(total);
         return page;
+    }
+
+    /*
+    * 增加教师和作业之间的联系
+    * */
+    public void addTeacherHomework(Integer teacherId, Integer homeworkId,Integer templateId,String templateType){
+        //教师和作业之间添加联系
+        TeacherHomework teacherHomework = new TeacherHomework();
+        teacherHomework.setHomeworkId(homeworkId);
+        teacherHomework.setTemplateId(templateId);
+        teacherHomework.setTemplateType(templateType);
+        teacherHomework.setTeacherId(teacherId);
+        save(teacherHomework);
     }
 }

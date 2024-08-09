@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moyunzhijiao.system_frontend.common.Constants;
 import com.moyunzhijiao.system_frontend.common.Result;
 import com.moyunzhijiao.system_frontend.controller.dto.HomeworkDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.KlassHomeworkDetailDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.PublishByTemplateDTO;
 import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import com.moyunzhijiao.system_frontend.service.homework.HomeworkService;
 import com.moyunzhijiao.system_frontend.service.homework.TeacherHomeworkService;
@@ -21,6 +23,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -75,14 +78,14 @@ public class HomeworkController {
         int type = Integer.parseInt(request.get("type"));
         try {
             if (stuId!=-1){
-                studentNoteReceiveService.urgeHomeworkSingle(teacherId,stuId,homeworkId);
+                studentNoteReceiveService.urgeHomeworkSingle(teacherId,stuId,homeworkService.getById(homeworkId));
             } else {
                 switch (type){
                     case 0:
-                        klassNoteReceiveService.urgeHomework(teacherId,homeworkId);
+                        klassNoteReceiveService.urgeHomework(teacherId,homeworkService.getById(homeworkId));
                         break;
                     case 1:
-                        studentNoteReceiveService.urgeHomeworkBatch(teacherId,homeworkId);
+                        studentNoteReceiveService.urgeHomeworkBatch(teacherId,homeworkService.getById(homeworkId));
                         break;
                     default:
                         return Result.error(Constants.CODE_401,"type内容错误！");
@@ -95,11 +98,31 @@ public class HomeworkController {
         return Result.success();
     }
 
+    @Operation(summary = "获取作业详情（班级）")
+    @GetMapping("/ciep/class-homework-detail")
+    public Result detailInKlass(@RequestParam Integer homeworkId, @RequestParam Integer currentPage, @RequestParam Integer pageSize){
+        KlassHomeworkDetailDTO klassHomeworkDetailDTO;
+        klassHomeworkDetailDTO = homeworkService.getHomeworkDetail(homeworkId,currentPage,pageSize);
+        return Result.success(klassHomeworkDetailDTO);
+    }
 
-//    @GetMapping("/ciep/class-homework-detail")
-//    public Result detailInKlass(@RequestHeader("authorization") String token
-//            , @RequestParam Integer homeworkId, @RequestParam Integer currentPage, @RequestParam Integer pageSize){
-//
-//    }
+    @Operation(summary = "教师根据模板发布作业")
+    @PostMapping("/ciep/publish-homework")
+    public Result publishHomeworkByTemplate(@RequestHeader("authorization") String token,@RequestBody PublishByTemplateDTO publishByTemplateDTO){
+        DecodedJWT jwt = JWT.decode(token);
+        // 从载荷中获取用户 ID
+        //从封装的类中取出数据
+        Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
+        String templateType = publishByTemplateDTO.getTemplateType();
+        Integer templateId = publishByTemplateDTO.getTemplateId();
+        String name = publishByTemplateDTO.getDescription().getName();
+        String target = publishByTemplateDTO.getDescription().getTarget();
+        String require = publishByTemplateDTO.getDescription().getRequire();
+        String deadline = publishByTemplateDTO.getDescription().getDeadline();
+        List<Integer> list = publishByTemplateDTO.getList();
+        //根据模板新增作业
+        homeworkService.addByTemplate(teacherId,templateId,templateType,require,name,target,deadline,list);
+        return Result.success();
+    }
 
 }

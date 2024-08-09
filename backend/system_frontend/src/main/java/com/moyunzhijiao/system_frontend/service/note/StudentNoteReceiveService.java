@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StudentNoteReceiveService extends ServiceImpl<StudentNoteReceiveMapper, StudentNoteReceive> {
@@ -24,14 +25,16 @@ public class StudentNoteReceiveService extends ServiceImpl<StudentNoteReceiveMap
     @Autowired
     NoteService noteService;
     @Autowired
-    HomeworkService homeworkService;
-    @Autowired
     TeacherService teacherService;
     @Autowired
     HomeworkSubmissionService homeworkSubmissionService;
     @Autowired
     NoteContentService noteContentService;
-    public void urgeHomeworkSingle(Integer teacherId,Integer studentId,Integer homeworkId){
+    /*
+    * 只催促一个人的作业
+    * */
+    public void urgeHomeworkSingle(Integer teacherId,Integer studentId,Homework homework){
+        Integer homeworkId = homework.getId();
         //设置消息
         Note note = new Note();
         note.setType("作业催促");
@@ -40,7 +43,6 @@ public class StudentNoteReceiveService extends ServiceImpl<StudentNoteReceiveMap
         note.setAssociationId(homeworkId);
         //设置消息内容
         NoteContent noteContent = new NoteContent();
-        Homework homework = homeworkService.getById(homeworkId);
         noteContent.setMessage("您的老师催促您尽快完成作业："+homework.getName()+"，作业目标群体为："+homework.getTarget()+"，截止时间为："+homework.getDeadline()+"。");
         //单个插入消息
         noteService.insertSingle(note,noteContent);
@@ -52,40 +54,56 @@ public class StudentNoteReceiveService extends ServiceImpl<StudentNoteReceiveMap
         studentNoteReceiveMapper.insert(studentNoteReceive);
     }
 
+    /*
+    * 催促作业的生成消息,催促一个个人作业，把里面的所有学生都催促一遍
+    * */
     @Transactional
-    public void urgeHomeworkBatch(Integer teacherId,Integer homeworkId){
-        Homework homework = homeworkService.getById(homeworkId);
+    public void urgeHomeworkBatch(Integer teacherId,Homework homework){
+        Integer homeworkId = homework.getId();
         List<Integer> studentList = homeworkSubmissionService.getStudentIdByHomework(homeworkId);
-        List<Note> noteList = new ArrayList<>();
-        List<NoteContent> noteContentList = new ArrayList<>();
-        List<StudentNoteReceive> studentNoteReceiveList = new ArrayList<>();
-        for(Integer studentId:studentList){
-            //设置消息
-            Note note = new Note();
-            note.setType("作业催促");
-            note.setName("您有作业未及时完成！");
-            note.setSender(teacherService.getNameById(teacherId));
-            note.setAssociationId(homeworkId);
-            noteList.add(note);
-        }
-        noteService.saveBatch(noteList);
-        Note note;
-        //要先把消息保存了才能获得消息的id，所以要两次循环studentList大小的次数
-        for (int i=0;i<studentList.size();i++){
-            note = noteList.get(i);
-            Integer studentId = studentList.get(i);
-            //设置消息内容
-            NoteContent noteContent = new NoteContent();
-            noteContent.setMessage("您的老师催促您尽快完成作业："+homework.getName()+"，作业目标群体为："+homework.getTarget()+"，截止时间为："+homework.getDeadline()+"。");
-            noteContent.setNoteId(note.getId());
-            noteContentList.add(noteContent);
-            //设置关系
+        //只需要一个消息和一个消息内容即可
+        Note note = new Note();
+        note.setType("作业催促");
+        note.setName("您有作业未及时完成！");
+        note.setSender(teacherService.getNameById(teacherId));
+        note.setAssociationId(homeworkId);
+        NoteContent noteContent = new NoteContent();
+        noteContent.setMessage("您的老师催促您尽快完成作业："+homework.getName()+"，作业目标群体为："+homework.getTarget()+"，截止时间为："+homework.getDeadline()+"。");
+        noteContent.setNoteId(note.getId());
+        noteService.insertSingle(note,noteContent);
+        //批量生成学生和消息关系，给学生发消息
+        List<StudentNoteReceive> studentNoteReceiveList = studentList.stream().map(studentId->{
+            StudentNoteReceive studentNoteReceive = new StudentNoteReceive();
+            studentNoteReceive.setNoteId(note.getId());
+            studentNoteReceive.setStudentId(studentId);
+            return studentNoteReceive;
+        }).toList();
+        saveBatch(studentNoteReceiveList);
+    }
+
+    /*
+    * 布置作业的时候给学生发消息
+    * */
+    @Transactional
+    public void addHomework(Integer teacherId,List<Integer> list, Homework homework) {
+        //新增消息
+        Note note = new Note();
+        note.setAssociationId(homework.getId());
+        note.setType("布置作业");
+        note.setSender(teacherService.getNameById(teacherId));
+        note.setName("您有新的作业需要完成！");
+        noteService.save(note);
+        //新增消息内容
+        NoteContent noteContent = new NoteContent();
+        noteContent.setNoteId(note.getId());
+        noteContent.setMessage("您的教师"+note.getSender()+"给您布置了新的作业:"+homework.getName()+",截止时间为："+homework.getDeadline()+",请您在截止时间之前完成此次作业！");
+        noteContentService.save(noteContent);
+        List<StudentNoteReceive>studentNoteReceiveList = list.stream().map(studentId->{
             StudentNoteReceive studentNoteReceive = new StudentNoteReceive();
             studentNoteReceive.setStudentId(studentId);
             studentNoteReceive.setNoteId(note.getId());
-            studentNoteReceiveList.add(studentNoteReceive);
-        }
-        noteContentService.saveBatch(noteContentList);
+            return studentNoteReceive;
+        }).toList();
         saveBatch(studentNoteReceiveList);
     }
 }

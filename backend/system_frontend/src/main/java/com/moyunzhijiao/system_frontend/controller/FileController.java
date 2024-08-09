@@ -33,4 +33,28 @@ public class FileController {
                 .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
                 .body(resource);
     }
+
+    @Operation(summary = "获取模板字,所有文件都存储在了与前后端文件同级的resources里了")
+    @GetMapping("/images/templateWord/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveTemplateWord(@PathVariable String filename){
+        Resource resource = fileService.loadTemplateWordAsResource(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
+                .body(resource);
+    }
+
+    @Operation(summary = "获取字帖,所有文件都存储在了与前后端文件同级的resources里了")
+    @GetMapping("/images/copybook/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveCopybook(@PathVariable String filename){
+        Resource resource = fileService.loadCopybookAsResource(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
+                .body(resource);
+    }
+
+
 }

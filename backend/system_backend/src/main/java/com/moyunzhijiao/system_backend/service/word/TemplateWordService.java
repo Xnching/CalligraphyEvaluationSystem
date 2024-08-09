@@ -95,11 +95,9 @@ public class TemplateWordService extends ServiceImpl<TemplateWordMapper, Templat
                     data.setGradeId(gradeService.getIdByField(data.getGrade()));
                     data.setRadicalId(radicalService.getIdByField(data.getRadical()));
                     data.setStructureId(structureService.getIdByField(data.getStructure()));
-                    System.out.println("让我们看看字体到底出了什么问题，打印data："+data.toString());
-                    System.out.println("让我们看看字体到底出了什么问题，打印font："+data.getFont());
                     data.setFontId(fontService.getIdByField(data.getFont()));
-                    System.out.println("让我们看看字体到底出了什么问题，打印fontId："+data.getFontId());
                     TemplateWord tmp = convertToEntity(data);
+                    System.out.println("让我们看下原始文件名是多少："+tmp.getFileName());
                     templateWords.add(tmp);
                 }
                 @Override

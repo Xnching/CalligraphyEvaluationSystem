@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_frontend.controller.dto.HomeworkSubmissionDTO;
+import com.moyunzhijiao.system_frontend.entity.Student;
 import com.moyunzhijiao.system_frontend.entity.homework.HomeworkSubmission;
 import com.moyunzhijiao.system_frontend.mapper.homework.HomeworkSubmissionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,5 +57,21 @@ public class HomeworkSubmissionService extends ServiceImpl<HomeworkSubmissionMap
         return this.baseMapper.selectObjs(queryWrapper).stream()
                 .map(obj -> (Integer) obj)
                 .collect(Collectors.toList());
+    }
+
+    /*
+    * 根据个人作业，查找学生信息
+    * */
+    public IPage<Student> getStudentPage(Integer homeworkId,IPage<Student> page){
+        page = homeworkSubmissionMapper.selectStudentPage(page,homeworkId);
+        QueryWrapper<HomeworkSubmission> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("homework_id",homeworkId);
+        Integer total = Math.toIntExact(homeworkSubmissionMapper.selectCount(queryWrapper));
+        page.setTotal(total);
+        return page;
+    }
+
+    public void addByHomework(Integer homeworkId, String target, List<Integer> list) {
+
     }
 }

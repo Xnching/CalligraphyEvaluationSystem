@@ -1,7 +1,9 @@
 package com.moyunzhijiao.system_frontend.service.homework;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.moyunzhijiao.system_frontend.entity.Klass;
 import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import com.moyunzhijiao.system_frontend.entity.homework.KlassHomework;
 import com.moyunzhijiao.system_frontend.mapper.homework.KlassHomeworkMapper;
@@ -41,5 +43,14 @@ public class KlassHomeworkService extends ServiceImpl<KlassHomeworkMapper, Klass
             klassIds.add(klassHomework.getKlassId());
         }
         return klassIds;
+    }
+
+    public IPage<Klass> getKlassByHomework(IPage<Klass> page,Integer homeworkId){
+        page = klassHomeworkMapper.selectKlassByHomework(page,homeworkId);
+        QueryWrapper<KlassHomework> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("homework_id",homeworkId);
+        Integer count = Math.toIntExact(klassHomeworkMapper.selectCount(queryWrapper));
+        page.setTotal(count);
+        return page;
     }
 }

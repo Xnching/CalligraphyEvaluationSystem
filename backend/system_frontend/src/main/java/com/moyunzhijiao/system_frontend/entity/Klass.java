@@ -25,4 +25,6 @@ public class Klass {
     boolean deleteFlag;
     @TableField("created_time")
     String createdTime;
+    @TableField(exist = false)
+    Float score;
 }

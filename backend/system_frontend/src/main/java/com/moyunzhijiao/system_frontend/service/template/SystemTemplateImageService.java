@@ -23,4 +23,6 @@ public class SystemTemplateImageService extends ServiceImpl<SystemTemplateImageM
                 .map(SystemTemplateImage::getPictureUrl)
                 .collect(Collectors.toList());
     }
+
+
 }

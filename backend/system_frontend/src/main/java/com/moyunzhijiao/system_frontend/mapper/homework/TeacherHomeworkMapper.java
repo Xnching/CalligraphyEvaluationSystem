@@ -58,7 +58,7 @@ public interface TeacherHomeworkMapper extends BaseMapper<TeacherHomework> {
             "and homework.name LIKE CONCAT('%',#{name},'%')")
     Integer countDeadOfStudent(IPage<HomeworkDTO> page,@Param("teacherId") Integer teacherId, @Param("name")String name);
 
-    @Select("select homework.id,homework.created_time,homework.type,homework.name " +
+    @Select("select homework.*" +
             "from teacher_homework left join homework on teacher_homework.homework_id = homework.id " +
             "where teacher_homework.teacher_id = #{teacherId}")
     IPage<Homework> selectAllHomeworkPageOfTeacher(IPage<Homework> page, @Param("teacherId")Integer teacherId);

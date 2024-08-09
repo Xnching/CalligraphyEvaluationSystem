@@ -2,6 +2,8 @@ package com.moyunzhijiao.system_backend.controller;
 
 import cn.hutool.core.lang.UUID;
 import com.moyunzhijiao.system_backend.common.FileResponse;
+import com.moyunzhijiao.system_backend.service.FileService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -19,9 +21,9 @@ import java.nio.file.Paths;
 @RestController
 @RequestMapping("/upload")
 public class FileController {
-    private final Path imageLocation = Paths.get("src/main/resources/static/images");
-    private final Path videoLocation = Paths.get("src/main/resources/static/videos");
 
+    @Autowired
+    FileService fileService;
 
 
     @PostMapping("/editor-image")
@@ -66,6 +68,36 @@ public class FileController {
         } catch (MalformedURLException e) {
             throw new RuntimeException("错误: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/images/templateWord/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveTemplateWord(@PathVariable String filename){
+        Resource resource = fileService.loadTemplateWordAsResource(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
+                .body(resource);
+    }
+
+    @GetMapping("/images/sampleWord/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveSampleWord(@PathVariable String filename){
+        Resource resource = fileService.loadSampleWordAsResource(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
+                .body(resource);
+    }
+
+    @GetMapping("/images/copybook/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveCopybook(@PathVariable String filename){
+        Resource resource = fileService.loadCopybookAsResource(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
+                .body(resource);
     }
 
 }

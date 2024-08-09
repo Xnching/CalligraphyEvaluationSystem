@@ -33,4 +33,6 @@ public class Student {
     boolean deleteFlag;
     @TableField("created_time")
     String createdTime;
+    @TableField(exist = false)
+    Integer score;
 }

@@ -25,4 +25,38 @@ public class FileService {
             throw new RuntimeException("错误: " + e.getMessage());
         }
     }
+
+    /*
+    * 加载模板字
+    * */
+    public Resource loadTemplateWordAsResource(String filename) {
+        String imageFilePath = ConfigService.getTemplateWordFilePath() + filename;
+        try {
+            Resource resource = new UrlResource(Paths.get(imageFilePath).toUri().toURL());
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            } else {
+                throw new RuntimeException("找不到文件!");
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("错误: " + e.getMessage());
+        }
+    }
+
+    /*
+     * 加载字帖
+     * */
+    public Resource loadCopybookAsResource(String filename) {
+        String imageFilePath = ConfigService.getCopybookFilePath() + filename;
+        try {
+            Resource resource = new UrlResource(Paths.get(imageFilePath).toUri().toURL());
+            if (resource.exists() || resource.isReadable()) {
+                return resource;
+            } else {
+                throw new RuntimeException("找不到文件!");
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("错误: " + e.getMessage());
+        }
+    }
 }
