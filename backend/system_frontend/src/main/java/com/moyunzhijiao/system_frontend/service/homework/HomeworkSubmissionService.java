@@ -5,11 +5,16 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_frontend.controller.dto.HomeworkSubmissionDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.HomeworkSubmissionDetailDTO;
 import com.moyunzhijiao.system_frontend.entity.Student;
+import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import com.moyunzhijiao.system_frontend.entity.homework.HomeworkSubmission;
 import com.moyunzhijiao.system_frontend.mapper.homework.HomeworkSubmissionMapper;
+import com.moyunzhijiao.system_frontend.service.KlassService;
+import com.moyunzhijiao.system_frontend.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +23,7 @@ import java.util.stream.Collectors;
 public class HomeworkSubmissionService extends ServiceImpl<HomeworkSubmissionMapper, HomeworkSubmission> {
     @Autowired
     HomeworkSubmissionMapper homeworkSubmissionMapper;
+
 
     public IPage<HomeworkSubmissionDTO> getUnSubmitedPage(Integer stuId, Integer currentPage, Integer pageSize) {
         IPage<HomeworkSubmissionDTO> homeworkIPage = new Page<>(currentPage,pageSize);
@@ -71,7 +77,34 @@ public class HomeworkSubmissionService extends ServiceImpl<HomeworkSubmissionMap
         return page;
     }
 
-    public void addByHomework(Integer homeworkId, String target, List<Integer> list) {
-
+    /*
+    * 根据作业批量布置，list为学生list
+    * */
+    @Transactional
+    public void addByHomework(Integer homeworkId, List<Integer> list) {
+        System.out.println("让我看看有没有保存作业");
+        List<HomeworkSubmission> homeworkSubmissionList = list.stream().map(studentId->{
+            HomeworkSubmission homeworkSubmission = new HomeworkSubmission();
+            homeworkSubmission.setHomeworkId(homeworkId);
+            homeworkSubmission.setStudentId(studentId);
+            homeworkSubmission.setState(false);
+            homeworkSubmission.setReviewed(0);
+            return homeworkSubmission;
+        }).toList();
+        //批量保存
+        System.out.println("让我看看列表，"+homeworkSubmissionList);
+        saveBatch(homeworkSubmissionList);
     }
+
+    /*
+    * 根据学生id和作业id找到这个学生的作业作品
+    * */
+    public HomeworkSubmission getSubmissionByStuAndWork(Integer stuId, Integer homeworkId) {
+        QueryWrapper<HomeworkSubmission> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("student_id",stuId);
+        queryWrapper.eq("homework_id",homeworkId);
+        return  homeworkSubmissionMapper.selectOne(queryWrapper);
+    }
+
+
 }

@@ -60,7 +60,7 @@ public class TemplateWordController {
             String fileName = UUID.randomUUID() + "-" +file.getOriginalFilename();
             // 构造文件的路径
             String filePath = ConfigService.getTemplateWordFilePath() + fileName;
-            String url = ConfigService.getSampleWordUrl()+"/"+fileName;
+            String url = ConfigService.getTemplateWordUrl()+"/"+fileName;
             File dest = new File(filePath);
             try {
                 file.transferTo(dest);
@@ -91,7 +91,7 @@ public class TemplateWordController {
                 String fileName = UUID.randomUUID() + "-" +image.getOriginalFilename();
                 // 构造文件的路径
                 String filePath = ConfigService.getTemplateWordFilePath() + fileName;
-                String url = ConfigService.getSampleWordUrl()+"/"+fileName;
+                String url = ConfigService.getTemplateWordUrl()+"/"+fileName;
                 File dest = new File(filePath);
                 try {
                     image.transferTo(dest);

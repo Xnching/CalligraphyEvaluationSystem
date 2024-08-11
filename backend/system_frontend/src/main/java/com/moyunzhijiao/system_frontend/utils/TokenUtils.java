@@ -19,9 +19,6 @@ public class TokenUtils {
      * 生成Token
      */
     public static String genToken(String userId, String userType,String sign){
-        System.out.println("生成token里的password是什么"+sign);
-        System.out.println("生成token里的userId是什么"+userId);
-        System.out.println("生成token里的userType是什么"+userType);
         return JWT.create().withAudience(userId)    // 将 user id 保存到 token 里面,作为载荷
                 .withClaim("userType", userType)  // 将用户类型保存到 token 里面,作为载荷
                 .withExpiresAt(DateUtil.offsetHour(new Date(),24))   //24小时后token过期

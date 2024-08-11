@@ -11,6 +11,7 @@ import com.moyunzhijiao.system_frontend.mapper.template.CustomTemplateMapper;
 import com.moyunzhijiao.system_frontend.service.FontService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CustomTemplateService extends ServiceImpl<CustomTemplateMapper, CustomTemplate> {
@@ -20,7 +21,6 @@ public class CustomTemplateService extends ServiceImpl<CustomTemplateMapper, Cus
     CustomTemplateImageService customTemplateImageService;
     @Autowired
     FontService fontService;
-
     /*
     * 下面是通过教师发布作业，里面找是否有自定义的模板，教师获取保存的模板换了，换成teacherTemplateService
     * */
@@ -54,8 +54,9 @@ public class CustomTemplateService extends ServiceImpl<CustomTemplateMapper, Cus
 //    }
 
     /*
-     * 把教师的一个保存下来的模板删除，同时把对应自定义模板删除
+     * 把教师的一个保存下来的模板删除，同时把对应自定义模板删除，同时还需要把模板图片也给删了
      * */
+    @Transactional
     public void deleteTemplateOfTeacher(Integer templateId){
         //首先删除关系
         QueryWrapper<CustomTemplate> queryWrapper = new QueryWrapper<>();
@@ -66,5 +67,7 @@ public class CustomTemplateService extends ServiceImpl<CustomTemplateMapper, Cus
             e.printStackTrace();
             throw new ServiceException(Constants.CODE_500,"参数或系统错误，删除关系失败");
         }
+        //接着删除图片
+        customTemplateImageService.deleteByTemplate(templateId);
     }
 }

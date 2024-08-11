@@ -6,15 +6,17 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moyunzhijiao.system_frontend.common.Result;
 import com.moyunzhijiao.system_frontend.controller.dto.StudentDTO;
+import com.moyunzhijiao.system_frontend.entity.Student;
 import com.moyunzhijiao.system_frontend.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @Tag(name = "学生接口")
-@RequestMapping("/api/frontend/student")
 public class StudentController {
     @Autowired
     StudentService studentService;
@@ -35,12 +37,13 @@ public class StudentController {
         return Result.success();
     }
 
-    @Operation(summary = "搜索学生列表，带有年份年级班级个人信息四样模糊查询")
-    @GetMapping("")
-    public Result findPage(@RequestParam(defaultValue = "") String year,@RequestParam(defaultValue = "") String grade,
-                           @RequestParam(defaultValue = "") String klass,@RequestParam(defaultValue = "") String stuInfo,
-                           @RequestParam Integer currentPage, @RequestParam Integer pageSize){
-        IPage<StudentDTO> page = new Page<>(currentPage,pageSize);
-        return Result.success();
+    @Operation(summary = "获取学生列表，根据班级id差一个班级的学生列表，其中名字模糊查询")
+    @GetMapping("/ciep/student")
+    public Result findPage(@RequestParam(defaultValue = "") String name, @RequestParam Integer classId){
+        List<Student> list = studentService.getByKlass(classId,name);
+        return Result.success(list);
     }
+
+
+
 }

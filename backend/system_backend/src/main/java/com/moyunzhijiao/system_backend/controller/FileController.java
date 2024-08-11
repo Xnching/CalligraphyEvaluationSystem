@@ -100,4 +100,44 @@ public class FileController {
                 .body(resource);
     }
 
+    @GetMapping("/videos/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveWriteWord(@PathVariable String filename){
+        Resource resource = fileService.loadVideoAsResource(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.parseMediaType("video/mp4")) // 设置Content-Type为视频类型
+                .body(resource);
+    }
+
+    @GetMapping("/images/character/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveCharacter(@PathVariable String filename){
+        Resource resource = fileService.loadCharacterAsResource(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
+                .body(resource);
+    }
+
+    @GetMapping("/images/stroke/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveStroke(@PathVariable String filename){
+        Resource resource = fileService.loadStrokeAsResource(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
+                .body(resource);
+    }
+
+    @GetMapping("/images/homework/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveHomework(@PathVariable String filename){
+        Resource resource = fileService.loadHomeworkAsResource(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
+                .body(resource);
+    }
+
 }

@@ -19,6 +19,7 @@ import com.moyunzhijiao.system_frontend.exception.ServiceException;
 import com.moyunzhijiao.system_frontend.mapper.homework.HomeworkMapper;
 import com.moyunzhijiao.system_frontend.mapper.homework.TeacherHomeworkMapper;
 import com.moyunzhijiao.system_frontend.service.FontService;
+import com.moyunzhijiao.system_frontend.service.StudentService;
 import com.moyunzhijiao.system_frontend.service.note.KlassNoteReceiveService;
 import com.moyunzhijiao.system_frontend.service.note.StudentNoteReceiveService;
 import com.moyunzhijiao.system_frontend.service.template.CustomTemplateImageService;
@@ -60,6 +61,8 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
     KlassNoteReceiveService klassNoteReceiveService;
     @Autowired
     StudentNoteReceiveService studentNoteReceiveService;
+    @Autowired
+    StudentService studentService;
 
     /*
     * 获取作业详情（班级）
@@ -159,13 +162,16 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
     @Transactional
     public void publishHomework(Integer teacherId,Homework homework,List<Integer> list,String target){
         Integer homeworkId = homework.getId();
-        //批量创建作业作品，让学生们准备去完成
-        homeworkSubmissionService.addByHomework(homeworkId,homework.getTarget(),list);
         //给相应的学生发送消息
         if (target.equals("个人")){
             studentNoteReceiveService.addHomework(teacherId,list,homework);
+            //批量创建作业作品，让学生们准备去完成
+            homeworkSubmissionService.addByHomework(homeworkId,list);
         } else if (target.equals("集体")) {
+            List<Integer> studentList = studentService.getByKlassList(list);
             klassNoteReceiveService.addHomework(teacherId,list,homework);
+            //批量创建作业作品，让学生们准备去完成
+            homeworkSubmissionService.addByHomework(homeworkId,studentList);
         }
     }
 

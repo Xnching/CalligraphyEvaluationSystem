@@ -32,4 +32,19 @@ public class TemplateWordService extends ServiceImpl<TemplateWordMapper, Templat
         queryWrapper.select("id","content");
         return templateWordMapper.selectList(queryWrapper);
     }
+
+    /*
+    * 作业中获取作为参照的模板字的url,根据一个字的名称
+    * */
+    public String getByHomework(String name) {
+        QueryWrapper<TemplateWord> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("name", name);
+        queryWrapper.last("ORDER BY RAND() LIMIT 1");
+        TemplateWord templateWord = getOne(queryWrapper);
+        if(templateWord!=null){
+            return templateWord.getContent();
+        }
+        return null;
+    }
+
 }

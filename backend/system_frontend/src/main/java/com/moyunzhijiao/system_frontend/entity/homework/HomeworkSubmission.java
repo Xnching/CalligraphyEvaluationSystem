@@ -20,11 +20,12 @@ public class HomeworkSubmission {
     @TableField(value="teacher_feedback")
     String teacherFeedback;
     String content;
-    @TableField(value="created_time")
-    String submitTime;
+    @TableField(value="submited_time")
+    String submitedTime;
     @TableField(value="homework_id")
     Integer homeworkId;
     @TableField(value="student_id")
     Integer studentId;
     boolean state;      //0表示没有提交
+    Integer reviewed;   //作业是否被教师批改，0为未批改，1为中间态，2为已批改
 }

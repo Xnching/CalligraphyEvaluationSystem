@@ -56,5 +56,49 @@ public class FileController {
                 .body(resource);
     }
 
+    @Operation(summary = "获取字的生成视频,所有文件都存储在了与前后端文件同级的resources里了")
+    @GetMapping("/videos/writeWord/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveWriteWord(@PathVariable String filename){
+        Resource resource = fileService.loadWriteWordAsResource(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.parseMediaType("video/mp4")) // 设置Content-Type为视频类型
+                .body(resource);
+    }
+
+    @Operation(summary = "获取字的分析的图片,所有文件都存储在了与前后端文件同级的resources里了")
+    @GetMapping("/images/character/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveCharacter(@PathVariable String filename){
+        Resource resource = fileService.loadCharacterAsResource(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
+                .body(resource);
+    }
+
+    @Operation(summary = "获取笔画分析,所有文件都存储在了与前后端文件同级的resources里了")
+    @GetMapping("/images/stroke/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveStroke(@PathVariable String filename){
+        Resource resource = fileService.loadStrokeAsResource(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
+                .body(resource);
+    }
+
+    @Operation(summary = "获取作业图片,所有文件都存储在了与前后端文件同级的resources里了")
+    @GetMapping("/images/homework/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveHomework(@PathVariable String filename){
+        Resource resource = fileService.loadHomeworkAsResource(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
+                .body(resource);
+    }
+
 
 }

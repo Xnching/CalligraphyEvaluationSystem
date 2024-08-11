@@ -459,6 +459,7 @@ create table homework_submission(
     homework_id int UNSIGNED not null comment '作业id',
     student_id int UNSIGNED not null comment '学生id',
     state tinyint(1) not null default 0 comment '学生是否完成作业',
+    reviewed tinyint(1) not null default 0 comment '作业是否被教师批改，0为未批改，1为中间态，2为已批改',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '作业作品';
 #作业id改成作业作品id，上表已更改
@@ -1043,18 +1044,16 @@ create table version(
 
 create table character_analysis(
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '单字分析id',
-    submissions_id int UNSIGNED not null comment '作品id',
+    name varchar(10) not null comment '该字名',
+    submission_id int UNSIGNED not null comment '作品id',
     score tinyint comment '系统得分',
     evaluation varchar(100) comment '系统评价',
     picture varchar(255) comment '该字图片url',
-    location_x int comment '在整体图片上的位置x',
-    location_y int comment '在整体图片上的位置y',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '作品的单字分析';
 
 create table stroke_analysis(
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '笔画分析id',
-    submissions_id int UNSIGNED not null comment '作品id',
     character_analysis_id int UNSIGNED not null comment '单字分析id',
     score tinyint comment '系统得分',
     picture varchar(255) comment '该笔画图片url',

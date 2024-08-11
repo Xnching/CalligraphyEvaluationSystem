@@ -30,4 +30,10 @@ public class CustomTemplateImageService extends ServiceImpl<CustomTemplateImageM
         queryWrapper.eq("custom_template_id",templateId);
         return list(queryWrapper);
     }
+
+    public void deleteByTemplate(Integer templateId) {
+        QueryWrapper<CustomTemplateImage>queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("custom_template_id",templateId);
+        customTemplateImageMapper.delete(queryWrapper);
+    }
 }

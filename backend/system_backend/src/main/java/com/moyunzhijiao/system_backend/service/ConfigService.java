@@ -41,6 +41,35 @@ public class ConfigService {
     private static final String COPYBOOK_BASE_URL = "/upload/images/copybook";
     private static final String COPYBOOK_PATH = "/resources/image/copybook/";
 
+    //视频的
+    private static String videoFilePath;
+    private static String videoUrl;
+    private static final String VIDEO_BASE_URL = "/upload/videos";
+    private static final String VIDEO_PATH = "/resources/video/";
+
+    //视频封面的
+    private static String videoImageFilePath;
+    private static String videoImageUrl;
+    private static final String VIDEO_IMAGE_BASE_URL = "/upload/images/video";
+    private static final String VIDEO_IMAGE_PATH = "/resources/image/video/";
+    //字的分析的
+    private static String characterFilePath;
+    private static String characterUrl;
+    private static final String CHARACTER_BASE_URL = "/upload/images/character";
+    private static final String CHARACTER_PATH = "/resources/image/character/";
+
+    //笔画分析的
+    private static String strokeFilePath;
+    private static String strokeUrl;
+    private static final String STROKE_BASE_URL = "/upload/images/stroke";
+    private static final String STROKE_PATH = "/resources/image/stroke/";
+
+    //作业图片的
+    private static String homeworkFilePath;
+    private static String homeworkUrl;
+    private static final String HOMEWORK_BASE_URL = "/upload/images/homework";
+    private static final String HOMEWORK_PATH = "/resources/image/homework/";
+
     @PostConstruct
     public void init() {
         baseUrl = serverProtocol + "://" + serverIp + ":" + serverPort;
@@ -58,6 +87,26 @@ public class ConfigService {
         //设置字帖
         copybookFilePath = projectRoot.getParentFile().getParent()+COPYBOOK_PATH;
         copybookUrl = baseUrl+COPYBOOK_BASE_URL;
+
+
+        //视频的
+        videoFilePath = projectRoot.getParentFile().getParent()+VIDEO_PATH;
+        videoUrl = baseUrl+VIDEO_BASE_URL;
+        //视频封面的
+        videoImageFilePath = projectRoot.getParentFile().getParent()+VIDEO_IMAGE_PATH;
+        videoImageUrl = baseUrl+VIDEO_IMAGE_BASE_URL;
+
+        //字的分析的
+        characterFilePath = projectRoot.getParentFile().getParent()+CHARACTER_PATH;
+        characterUrl = baseUrl+CHARACTER_BASE_URL;
+
+        //笔画分析的
+        strokeFilePath = projectRoot.getParentFile().getParent()+STROKE_PATH;
+        strokeUrl = baseUrl+STROKE_BASE_URL;
+
+        //作业图片的
+        homeworkFilePath = projectRoot.getParentFile().getParent()+HOMEWORK_PATH;
+        homeworkUrl = baseUrl+HOMEWORK_BASE_URL;
     }
     public static String getBaseUrl() {
         return baseUrl;
@@ -81,6 +130,32 @@ public class ConfigService {
 
     public static String getSampleWordUrl(){
         return sampleWordUrl;
+    }
+    public static String getTemplateWordUrl(){
+        return templateWordUrl;
+    }
+
+    public static String getVideoFilePath(){
+        return videoFilePath;
+    }
+    public static String getVideoUrl(){
+        return videoUrl;
+    }
+    public static String getVideoImageFilePath(){
+        return videoImageFilePath;
+    }
+    public static String getVideoImageUrl(){
+        return videoImageUrl;
+    }
+    public static String getCharacterFilePath(){
+        return characterFilePath;
+    }
+
+    public static String getStrokeFilePath(){
+        return strokeFilePath;
+    }
+    public static String getHomeworkFilePath(){
+        return homeworkFilePath;
     }
 
 

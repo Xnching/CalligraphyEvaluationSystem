@@ -9,6 +9,7 @@ import com.moyunzhijiao.system_backend.common.Constants;
 import com.moyunzhijiao.system_backend.entiy.resource.Video;
 import com.moyunzhijiao.system_backend.exception.ServiceException;
 import com.moyunzhijiao.system_backend.mapper.resource.VideoMapper;
+import com.moyunzhijiao.system_backend.service.ConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,21 +25,20 @@ public class VideoService extends ServiceImpl<VideoMapper, Video> {
     VideoMapper videoMapper;
     @Transactional
     public void addVideo(MultipartFile image, MultipartFile videoFile, Video video) {
-        File projectRoot = new File(System.getProperty("user.dir"));
         String videoFileName = UUID.randomUUID() + "-" +videoFile.getOriginalFilename();
         String imageFileName = UUID.randomUUID() + "-" +image.getOriginalFilename();
-        String videoFilePath = projectRoot.getParentFile().getParent()+ "/frontend/system_frontend/public/videos/" + videoFileName;
-        String imageFilePath = projectRoot.getParentFile().getParent()+ "/frontend/system_frontend/public/images/videoPicture/" + imageFileName;
-        String tempVideoFilePath = "/videos/" + videoFileName;
-        String tempImageFilePath = "/images/videoPicture/" + imageFileName;
+        String videoFilePath = ConfigService.getVideoFilePath() + videoFileName;
+        String imageFilePath = ConfigService.getVideoImageFilePath()+ imageFileName;
+        String videoUrl = ConfigService.getVideoUrl()+"/" + videoFileName;
+        String imageUrl = ConfigService.getVideoImageUrl()+"/" + imageFileName;
         File videoDest = new File(videoFilePath);
         File imageDest = new File(imageFilePath);
         try {
             videoFile.transferTo(videoDest);
             image.transferTo(imageDest);
             if(video!=null){
-                video.setContent(tempVideoFilePath);
-                video.setPictureUrl(tempImageFilePath);
+                video.setContent(videoUrl);
+                video.setPictureUrl(imageUrl);
                 videoMapper.insert(video);
             }
         } catch (IOException e) {
@@ -57,7 +57,9 @@ public class VideoService extends ServiceImpl<VideoMapper, Video> {
         if(ObjectUtil.isNotEmpty(isRecommended)){
             queryWrapper.eq("is_recommended",isRecommended);
         }
-        return videoMapper.selectPage(page,queryWrapper);
+        IPage<Video> page1 = videoMapper.selectPage(page,queryWrapper);
+        System.out.println("让我看下有多少个");
+        return page1;
     }
 
     public void deleteVideo(String id) {
