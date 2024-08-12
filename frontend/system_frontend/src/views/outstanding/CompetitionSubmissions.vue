@@ -16,46 +16,46 @@
         :data="tableData"
         stripe
         tooltip-effect="dark"
-        style="width: 100%"
-        @selection-change="handleSelectionChange">
+        style="width: 100%">
       <el-table-column
-          type="selection"
-          width="55">
-      </el-table-column>
-      <el-table-column
-          prop="ID"
+          prop="submissionId"
           label="竞赛作品编号"
           width="120">
       </el-table-column>
       <el-table-column
-          prop="competitionName"
+          prop="competition"
           label="竞赛名"
           width="200">
       </el-table-column>
       <el-table-column
-          prop="name"
-          label="作者"
-          width="120">
+          prop="division"
+          label="组别"
+          width="200">
       </el-table-column>
       <el-table-column
-          prop="finalScore"
+          prop="author"
+          label="作者"
+          width="80">
+      </el-table-column>
+      <el-table-column
+          prop="averageFinalScore"
           label="最终分数"
-          width="120">
+          width="80">
+      </el-table-column>
+      <el-table-column
+          prop="rk"
+          label="排名"
+          width="80">
       </el-table-column>
       <el-table-column
           prop="level"
           label="等级"
-          width="120">
-      </el-table-column>
-      <el-table-column
-          prop="judge"
-          label="评选人"
-          width="120">
+          width="100">
       </el-table-column>
       <el-table-column fixed="right" label="操作">
         <template slot-scope="scope">
           <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit(scope.row)">作品详情</el-button>
-          <el-button type="danger" size="small"  icon="el-icon-delete">移出优秀作品</el-button>
+          <el-button type="danger" size="small"  icon="el-icon-delete" @click="handleDelete1(scope.row)">移出优秀作品</el-button>
         </template>
       </el-table-column>
 
@@ -64,13 +64,13 @@
     <!-- 分页栏-->
     <div style="padding:10px">
       <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="currentPage4"
-          :page-sizes="[5, 10, 15, 20]"
-          :page-size="10"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="20">
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="pageNum"
+        :page-sizes="[10, 15, 20, 30]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total">
       </el-pagination>
     </div>
 
@@ -79,42 +79,39 @@
         :visible.sync="dialogVisible"
         width="40%"
         :close-on-click-modal="false">
-      <el-form label-position="left" label-width="90px">
+      <el-form label-position="left" label-width="90px" :model="editForm">
         <!-- 作业图片 -->
         <el-form-item label="作业图片:">
-          <img :src="imageSrc" style="width: 100%; height: 75%;">
+          <div v-for="(imageSrc, index) in editForm.imageSrcList" :key="index">
+            <img :src="imageSrc" alt="作业图片" style="width: 100%; margin-bottom: 10px;">
+          </div>
         </el-form-item>
         <!-- 作者 -->
         <el-form-item label="作者:">
-          <el-input v-model="currentRow.name" placeholder="作者"></el-input>
+          <el-input v-model="editForm.author" placeholder="作者"></el-input>
         </el-form-item>
         <!-- 竞赛名 -->
         <el-form-item label="竞赛名:">
-          <el-input v-model="currentRow.competitionName" placeholder="竞赛名"></el-input>
+          <el-input v-model="editForm.competition" placeholder="竞赛名"></el-input>
+        </el-form-item>
+        <el-form-item label="组别:">
+          <el-input v-model="editForm.division" placeholder="组别"></el-input>
         </el-form-item>
         <!-- 分数 -->
         <el-form-item label="最终分数:">
-          <el-input v-model="currentRow.finalScore" placeholder="分数"></el-input>
-        </el-form-item>
-        <!-- 展示状态 -->
-        <el-form-item label="展示状态:">
-          <el-button type="text" @click="toggleDisplayStatus">{{ displayStatus }}</el-button>
+          <el-input v-model="editForm.averageFinalScore" placeholder="分数"></el-input>
         </el-form-item>
         <!-- 等级 -->
         <el-form-item label="等级:">
-          <el-input v-model="currentRow.level" placeholder="等级"></el-input>
-        </el-form-item>
-        <!-- 评选人 -->
-        <el-form-item label="评选人:">
-          <el-input v-model="currentRow.judge" placeholder="评选人"></el-input>
+          <el-input v-model="editForm.level" placeholder="等级"></el-input>
         </el-form-item>
         <!-- 教师评语 -->
-        <el-form-item label="教师评语:">
-          <el-input v-model="currentRow.comment" placeholder="教师评语"></el-input>
+        <el-form-item label="初级评价:">
+          <el-input v-model="editForm.initialEvaluation" placeholder="教师评语"></el-input>
         </el-form-item>
         <!-- 删除按钮 -->
         <el-form-item style=" text-align: right;">
-          <el-button type="danger" @click="handleDelete">移出优秀作品</el-button>
+          <el-button type="danger" @click="handleDelete2">移出优秀作品</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -125,81 +122,90 @@
 export default {
   data() {
     return {
+      pageNum:1,
+      pageSize:20,
+      total:0,
       inputVal:"",
-      tableData: Array(8).fill().map(() => ({
-        ID:"3",
-        competitionName: "王羲之杯硬笔书法大赛",
-        name: "张三",
-        finalScore: "94.567",
-        level: "特等奖",
-        judge: "李四",
-        image: "image_url",
-        comment: "优秀作品"
-      })),
-      showTable:[],
-      multipleSelection: [],
+      tableData: [],
       dialogVisible: false,
-      currentRow: {},
-      displayStatus: '允许展示',
-      imageSrc:'/images/copybook/3.jpg',
+      editForm:{},
     };
   },
-  watch: {
-    inputVal(item1) {
-      if (item1 == "") {
-        this.tableData = this.showTable;
-      }
-    },
+  created(){
+    this.load();
   },
   methods: {
-    toggleSelection(rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
-        });
-      } else {
-        this.$refs.multipleTable.clearSelection();
-      }
+    //分页用的功能
+    handleCurrentChange(val) {
+      this.pageNum = val;   //获取当前第几页
+      this.load();
     },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
+    handleSizeChange(val) {
+      this.pageSize = val;  //获取当前每页显示条数
+      this.load();
+    },
+    //请求分页查询数据
+    load(){
+      this.request.get("/outstanding-competition/page",{
+        params:{
+          pageNum:this.pageNum,
+          pageSize:this.pageSize,
+          str:this.inputVal,
+        }
+      }).then(res=>{
+        if(res.code=='200'){
+					console.log(res);
+          this.tableData=res.data.records;
+          this.total=res.data.total;
+        }else{
+          this.$message.error('获取全部视频数据失败，原因：'+res.msg);
+        }
+      })
     },
     Search_table() {
-      const Search_List = [];
-      let res1 = this.inputVal;
-      const res = res1.replace(/\\s/gi, "");
-      let searchArr = this.showTable;
-      searchArr.forEach((e) => {
-        let ID = e.ID;
-        let competitonName= e.competitionName;
-        let name= e.name;
-        let finalScore=e.finalScore;
-        let level=e.level;
-        let judge=e.judge;
-        if (ID.includes(res) || competitonName.includes(res) || name.includes(res) || finalScore.includes(res) || level.includes(res) || judge.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-      });
-      this.tableData = Search_List;
+      this.load();
     },
-    handleCurrentChange() {},
-    handleSizeChange() {},
-    currentPage4() {},
     handleEdit(row) {
-      this.currentRow = row;
+      this.editForm = row;
       this.dialogVisible = true;
     },
-    toggleDisplayStatus() {
-      this.displayStatus = this.displayStatus === '允许展示' ? '不予展示' : '允许展示';
+    handleDelete1(row) {
+      
+      this.delete(row.submissionId);
     },
-    handleDelete() {
+    handleDelete2() {
+      this.delete(this.editForm.submissionId);
       this.dialogVisible = false;
-    }
+    },
+    delete(val){
+      // 在此处处理删除逻辑
+			this.$confirm('确认删除该记录吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 调用后端删除接口
+        this.request({
+          url: '/outstanding-competition/delete',
+          method: 'delete',
+          data: {
+            id: val
+          }
+        }).then(res => {
+          if(res.code == '200'){
+            this.$message.success('删除数据成功！');
+            this.load();
+          }else{
+            this.$message.error('删除数据失败，原因：'+res.msg);
+          }
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
+      });
+    },
   },
-  created(){
-    this.showTable = [...this.tableData];
-  }
 };
 </script>

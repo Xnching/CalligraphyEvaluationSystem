@@ -1,4 +1,4 @@
-package com.moyunzhijiao.system_frontend.entity.homework;
+package com.moyunzhijiao.system_backend.entiy.homework;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

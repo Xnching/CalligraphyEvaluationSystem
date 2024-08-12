@@ -16,46 +16,41 @@
         :data="tableData"
         stripe
         tooltip-effect="dark"
-        style="width: 100%"
-        @selection-change="handleSelectionChange">
+        style="width: 100%">
       <el-table-column
-          type="selection"
-          width="55">
-      </el-table-column>
-      <el-table-column
-          prop="ID"
-          label="作品ID"
+          prop="submissionId"
+          label="作品编号"
           width="95">
       </el-table-column>
       <el-table-column
-          prop="homeworkName"
+          prop="name"
           label="作业名称"
           width="190">
       </el-table-column>
       <el-table-column
-          prop="name"
+          prop="author"
           label="作者"
           width="120">
       </el-table-column>
       <el-table-column
-          prop="recommendTeacher"
+          prop="teacher"
           label="推荐教师"
           width="120">
       </el-table-column>
       <el-table-column
-          prop="workType"
+          prop="type"
           label="作业类型"
           width="120">
       </el-table-column>
       <el-table-column
-          prop="judge"
+          prop="reviewer"
           label="评选人"
           width="120">
       </el-table-column>
       <el-table-column fixed="right" label="操作">
         <template slot-scope="scope">
           <el-button type="success" size="small" icon="el-icon-edit" @click="handleEdit(scope.row)">作品详情</el-button>
-          <el-button type="danger" size="small" icon="el-icon-delete">移出优秀作品</el-button>
+          <el-button type="danger" size="small" icon="el-icon-delete" @click="handleDelete1(scope.row)">移出优秀作品</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -63,54 +58,53 @@
     <!-- 分页栏-->
     <div style="padding:10px">
       <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="currentPage4"
-          :page-sizes="[5, 10, 15, 20]"
-          :page-size="10"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="20">
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="pageNum"
+        :page-sizes="[10, 15, 20, 30]"
+        :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total">
       </el-pagination>
     </div>
 
     <!-- 作品详情弹窗 -->
-    <el-dialog :visible.sync="dialogVisible" width="60%" :before-close="handleClose">
-      <el-form label-position="left" label-width="90px">
+    <el-dialog :visible.sync="dialogVisible" width="60%" :close-on-click-modal="false">
+      <el-form label-position="left" label-width="90px" :model="editForm">
         <!-- 作业图片 -->
         <el-form-item label="作业图片:">
-          <img :src="imageSrc" style="width: 100%; height: 75%;">
+          <div v-for="(imageSrc, index) in editForm.imageSrcList" :key="index">
+            <img :src="imageSrc" alt="作业图片" style="width: 100%; margin-bottom: 10px;">
+          </div>
         </el-form-item>
         <!-- 作者 -->
         <el-form-item label="作者:">
-          <el-input v-model="currentWork.name" placeholder="作者"></el-input>
+          <el-input v-model="author" placeholder="作者"></el-input>
         </el-form-item>
         <!-- 作业类型 -->
         <el-form-item label="作业类型:">
-          <el-input v-model="currentWork.workType" placeholder="作业类型"></el-input>
+          <el-input v-model="type" placeholder="作业类型"></el-input>
         </el-form-item>
         <!-- 分数 -->
         <el-form-item label="分数:">
-          <el-input v-model="currentWork.finalScore" placeholder="分数"></el-input>
-        </el-form-item>
-        <!-- 展示状态 -->
-        <el-form-item label="展示状态:">
-          <el-button type="text" @click="toggleDisplay">{{ displayStatus }}</el-button>
+          <el-input v-model="editForm.teacherScore" placeholder="分数"></el-input>
         </el-form-item>
         <!-- 作业名 -->
         <el-form-item label="作业名:">
-          <el-input v-model="currentWork.homeworkName" placeholder="作业名"></el-input>
+          <el-input v-model="name" placeholder="作业名"></el-input>
         </el-form-item>
         <!-- 评选人 -->
         <el-form-item label="评选人:">
-          <el-input v-model="currentWork.judge" placeholder="评选人"></el-input>
+          <el-input v-model="reviewer" placeholder="评选人"></el-input>
         </el-form-item>
         <!-- 教师评语 -->
         <el-form-item label="教师评语:">
-          <el-input v-model="currentWork.comment" placeholder="教师评语"></el-input>
+          <el-input v-model="editForm.teacherFeedback" placeholder="教师评语"></el-input>
         </el-form-item>
         <!-- 删除按钮 -->
         <el-form-item style=" text-align: right;">
-          <el-button type="danger" @click="handleDelete">删除</el-button>
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="danger" @click="handleDelete2">删除</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -121,85 +115,121 @@
 export default {
   data() {
     return {
+      pageNum:1,
+      pageSize:20,
+      total:0,
       inputVal: "",
-      tableData: Array(8).fill().map(() => ({
-        ID: "3",
-        homeworkName: "一年级第一次专项作业",
-        name: "张三",
-        recommendTeacher: "李四",
-        workType: "综合作业",
-        judge: "王五",
-        image: "image_url"
-      })),
-      showTable: [],
-      multipleSelection: [],
+      tableData: [],
       dialogVisible: false,
-      currentWork: {},
-      displayStatus: '允许展示',
-      imageSrc:'/images/copybook/6.jpg',
+      editForm: {},
+      grade:'',
+      teacher:'',
+      author:'',
+      type:'',
+      name:'',
+      reviewer:'',
     };
   },
-  watch: {
-    inputVal(item1) {
-      if (item1 == "") {
-        this.tableData = this.showTable;
-      }
-    },
+  created(){
+    this.load();
   },
   methods: {
-    toggleSelection(rows) {
-      if (rows) {
-        rows.forEach(row => {
-          this.$refs.multipleTable.toggleRowSelection(row);
-        });
-      } else {
-        this.$refs.multipleTable.clearSelection();
-      }
-    },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
-    },
     Search_table() {
-      const Search_List = [];
-      let res1 = this.inputVal;
-      const res = res1.replace(/\\s/gi, "");
-      let searchArr = this.showTable;
-      searchArr.forEach((e) => {
-        if (
-            e.ID.includes(res) ||
-            e.homeworkName.includes(res) ||
-            e.name.includes(res) ||
-            e.recommendTeacher.includes(res) ||
-            e.workType.includes(res) ||
-            e.judge.includes(res)
-        ) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
+      this.load();
+    },
+    //分页用的功能
+    handleCurrentChange(val) {
+      this.pageNum = val;   //获取当前第几页
+      this.load();
+    },
+    handleSizeChange(val) {
+      this.pageSize = val;  //获取当前每页显示条数
+      this.load();
+    },
+    //请求分页查询数据
+    load(){
+      this.request.get("/outstanding-homework/page",{
+        params:{
+          pageNum:this.pageNum,
+          pageSize:this.pageSize,
+          str:this.inputVal,
         }
-      });
-      this.tableData = Search_List;
+      }).then(res=>{
+        if(res.code=='200'){
+					console.log(res);
+          this.tableData=res.data.records;
+          this.total=res.data.total;
+        }else{
+          this.$message.error('获取全部视频数据失败，原因：'+res.msg);
+        }
+      })
     },
-    handleCurrentChange() {},
-    handleSizeChange() {},
-    currentPage4() {},
     handleEdit(row) {
-      this.currentWork = row;
+      this.grade = row.grade;
+      this.teacher = row.teacher;
+      this.author = row.author;
+      this.type = row.type;
+      this.name = row.name;
+      this.reviewer = row.reviewer;
+      // 然后显示弹窗
+      this.request.get("/outstanding-homework/detail",{
+        params:{
+          submissionId:row.submissionId
+        }
+      }).then(res=>{
+        if(res.code=='200'){
+					console.log(res);
+          this.editForm=res.data;
+          console.log('让我看下editForm');
+          console.log(this.editForm);
+          
+        }else{
+          this.$message.error('获取全部视频数据失败，原因：'+res.msg);
+        }
+      })
       this.dialogVisible = true;
+      // 如果需要，可以根据row设置弹窗中的其他内容
     },
-    handleClose() {
+    handleDelete1(row) {
+      console.log("有东西吗：");
+      console.log(row.submissionId);
+      
+      this.delete(row.submissionId);
+    },
+    handleDelete2() {
+      this.delete(this.editForm.id);
       this.dialogVisible = false;
     },
-    toggleDisplay() {
-      this.displayStatus = this.displayStatus === '允许展示' ? '不予展示' : '允许展示';
+    delete(val){
+      // 在此处处理删除逻辑
+			this.$confirm('确认删除该记录吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 调用后端删除接口
+        this.request({
+          url: '/outstanding-homework/delete',
+          method: 'delete',
+          data: {
+            id: val
+          }
+        }).then(res => {
+          if(res.code == '200'){
+            this.$message.success('删除数据成功！');
+            this.load();
+          }else{
+            this.$message.error('删除数据失败，原因：'+res.msg);
+          }
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
+      });
     },
-    handleDelete() {
-      this.dialogVisible = false;
-    }
   },
-  created() {
-    this.showTable = [...this.tableData];
-  }
 };
 </script>
 

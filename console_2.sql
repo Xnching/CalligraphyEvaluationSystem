@@ -455,7 +455,6 @@ create table homework_submission(
     system_feedback varchar(255) comment '系统评语',
     teacher_score tinyint comment '教师得分',
     teacher_feedback varchar(255) comment '教师评语',
-    content varchar(255) comment'作业作品内容url',
     homework_id int UNSIGNED not null comment '作业id',
     student_id int UNSIGNED not null comment '学生id',
     state tinyint(1) not null default 0 comment '学生是否完成作业',
@@ -463,6 +462,11 @@ create table homework_submission(
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '作业作品';
 #作业id改成作业作品id，上表已更改
+create table hsubmission_image(
+    submission_id int UNSIGNED comment '作业id',
+    picture_url varchar(255) not null comment '图片url',
+    primary key (submission_id,picture_url)
+);
 
 
 # create table student_homework(
@@ -878,12 +882,18 @@ create table competition_submissions(
     division_id int UNSIGNED not null comment '组别id',
     author_id int UNSIGNED not null comment '作者id',
     initial_score tinyint comment '初级评分',
-    initial_evaluation varchar(255) comment '初级评价',
+    initial_rank int comment '初级评分排名',
+    final_evaluation varchar(255) comment '初级评价',
     system_score tinyint comment '系统评分',
     system_evaluation varchar(255)comment '系统评价',
     average_final_score decimal(5,3) comment '最终评分均分',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '竞赛作品';
+create table csubmission_image(
+    submission_id int UNSIGNED comment '作业id',
+    picture_url varchar(255) not null comment '图片url',
+    primary key (submission_id,picture_url)
+);
 
 create table participant(
     division_id int UNSIGNED comment '组别id',
@@ -911,18 +921,12 @@ create table final_review(
     primary key (teacher_id,submission_id)
 )comment '最终评阅记录';
 
-create table initial_rank(
-    submission_id int UNSIGNED primary key comment '作品id',
-    competition_id int UNSIGNED not null comment'竞赛id',
-    rk int comment '排名',
-    score tinyint not null comment '初级评分得分',
-    updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'
-)comment '初级评分排名';
+
 
 create table final_rank(
     submission_id int UNSIGNED primary key comment '作品id',
-    competition_id int UNSIGNED not null comment'竞赛id',
     rk int comment '排名',
+    level varchar(10) comment '等级如一等奖',
     score tinyint not null comment '最终评分得分',
     updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'
 )comment '最终评分排名';
@@ -1127,20 +1131,22 @@ create table knowledge_collection(
 )comment '知识收藏';
 
 create table outstanding_competition(
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '优秀id',
-    submissions_id int UNSIGNED not null comment '竞赛作品id',
+    submissions_id int UNSIGNED not null primary key comment '竞赛作品id',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '优秀竞赛作品';
 
 create table outstanding_homework(
-    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '优秀id',
-    submissions_id int UNSIGNED not null comment '作业作品id',
-    state varchar(50) comment '状态',
+    submissions_id int UNSIGNED not null primary key comment '作业作品id',
     recommender_id int UNSIGNED not null comment '推荐教师id',
     reviewer_id int UNSIGNED not null comment '评审人id即系统用户id',
     updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'
 )comment '优秀作业作品';
 
+create table unreviewed_outstanding(
+    submissions_id int UNSIGNED not null primary key comment '作业作品id',
+    recommender_id int UNSIGNED not null comment '推荐教师id',
+    updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'
+)comment '未评审的优秀作业作品';
 
 
 
