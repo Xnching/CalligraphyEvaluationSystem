@@ -1,51 +1,64 @@
 <template>
   <div class="container" >
     <div style=" text-align: right;">
-      <el-button type="primary" @click="handleNew" style="margin-right: 130px">新增</el-button>
+      <el-button type="primary" @click="handleAdd" style="margin-right: 130px">新增</el-button>
     </div>
-    <el-container>
-      <el-aside width="100%">
         <el-table :data="tableData" 
         style="width: 100%"
         stripe>
-          <el-table-column prop="question" label="问题"></el-table-column>
-          <el-table-column prop="answer" label="答案"></el-table-column>
-          <el-table-column prop="man" label="编辑人"></el-table-column>
+          <el-table-column prop="q" label="问题"></el-table-column>
+          <el-table-column prop="a" label="答案"></el-table-column>
+          <el-table-column prop="editor" label="编辑人"></el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <el-button @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-              <el-button type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+              <el-button @click="handleEdit(scope.row)">编辑</el-button>
+              <el-button type="danger" @click="handleDelete(scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination
+        <!-- 分页栏-->
+        <div style="padding:10px">
+          <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
-            :current-page="currentPage"
-            :page-sizes="[10, 20, 50, 100]"
+            :current-page="pageNum"
+            :page-sizes="[20, 25, 30, 40]"
             :page-size="pageSize"
             layout="total, sizes, prev, pager, next, jumper"
             :total="total">
-        </el-pagination>
+          </el-pagination>
+        </div>
         
-      </el-aside>
-      <el-main>
-        <el-dialog :visible.sync="dialogVisible" width="50%">
-          <el-form ref="form" :model="form" label-width="80px">
+        <el-dialog :visible.sync="dialogVisible1" width="50%">
+          <el-form ref="form" :model="editForm" label-width="80px">
             <el-form-item label="问题">
-              <el-input v-model="form.question"></el-input>
+              <el-input v-model="editForm.q"></el-input>
             </el-form-item>
             <el-form-item label="答案">
-              <el-input v-model="form.answer" type="textarea"></el-input>
+              <el-input v-model="editForm.a" type="textarea"></el-input>
             </el-form-item>
           </el-form>
           <span slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">取消</el-button>
+            <el-button @click="dialogVisible1 = false">取消</el-button>
             <el-button type="primary" @click="handleSave">确定</el-button>
           </span>
         </el-dialog>
-      </el-main>
-    </el-container>
+
+
+        <el-dialog :visible.sync="dialogVisible2" width="50%">
+          <el-form ref="form" :model="addForm" label-width="80px">
+            <el-form-item label="问题">
+              <el-input v-model="addForm.q"></el-input>
+            </el-form-item>
+            <el-form-item label="答案">
+              <el-input v-model="addForm.a" type="textarea"></el-input>
+            </el-form-item>
+          </el-form>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="dialogVisible2 = false">取消</el-button>
+            <el-button type="primary" @click="handleSubmit">确定</el-button>
+          </span>
+        </el-dialog>
   </div>
 </template>
 <script>
@@ -53,69 +66,110 @@ export default {
   data() {
     return {
       tableData: [], // 表格数据
-      currentPage: 1, // 当前页码
-      pageSize: 10, // 每页数量
-      total: 0, // 总记录数
-      form: {
-        question: '',
-        answer: '',
+      pageNum:1,
+      pageSize:20,
+      total:0,
+      editForm: {},
+      addForm:{
+        q:'',
+        a:''
       },
-      tableData: Array(8).fill().map(() => ({
-        question:"如何找回作业",
-        answer: "反馈管理处提交反馈帮助找回作业",
-        man:'哈洛德',
-
-      })),
-      dialogVisible: false, // 弹窗显示状态4
-      editingIndex: null, // 当前编辑行的索引
+      tableData:[],
+      dialogVisible1: false, // 弹窗显示状态
+      dialogVisible2:false,
     };
   },
+  created(){
+    this.load();
+  },
   methods: {
-    // 处理分页大小变化
-    handleSizeChange(val) {
-      this.pageSize = val;
+    handleAdd(){
+      this.addForm.q='';
+      this.addForm.a='';
+      this.dialogVisible2=true;
     },
-    // 处理当前页码变化
+    handleEdit(row){
+      this.editForm=row;
+      this.dialogVisible1=true;
+    },
+    handleSubmit(){
+      this.request.post("/question/add",this.addForm).then(res=>{
+        if(res.code == '200'){
+          this.$message.success('添加数据成功！');
+          this.dialogVisible1=false;
+        } else {
+          this.$message.error('添加数据失败，原因：' + res.msg);
+        }
+      })
+      this.dialogVisible2=false;
+      this.load();
+    },
+    handleDelete(row){
+      // 在此处处理删除逻辑
+			this.$confirm('确认删除该记录吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 调用后端删除接口
+        this.request({
+          url: '/question/delete',
+          method: 'delete',
+          data: {
+            id: row.id
+          }
+        }).then(res => {
+          if(res.code == '200'){
+            this.$message.success('删除数据成功！');
+            this.load();
+          }else{
+            this.$message.error('删除数据失败，原因：'+res.msg);
+          }
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
+      });
+    },
+    handleSave(){
+      this.request.put("/question/update",this.editForm).then(res=>{
+        if(res.code == '200'){
+          this.$message.success('修改样本字数据成功！');
+          this.dialogVisible1=false;
+        } else {
+          this.$message.error('修改样本字数据失败，原因：' + res.msg);
+        }
+      })
+      this.dialogVisible1=false;     
+      this.load();
+    },
+    //分页用的功能
     handleCurrentChange(val) {
-      this.currentPage = val;
+      this.pageNum = val;   //获取当前第几页
+      this.load();
     },
-    // 弹出新增弹窗
-    handleNew() {
-      this.dialogVisible = true;
-      this.form = {
-        question: '',
-        answer: '',
-      };
+    handleSizeChange(val) {
+      this.pageSize = val;  //获取当前每页显示条数
+      this.load();
     },
-    // 保存新增或编辑的数据
-    handleSave() {
-      // 在这里处理保存逻辑，可以发送到后端
-      this.dialogVisible = false;
-      if (this.editingIndex !== null) {
-        // 编辑操作，更新表格数据
-        this.$set(this.tableData, this.editingIndex, {
-          question: this.form.question,
-          answer: this.form.answer,
-        });
-        this.editingIndex = null;
-      } else {
-        // 新增操作，添加新数据到表格
-        this.tableData.push({
-          question: this.form.question,
-          answer: this.form.answer,
-        });
-      }
-    },
-    // 处理编辑操作
-    handleEdit(index, row) {
-      this.dialogVisible = true;
-      this.form = { ...row };
-      this.editingIndex = index;
-    },
-    // 处理删除操作
-    handleDelete(index, row) {
-      // 在这里处理删除逻辑，可以发送到后端
-      this.tableData.splice(index, 1);
+    //请求分页查询数据
+    load(){
+      this.request.get("/question/page",{
+        params:{
+          pageNum:this.pageNum,
+          pageSize:this.pageSize,
+        }
+      }).then(res=>{
+        if(res.code=='200'){
+					console.log(res);
+          this.tableData=res.data.records;
+          this.total=res.data.total;
+        }else{
+          this.$message.error('获取全部数据失败，原因：'+res.msg);
+        }
+      })
     },
   },
   // 可以在这里添加生命周期钩子等其他逻辑

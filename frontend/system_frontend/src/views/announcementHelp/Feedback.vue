@@ -1,29 +1,30 @@
 <template>
   <div>
-    <el-table :data="feedbacks" style="width: 100%">
+    <el-table :data="tableData" style="width: 100%">
       <el-table-column 
-      prop="userType" 
+      prop="providerType" 
       label="用户类型">
       </el-table-column>
       <el-table-column 
-      prop="feedbackType" 
+      prop="type" 
       label="反馈类型">
       </el-table-column>
       <el-table-column 
-      prop="effectiveness" 
+      prop="state" 
       label="有效性">
       </el-table-column>
       <el-table-column 
-      prop="phone" 
+      prop="providerPhone" 
       label="反馈人电话">
       </el-table-column>
       <el-table-column 
-      prop="man" 
+      prop="editor" 
       label="编辑人">
       </el-table-column>
       <el-table-column fixed="right" label="操作">                         
           <template slot-scope="scope">
               <el-button type="primary" size="small" icon="el-icon-edit"  @click="handleEdit(scope.row)">回复</el-button>
+              <el-button type="danger" size="small" icon="el-icon-edit"  @click="handleDelete1(scope.row)">删除</el-button>
           </template>
         </el-table-column> 
     </el-table>
@@ -33,11 +34,11 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="currentPage4"
-        :page-sizes="[5, 10, 15, 20]"
-        :page-size="10"
+        :current-page="pageNum"
+        :page-sizes="[20, 25, 30, 40]"
+        :page-size="pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="20">
+        :total="total">
       </el-pagination>
     </div>
 
@@ -47,31 +48,31 @@
       <div class="dialog-container">
         <el-form ref="editForm" :model="editForm" label-width="80px">
             <el-form-item label="反馈内容:">
-              <el-input type="textarea" v-model="editForm.feedbackContent"></el-input>
+              <el-input type="textarea" v-model="message"></el-input>
             </el-form-item>
             <h3>照片区域</h3>
             <el-image
               style="width: 100px; height: 100px"
-              :src="editForm.imgUrl"
-              :fit="fit">
+              :src="file">
             </el-image>
             <el-form-item label="用户类型:">
-              <el-input v-model="editForm.userType"></el-input>
+              <el-input v-model="editForm.providerType"></el-input>
             </el-form-item>
             <el-form-item label="反馈性质:">
-              <el-input v-model="editForm.feedbackType"></el-input>
+              <el-input v-model="editForm.type"></el-input>
             </el-form-item>
             <el-form-item label="电话:">
-              <el-input v-model="editForm.phone"></el-input>
+              <el-input v-model="editForm.providerPhone"></el-input>
             </el-form-item>
             <el-form-item label="回复内容:">
-              <el-input type="textarea" v-model="editForm.returnContent"></el-input>
+              <el-input type="textarea" v-model="reply"></el-input>
             </el-form-item>
 
         </el-form>
         
         <el-button type="primary" @click="submitReply">回复</el-button>
-        <el-button type="warning" @click="submitReply">设为无效反馈</el-button>
+        <el-button type="warning" @click="submitState">设为无效反馈</el-button>
+        <el-button type="danger" @click="handleDelete2">删除</el-button>
       </div>
     </el-dialog>
   </div>
@@ -83,35 +84,135 @@
 export default {
   data() {
     return {
-      feedbackContent: '文本',
-      replyContent: '',
+      total:0,
+      pageNum:1,
+      pageSize:10,
       dialogVisible:false,
-      feedbacks: Array(8).fill().map(() => ({
-        userType:'学生',
-        feedbackType:'体验反馈',
-        phone:'12345678',
-        effectiveness:'未评判',
-        man:'张三丰',
-      })),
-      editForm:{
-        feedbackContent: '',
-        userType: '',
-        feedbackType: '',
-        phone: ''
-      },
-      imgUrl: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
+      tableData: [],
+      message:'',
+      reply:'',
+      file:'',
+      editForm:{},    
     };
   },
+  created(){
+    this.load();
+  },
   methods: {
-    submitReply() {
-      //alert('回复已提交');
+    handleDelete1(row){
+      this.delete(row.id);
+      this.load();
+    },
+    handleDelete2(){
+      this.delete(this.editForm.id);
       this.dialogVisible=false;
+      this.load();
+    },
+    delete(val){
+      // 在此处处理删除逻辑
+			this.$confirm('确认删除该记录吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 调用后端删除接口
+        this.request({
+          url: '/feedback/delete',
+          method: 'delete',
+          data: {
+            id: val
+          }
+        }).then(res => {
+          if(res.code == '200'){
+            this.$message.success('删除数据成功！');
+            this.load();
+          }else{
+            this.$message.error('删除数据失败，原因：'+res.msg);
+          }
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });          
+      });
+    },
+    submitState() {
+      // 调用后端删除接口
+      this.request.put('/feedback/state', {
+          id: this.editForm.id,
+        }).then(res => {
+          if(res.code == '200'){
+            this.$message.success('修改数据成功！');
+            this.dialogVisible=false;
+            this.load();
+          }else{
+            this.$message.error('修改数据失败，原因：'+res.msg);
+          }
+        });
+    },
+    submitReply() {
+      // 调用后端删除接口
+      this.request.put('/feedback/reply', {
+          id: this.editForm.id,
+          reply:this.reply
+        }).then(res => {
+          if(res.code == '200'){
+            this.$message.success('修改数据成功！');
+            this.load();
+            this.dialogVisible=false;
+          }else{
+            this.$message.error('修改数据失败，原因：'+res.msg);
+          }
+        });
     },
     handleEdit(row){
       // 将当前行数据复制到 editForm 中，避免直接修改表格数据
       this.editForm = Object.assign({}, row); 
+      this.getDetail(this.editForm.id);
       this.dialogVisible=true;
-    }
+    },
+    getDetail(val){
+      this.request.get("/feedback/detail",{
+        params:{
+          id:val
+        }
+      }).then(res=>{
+        if(res.code=='200'){
+          this.reply = res.data.reply;
+          this.message = res.data.message;
+          this.file = res.data.file;
+        }else{
+          this.$message.error('获取全部用户数据失败，原因：'+res.msg);
+        }
+      })
+    },
+    //分页用的功能
+    handleCurrentChange(val) {
+      this.pageNum = val;   //获取当前第几页
+      this.load();
+    },
+    handleSizeChange(val) {
+      this.pageSize = val;  //获取当前每页显示条数
+      this.load();
+    },
+    //请求分页查询数据
+    load(){
+      this.request.get("/feedback/page",{
+        params:{
+          pageNum:this.pageNum,
+          pageSize:this.pageSize,
+        }
+      }).then(res=>{
+        if(res.code=='200'){
+					console.log(res);
+          this.tableData=res.data.records;
+          this.total=res.data.total;
+        }else{
+          this.$message.error('获取全部用户数据失败，原因：'+res.msg);
+        }
+      })
+    },
   }
 };
 </script>

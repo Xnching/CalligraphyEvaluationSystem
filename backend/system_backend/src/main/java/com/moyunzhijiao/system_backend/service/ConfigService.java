@@ -70,6 +70,12 @@ public class ConfigService {
     private static final String HOMEWORK_BASE_URL = "/upload/images/homework";
     private static final String HOMEWORK_PATH = "/resources/image/homework/";
 
+    //作业图片的
+    private static String announcementFilePath;
+    private static String announcementUrl;
+    private static final String ANNOUNCEMENT_BASE_URL = "/upload/images/announcement";
+    private static final String ANNOUNCEMENT_PATH = "/resources/image/announcement/";
+
     @PostConstruct
     public void init() {
         baseUrl = serverProtocol + "://" + serverIp + ":" + serverPort;
@@ -107,6 +113,10 @@ public class ConfigService {
         //作业图片的
         homeworkFilePath = projectRoot.getParentFile().getParent()+HOMEWORK_PATH;
         homeworkUrl = baseUrl+HOMEWORK_BASE_URL;
+
+        //公告图片
+        announcementFilePath = projectRoot.getParentFile().getParent()+ANNOUNCEMENT_PATH;
+        announcementUrl = baseUrl+ANNOUNCEMENT_BASE_URL;
     }
     public static String getBaseUrl() {
         return baseUrl;
@@ -158,5 +168,10 @@ public class ConfigService {
         return homeworkFilePath;
     }
 
-
+    public static String getAnnouncementFilePath(){
+        return announcementFilePath;
+    }
+    public static String getAnnouncementUrl(){
+        return announcementUrl;
+    }
 }

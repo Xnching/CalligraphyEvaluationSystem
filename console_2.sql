@@ -502,6 +502,16 @@ create table teacher_homework(
 # );
 #每发布一次作业时记得把使用次数增加
 
+
+create table student_homework(
+    student_id int UNSIGNED not null comment '学生id',
+    homework_id int UNSIGNED not null comment '作业id',
+    template_id int UNSIGNED not null comment '模板id',
+    template_type enum('自定义','系统') comment '模板类型',
+    primary key (student_id,homework_id)
+)comment '学生创建作业的表';
+#上表是学生创建作业的表
+
 create table custom_template(
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '模板id',
     name varchar(50) not null comment '模板名',
@@ -789,8 +799,9 @@ create table feedback(
     provider_id int UNSIGNED not null comment '反馈人id',
     provider_type enum('教师','学生','管理员') not null comment '反馈人类型',
     type varchar(50) not null comment '反馈性质',
-    state varchar(25) not null comment '反馈状态',
+    state varchar(25) default '未评判' comment '反馈有效性',
     provider_phone varchar(20) comment '反馈人电话',
+    editor varchar(20) comment '编辑人，即回复人',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '反馈';
 
@@ -804,16 +815,18 @@ create table feedback_content(
 create table announcement(
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '公告id',
     name varchar(45) not null comment '公告名',
-    target enum('学生与教师','管理员','全体') comment '发布对象',
-    state varchar(25) not null comment '公告状态',
+    target enum('学生','教师','学生和教师','管理员','全体') comment '发布对象',
+    state varchar(25) comment '公告状态',
+    release_time datetime default now() comment '发布时间',
+    publisher varchar(30) comment '发布人',
     type varchar(30) not null comment '公告类型',
+    picture_url varchar(255) comment'封面图片url',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '公告';
 
 create table announcement_content(
     announcement_id int UNSIGNED not null primary key comment '公告id',
-    message varchar(3000) not null comment '公告内容',
-    file varchar(555) comment '公告附件url'
+    message varchar(3000) not null comment '公告内容'
 )comment '公告内容';
 
 #对话记录是暂时的，即用完就删，故存html，，，，，客服对话记录删了，不要了，不要客服了
@@ -831,7 +844,10 @@ create table announcement_content(
 create table question(
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '常见问题id',
     q  varchar(200) not null comment '问题',
-    a varchar(400) not null comment '答案'
+    title varchar(30) not null comment '标题',
+    type varchar(30) comment '种类',
+    a varchar(400) not null comment '答案',
+    editor varchar(20) comment '编辑人，即回复人'
 )comment '常见问题';
 
 create table competition(
@@ -1105,30 +1121,38 @@ create table tea_works_collection(
     primary key (teacher_id,submission_id,submission_type)
 )comment '教师的作品收藏';
 
-create table stu_homework_collection(
+create table stu_submission_collection(
     student_id int UNSIGNED not null comment '学生id',
     submission_id int UNSIGNED not null comment '作品id',
-    primary key (student_id,submission_id)
-)comment '学生的作业作品收藏';
-
-create table stu_competition_collection(
-    student_id int UNSIGNED not null comment '学生id',
-    submission_id int UNSIGNED not null comment '作品id',
-    primary key (student_id,submission_id)
-)comment '学生的优秀竞赛作品收藏';
-
-create table stu_outstanding_collection(
-    student_id int UNSIGNED not null comment '学生id',
-    submission_id int UNSIGNED not null comment '作品id',
-    primary key (student_id,submission_id)
-)comment '学生的优秀作业作品收藏';
+    type enum('学校练习','自我练习','优秀学校作品','优秀竞赛作品') comment '收藏的类型',
+    primary key (student_id,submission_id,type)
+)comment '学生的关于作品的收藏';
+#
+# create table stu_competition_collection(
+#     student_id int UNSIGNED not null comment '学生id',
+#     submission_id int UNSIGNED not null comment '作品id',
+#     primary key (student_id,submission_id)
+# )comment '学生的优秀竞赛作品收藏';
+#
+# create table stu_outstanding_collection(
+#     student_id int UNSIGNED not null comment '学生id',
+#     submission_id int UNSIGNED not null comment '作品id',
+#     primary key (student_id,submission_id)
+# )comment '学生的优秀作业作品收藏';
 #作品收藏拆成三个表，一个优秀竞赛作品，一个作业作品，一个优秀作业作品
+#2024/8/17三表重新合为一个表
 
 create table knowledge_collection(
     student_id int UNSIGNED not null comment '学生id',
     resources_id int UNSIGNED not null comment '书法知识资源id',
     primary key (student_id,resources_id)
 )comment '知识收藏';
+
+create table video_knowledge(
+    student_id int UNSIGNED not null comment '学生id',
+    video_id int UNSIGNED not null comment '视频id',
+    primary key (student_id,video_id)
+)comment '视频收藏';
 
 create table outstanding_competition(
     submissions_id int UNSIGNED not null primary key comment '竞赛作品id',

@@ -66,8 +66,8 @@
             </div>
         </div>
 
-         <!-- 分页栏-->
-         <div style="padding:10px">
+          <!-- 分页栏-->
+          <div style="padding:10px">
             <el-pagination
                 @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
@@ -77,7 +77,7 @@
                 layout="total, sizes, prev, pager, next, jumper"
                 :total="total">
             </el-pagination>
-        </div>
+          </div>
 
       
 
