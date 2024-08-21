@@ -22,9 +22,7 @@ public class Video {
     String content;
     String summary;
     String importer;
-    @TableField(value="picture_url")
-    String pictureUrl;
-    @TableField(value="created_time")
-    String createdTime;
+    String picture_url;
+    String created_time;
 
 }

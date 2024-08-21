@@ -1,9 +1,11 @@
 package com.moyunzhijiao.system_frontend.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.moyunzhijiao.system_frontend.common.Constants;
 import com.moyunzhijiao.system_frontend.common.Result;
 import com.moyunzhijiao.system_frontend.controller.dto.StudentDTO;
 import com.moyunzhijiao.system_frontend.entity.Student;
@@ -21,10 +23,15 @@ public class StudentController {
     @Autowired
     StudentService studentService;
 
-    @PostMapping("/login")
-    public Result login(){
-
-        return Result.success();
+    @PostMapping("/cieps/login")
+    public Result login(@RequestBody StudentDTO studentDTO){
+        String student_number=studentDTO.getStuno();
+        String password= studentDTO.getPassword();
+        if(StrUtil.isBlank(student_number) || StrUtil.isBlank(password)){
+            return Result.error(Constants.CODE_400,"参数错误");
+        }
+        StudentDTO dto=studentService.login(studentDTO);
+        return Result.success(dto);
     }
 
     @GetMapping("/information")
