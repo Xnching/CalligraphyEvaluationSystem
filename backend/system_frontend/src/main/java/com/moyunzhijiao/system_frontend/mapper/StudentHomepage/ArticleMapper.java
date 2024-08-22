@@ -71,5 +71,5 @@ public interface ArticleMapper extends BaseMapper<Article> {
     @Select("SELECT id, content " +
             "FROM article_contents " +
             "WHERE id=#{id} ")
-    public ArticleDTO getDetail(String id);
+    public ArticleDTO getDetail(@Param("id") String id);
 }

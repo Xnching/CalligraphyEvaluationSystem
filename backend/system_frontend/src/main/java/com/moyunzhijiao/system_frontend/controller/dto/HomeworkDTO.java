@@ -8,4 +8,5 @@ public class HomeworkDTO {
     String name;
     String deadline;
     Integer unSubmit;
+    String target;
 }
