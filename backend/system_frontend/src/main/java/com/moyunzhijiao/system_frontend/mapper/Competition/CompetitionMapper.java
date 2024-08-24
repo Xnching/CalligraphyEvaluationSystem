@@ -29,10 +29,20 @@ public interface CompetitionMapper extends BaseMapper<Competition> {
             "    c.id = #{id} ")
     public CompetitionDTO getDetail(@Param("id") String id);
 
-    @Select("SELECT id, name, picture as pictureURL,competition_start_time as startTime " +
-            "FROM competition "+
-            "where state!='已结束' ")
-    public IPage<CompetitionDTO> getExistingCompetition(IPage<CompetitionDTO> page);
+    @Select("SELECT  " +
+            "    c.id,  " +
+            "    c.name,  " +
+            "    c.picture as pictureURL,  " +
+            "    c.competition_start_time as startTime, " +
+            "    CASE  " +
+            "        WHEN EXISTS (SELECT 1 FROM participant p WHERE p.competition_id = c.id AND p.student_id = #{stuId}) THEN false  " +
+            "        ELSE true  " +
+            "    END AS disabled " +
+            "FROM  " +
+            "    competition c " +
+            "WHERE  " +
+            "    c.state != '已结束' ")
+    public IPage<CompetitionDTO> getExistingCompetition(IPage<CompetitionDTO> page,Integer stuId);
 
     @Select("SELECT COUNT(*) " +
             "FROM competition "+
