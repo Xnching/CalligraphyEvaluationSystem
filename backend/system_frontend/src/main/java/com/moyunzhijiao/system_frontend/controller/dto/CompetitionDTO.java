@@ -8,4 +8,6 @@ public class CompetitionDTO {
     String name;
     String pictureUrl;
     String requirements;
+    String startTime;
+    String score;
 }

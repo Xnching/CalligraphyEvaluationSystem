@@ -28,4 +28,35 @@ public interface CompetitionMapper extends BaseMapper<Competition> {
             "WHERE" +
             "    c.id = #{id} ")
     public CompetitionDTO getDetail(@Param("id") String id);
+
+    @Select("SELECT id, name, picture as pictureURL,competition_start_time as startTime " +
+            "FROM competition "+
+            "where state!='已结束' ")
+    public IPage<CompetitionDTO> getExistingCompetition(IPage<CompetitionDTO> page);
+
+    @Select("SELECT COUNT(*) " +
+            "FROM competition "+
+            "where state!='已结束' " )
+    public Integer countExistingCompetition();
+
+    @Select("SELECT " +
+            "  c.id, " +
+            "  c.name, " +
+            "  c.picture AS pictureURL, " +
+            "  c.competition_start_time AS startTime, " +
+            "  (" +
+            "    SELECT " +
+            "      cs.average_final_score " +
+            "    FROM competition_submissions AS cs " +
+            "    WHERE " +
+            "      cs.author_id = #{id} AND cs.competition_id = c.id " +
+            "  ) AS score " +
+            "FROM competition AS c "+
+            "where c.state='已结束'")
+    public IPage<CompetitionDTO> getHistoryCompetition(IPage<CompetitionDTO> page,@Param("id") Integer id);
+
+    @Select("SELECT COUNT(*) " +
+            "FROM competition "+
+            "where state='已结束' " )
+    public Integer countHistoryCompetition();
 }
