@@ -6,6 +6,7 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_backend.controller.dto.front.TeacherDTO;
@@ -14,6 +15,7 @@ import com.moyunzhijiao.system_backend.mapper.front.TeacherMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -76,5 +78,24 @@ public class TeacherService extends ServiceImpl<TeacherMapper, Teacher> {
             teacher.setPassword(teacher.getWorkno());
         }
         teacherMapper.insert(teacher);
+    }
+
+    /*
+    * 为了添加评阅教师，获取所有的教师
+    * */
+    public IPage<TeacherDTO> getAllTeacher(IPage<TeacherDTO> page, String str) {
+        page = teacherMapper.selectAllTeacher(page,str);
+        Long total = teacherMapper.countAllTeacher(str);
+        page.setTotal(total);
+        return page;
+    }
+    /*
+     * 为了添加评阅教师到一个组别中，获取所有的教师
+     * */
+    public IPage<TeacherDTO> getAllTeacherInDivision(IPage<TeacherDTO> page, String str,Integer divisionId) {
+        page = teacherMapper.selectAllTeacherInDivision(page,str,divisionId);
+        Long total = teacherMapper.countAllTeacherInDivision(str,divisionId);
+        page.setTotal(total);
+        return page;
     }
 }

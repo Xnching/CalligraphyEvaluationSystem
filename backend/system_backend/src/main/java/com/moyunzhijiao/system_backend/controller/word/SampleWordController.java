@@ -56,7 +56,6 @@ public class SampleWordController {
     @PostMapping("/single-add")
     public Result singleAddWord(@RequestPart("sampleWord") String sampleWordStr,@RequestPart("file") MultipartFile file){
         if (!file.isEmpty()) {
-            System.out.println("让我们看看sampleStr是什么");
             SampleWord sampleWord = JSONUtil.toBean(sampleWordStr, SampleWord.class);
             String fileName = UUID.randomUUID() + "-" +file.getOriginalFilename();
             // 构造文件的路径

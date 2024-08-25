@@ -111,7 +111,6 @@ public class StudentService extends ServiceImpl<StudentMapper, Student> {
             return student;
         }).collect(Collectors.toList());
         // 保存到数据库
-        System.out.println("看看批量插入有没有值："+studentList.toString());
         saveBatch(studentList);
     }
 }

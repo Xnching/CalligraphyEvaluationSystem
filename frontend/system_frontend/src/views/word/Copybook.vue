@@ -366,10 +366,6 @@ export default {
 			
     	formDatas.append('importer', importer);
 			formDatas.append('excelFile', this.$refs.batchExcelFile.uploadFiles[0].raw);
-			console.log("看下批量添加有importer吗");
-			console.log(importer);
-			console.log("看下批量添加有文件吗");
-			console.log(this.$refs.batchExcelFile.uploadFiles[0].raw);
 			this.request.post('/copybook/batch-add', formDatas, {
 					headers: {
 							'Content-Type': 'multipart/form-data'

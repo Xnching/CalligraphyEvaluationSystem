@@ -7,15 +7,16 @@ import request from '@/utils/request';
 export default {
   components: { Editor, Toolbar },
   setup() {
+    const show=ref(true)
     // 编辑器实例，必须用 shallowRef
     const editorRef = shallowRef()
 
     // 内容 HTML
-    const valueHtml = ref('<p>hello</p>')
+    const valueHtml = ref('')
 
     // 模拟 ajax 异步获取内容
     onMounted(() => {
-      
+      show.value=true
     })
 
     const toolbarConfig = {
@@ -60,8 +61,6 @@ export default {
         }
       }
     };
-    const token = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).token : '';
-    console.log('Token:', token);
 
     // 组件销毁时，也及时销毁编辑器
     onBeforeUnmount(() => {
@@ -74,13 +73,21 @@ export default {
       editorRef.value = editor // 记录 editor 实例，重要！
     }
 
+    const setHtml=(html)=>{
+      
+      const editor = editorRef.value
+      
+      editor.dangerouslyInsertHtml(html);
+    }
+
     return {
       editorRef,
       valueHtml,
       mode: 'default', // 或 'simple'
       toolbarConfig,
       editorConfig,
-      handleCreated
+      handleCreated,
+      setHtml
     }
   }
 }

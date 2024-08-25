@@ -9,4 +9,6 @@ public class Question {
     Integer id;
     String q;
     String a;
+    String type;
+    String title;
 }

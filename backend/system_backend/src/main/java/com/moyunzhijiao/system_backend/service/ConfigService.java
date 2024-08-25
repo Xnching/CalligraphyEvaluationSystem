@@ -70,11 +70,17 @@ public class ConfigService {
     private static final String HOMEWORK_BASE_URL = "/upload/images/homework";
     private static final String HOMEWORK_PATH = "/resources/image/homework/";
 
-    //作业图片的
+    //公告图片的
     private static String announcementFilePath;
     private static String announcementUrl;
     private static final String ANNOUNCEMENT_BASE_URL = "/upload/images/announcement";
     private static final String ANNOUNCEMENT_PATH = "/resources/image/announcement/";
+
+    //竞赛图片的
+    private static String competitionFilePath;
+    private static String competitionUrl;
+    private static final String COMPETITION_BASE_URL = "/upload/images/competition";
+    private static final String COMPETITION_PATH = "/resources/image/competition/";
 
     @PostConstruct
     public void init() {
@@ -117,6 +123,10 @@ public class ConfigService {
         //公告图片
         announcementFilePath = projectRoot.getParentFile().getParent()+ANNOUNCEMENT_PATH;
         announcementUrl = baseUrl+ANNOUNCEMENT_BASE_URL;
+
+        //竞赛图片
+        competitionFilePath = projectRoot.getParentFile().getParent()+COMPETITION_PATH;
+        competitionUrl = baseUrl+COMPETITION_BASE_URL;
     }
     public static String getBaseUrl() {
         return baseUrl;
@@ -173,5 +183,11 @@ public class ConfigService {
     }
     public static String getAnnouncementUrl(){
         return announcementUrl;
+    }
+    public static String getCompetitionFilePath(){
+        return competitionFilePath;
+    }
+    public static String getCompetitionUrl(){
+        return competitionUrl;
     }
 }

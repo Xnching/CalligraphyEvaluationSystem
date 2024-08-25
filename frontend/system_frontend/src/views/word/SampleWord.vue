@@ -349,25 +349,25 @@ export default {
     //新增按钮跳出弹窗
     handleAdd(){
       // 重置表单
-    this.addForm = {
-        name: '',
-        structureId: '',
-        gradeId: '',
-        radicalId: '',
-        source: '',
-        importer: ''
-    };
+      this.addForm = {
+          name: '',
+          structureId: '',
+          gradeId: '',
+          radicalId: '',
+          source: '',
+          importer: ''
+      };
 
-    // 清空上传的文件列表
-    if (this.$refs.singleImage) {
-        this.$refs.singleImage.clearFiles();
-    }
-    if (this.$refs.batchImages) {
-        this.$refs.batchImages.clearFiles();
-    }
-    if (this.$refs.batchExcelFile) {
-        this.$refs.batchExcelFile.clearFiles();
-    }
+      // 清空上传的文件列表
+      if (this.$refs.singleImage) {
+          this.$refs.singleImage.clearFiles();
+      }
+      if (this.$refs.batchImages) {
+          this.$refs.batchImages.clearFiles();
+      }
+      if (this.$refs.batchExcelFile) {
+          this.$refs.batchExcelFile.clearFiles();
+      }
       this.dialogVisible1 = true;
     },
 		selectChange(){

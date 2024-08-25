@@ -2,6 +2,7 @@ package com.moyunzhijiao.system_backend.controller.dto.front;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 @Data
@@ -30,4 +31,5 @@ public class StudentDTO {
     Integer schoolId;
     @ExcelProperty("性别")
     String gender;
+    Integer submissionId;         //竞赛详情中的参赛人员的是否提交作业
 }

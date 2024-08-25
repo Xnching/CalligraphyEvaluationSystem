@@ -2,6 +2,7 @@
   <div>
     <el-tabs v-model="currentPage" @tab-click="handleClick">
       <el-tab-pane label="初级作品评阅" name="junior">
+        <el-label v-if="is_urged">您被催促了！</el-label>
         <!-- 初级作品评阅的内容 -->
         <div style="padding:10px; margin:10px; margin-bottom: -5px;">
           <el-input style="width:300px "

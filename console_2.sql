@@ -364,7 +364,7 @@ create table teacher(
     email varchar(50) comment '邮箱',
     school_id int UNSIGNED not null comment '所属学校id',
     region_id int UNSIGNED comment '所在区域id',
-    picture_url varchar(255) comment'头像url',
+    avatar varchar(255) comment'头像url',
     delete_flag tinyint(1) NULL DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '教师';
@@ -439,6 +439,7 @@ create table homework(
     deadline datetime not null comment '截止时间',
     difficulty tinyint(1) not null comment '难度',
     target ENUM('个人', '集体') comment '发布对象',
+    is_self tinyint(1) not null default 0 comment '是否为自我生成的作业作品',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '作业';
 create table homework_image(
@@ -547,14 +548,6 @@ create table system_template_image(
     picture_url varchar(255) not null comment '图片url',
     primary key (system_template_id,picture_url)
 );
-
-create table student_create_homework(
-    student_id int UNSIGNED not null comment '学生id',
-    homework_id int UNSIGNED not null comment '作业id',
-    template_id int UNSIGNED not null comment '模板id',
-    template_type enum('自定义','系统') comment '模板类型',
-    primary key (student_id,homework_id)
-)comment '学生自我练习的作业';
 
 create table font(
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '字体id',
@@ -858,8 +851,10 @@ create table competition(
     competition_start_time datetime not null comment '开始竞赛时间',
     competition_end_time datetime not null comment '结束竞赛时间',
     review_start_time datetime not null comment '开始评阅时间',
-    review_end_time datetime not null comment '结束评阅时间',
-    state varchar(50) comment '状态',
+    count int not null default 0 comment '参赛人数',
+    state varchar(50) default '准备报名中' comment '状态',
+    picture varchar(255) comment '宣传图url',
+    delete_flag tinyint(1) not null DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '竞赛';
 
@@ -871,8 +866,7 @@ create table klass_competition(
 
 create table competition_requirements(
     competition_id int UNSIGNED not null primary key comment '竞赛id',
-    requirements varchar(2000) not null comment '竞赛要求',
-    picture varchar(255) comment '宣传图url'
+    requirements varchar(2000) not null comment '竞赛要求'
 )comment '竞赛要求和宣传图';
 
 create table division(
@@ -884,6 +878,7 @@ create table division(
     second_prize_ratio float default 10 comment '二等奖比例',
     third_prize_ratio float default 18 comment '三等奖比例',
     target enum('小学','初中','小学和初中') comment '参赛对象',
+    delete_flag tinyint(1) not null DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '组别';
 
@@ -894,17 +889,20 @@ create table division_requirements(
 
 create table competition_submissions(
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '竞赛作品id',
+    name varchar(30) comment '作品名称',
     competition_id int UNSIGNED not null comment '竞赛id',
     division_id int UNSIGNED not null comment '组别id',
     author_id int UNSIGNED not null comment '作者id',
-    initial_score tinyint comment '初级评分',
+    initial_score tinyint default -1 comment '初级评分',
     initial_rank int comment '初级评分排名',
-    final_evaluation varchar(255) comment '初级评价',
+    teacher_id int UNSIGNED comment '评阅教师id',
+    initial_evaluation varchar(255) comment '初级评价',
     system_score tinyint comment '系统评分',
     system_evaluation varchar(255)comment '系统评价',
     average_final_score decimal(5,3) comment '最终评分均分',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '竞赛作品';
+
 create table csubmission_image(
     submission_id int UNSIGNED comment '作业id',
     picture_url varchar(255) not null comment '图片url',
@@ -914,29 +912,24 @@ create table csubmission_image(
 create table participant(
     division_id int UNSIGNED comment '组别id',
     student_id int UNSIGNED comment '学生id',
-    submission_id int UNSIGNED comment '学生作品id',
+    competition_id int UNSIGNED comment '竞赛id',
+    submission_id int UNSIGNED default 0 comment '学生作品id',
     primary key (division_id,student_id)
 )comment '竞赛参赛人员表';
 
 create table reviewers(
     division_id int UNSIGNED comment '组别id',
-    teacher_id int UNSIGNED comment '评阅教师id即系统用户id',
+    teacher_id int UNSIGNED comment '评阅教师id就是教师的id',
+    is_urged int unsigned default 0 comment '是否被催促',
     primary key (division_id,teacher_id)
 )comment '评阅教师表';
 
-create table initial_review(
-    teacher_id int UNSIGNED comment '评阅教师id即系统用户id',
-    submission_id int UNSIGNED comment '学生作品id',
-    primary key (teacher_id,submission_id)
-)comment '初级评阅记录';
-
 create table final_review(
-    teacher_id int UNSIGNED comment '评阅教师id即系统用户id',
+    teacher_id int UNSIGNED comment '评阅教师id',
     submission_id int UNSIGNED comment '学生作品id',
     score tinyint comment '该老师评此作品评分',
     primary key (teacher_id,submission_id)
 )comment '最终评阅记录';
-
 
 
 create table final_rank(
@@ -947,12 +940,14 @@ create table final_rank(
     updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'
 )comment '最终评分排名';
 
+
 create table competition_rules(
     id int UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '规则id',
     question varchar(50) not null comment '评阅规则内容，如系统初筛分数',
     answer int not null comment '规则结果，可修改',
     updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'
 )comment '评阅规则';
+
 
 create table calligraphy_facts(
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '书法知识类型id',
@@ -969,6 +964,7 @@ INSERT INTO calligraphy_facts (name, parent_id, level) VALUES
 ('名家作品', 4, 2),
 ('汉字', 4, 2),
 ('人物传记', 4, 2);
+
 
 # create table calligraphy_resources(
 #     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '书法知识类型id',
@@ -1086,6 +1082,7 @@ create table note (
     type varchar(50) comment '消息类型',
     sender varchar(50) comment '消息发送人',
     association_id int UNSIGNED comment '相关联的id，例如作业id竞赛id',
+    target varchar(10) comment '只有系统消息和竞赛消息用到此处，系统消息判断有学生，教师，全体，竞赛消息判断有小学，初中，全体',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '消息';
 
@@ -1106,12 +1103,12 @@ create table klass_note_receive(
     primary key(klass_id,note_id)
 )comment '班级消息关系表';
 
-create table teacher_note_receive(
-    note_id int UNSIGNED not null comment '消息id',
-    teacher_id int UNSIGNED not null comment '教师id',
-    primary key(teacher_id,note_id)
-)comment '教师消息关系表';
-#消息关系表已经根据接收人类型分成了三张表
+# create table teacher_note_receive(
+#     note_id int UNSIGNED not null comment '消息id',
+#     teacher_id int UNSIGNED not null comment '教师id',
+#     primary key(teacher_id,note_id)
+# )comment '教师消息关系表';
+#消息关系表已经根据接收人类型分成了三张表，教师消息关系表不要了，因为系统和竞赛直接去消息表里找
 
 create table tea_works_collection(
     teacher_id int UNSIGNED not null comment '教师id',

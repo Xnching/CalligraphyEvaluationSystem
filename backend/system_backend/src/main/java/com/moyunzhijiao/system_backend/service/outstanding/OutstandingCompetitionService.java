@@ -3,7 +3,7 @@ package com.moyunzhijiao.system_backend.service.outstanding;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.moyunzhijiao.system_backend.controller.dto.competition.OutstandingCompetitionDTO;
+import com.moyunzhijiao.system_backend.controller.dto.outstanding.OutstandingCompetitionDTO;
 import com.moyunzhijiao.system_backend.entiy.outstanding.OutstandingCompetition;
 import com.moyunzhijiao.system_backend.mapper.outstanding.OutstandingCompetitionMapper;
 import com.moyunzhijiao.system_backend.service.competition.CSubmissionImageService;

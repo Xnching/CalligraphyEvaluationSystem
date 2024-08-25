@@ -7,7 +7,8 @@
       <el-form-item label="公告类型：">
         <el-select v-model="form.type" placeholder="请选择公告类型">
           <el-option label="系统公告" value="系统公告"></el-option>
-          <el-option label="竞赛公告" value="竞赛公告"></el-option>
+          <el-option label="平台竞赛公告" value="平台竞赛公告"></el-option>
+          <el-option label="第三方竞赛公告" value="第三方竞赛公告"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="发布对象：">
