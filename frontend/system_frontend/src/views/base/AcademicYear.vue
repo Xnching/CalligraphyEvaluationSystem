@@ -97,26 +97,31 @@ export default {
     toggleEditing() {
       this.editing = !this.editing;
       if (!this.editing) {
-        // 确认按钮被点击，发送请求到后端
+        // Confirm button clicked, send request to backend
+        const formatDateTime = (date) => {
+          return date.toLocaleString('en-GB', { hour12: false }).replace(',', '');
+        };
+
         const academicYear1 = {
-          id:1,
-          firstStart: this.firstSemesterStart.toISOString(),
-          firstEnd: this.firstSemesterEnd.toISOString(),
-          secondStart: this.secondSemesterStart.toISOString(),
-          secondEnd: this.secondSemesterEnd.toISOString()
+          id: 1,
+          firstStart: formatDateTime(this.firstSemesterStart),
+          firstEnd: formatDateTime(this.firstSemesterEnd),
+          secondStart: formatDateTime(this.secondSemesterStart),
+          secondEnd: formatDateTime(this.secondSemesterEnd)
         };
         console.log(academicYear1);
-        // 这里发送请求到后端，将 academicYear 发送到后端
-        this.request.post("/academic-year/update",academicYear1).then(res=>{
-          if(res.code == '200'){
+        // Send request to backend with academicYear1
+        this.request.post("/academic-year/update", academicYear1).then(res => {
+          if (res.code == '200') {
             this.$message.success('修改日期数据成功！');
             this.load();
           } else {
             this.$message.error('修改日期数据失败，原因：' + res.msg);
           }
-        })
+        });
       }
     },
+
     isSameOrAfter(date1, date2) {
       const d1 = new Date(date1.getFullYear(), date1.getMonth(), date1.getDate());
       const d2 = new Date(date2.getFullYear(), date2.getMonth(), date2.getDate());
@@ -131,19 +136,19 @@ export default {
       return `${date.getMonth() + 1}月${date.getDate()}日`;
     },
     //获取每个学期的开始与结束时间
-    load(){
-      this.request.get("/academic-year/page").then(res=>{
-        if(res.code == '200'){
-          this.firstSemesterStart=new Date(res.data.firstStart);
-          this.firstSemesterEnd=new Date(res.data.firstEnd);
-          this.secondSemesterStart=new Date(res.data.secondStart);
-          this.secondSemesterEnd=new Date(res.data.secondEnd);
+    load() {
+      this.request.get("/academic-year/page").then(res => {
+        if (res.code == '200') {
+          this.firstSemesterStart = new Date(res.data.firstStart.replace(' ', 'T'));
+          this.firstSemesterEnd = new Date(res.data.firstEnd.replace(' ', 'T'));
+          this.secondSemesterStart = new Date(res.data.secondStart.replace(' ', 'T'));
+          this.secondSemesterEnd = new Date(res.data.secondEnd.replace(' ', 'T'));
         } else {
           this.$message.error('获取日期数据失败，原因：' + res.msg);
         }
-      })
-
+      });
     }
+
   }
 }
 </script>

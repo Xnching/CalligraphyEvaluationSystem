@@ -442,6 +442,7 @@ create table homework(
     is_self tinyint(1) not null default 0 comment '是否为自我生成的作业作品',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '作业';
+
 create table homework_image(
     homework_id int UNSIGNED comment '作业id',
     picture_url varchar(255) not null comment '图片url',
@@ -907,7 +908,7 @@ create table csubmission_image(
     submission_id int UNSIGNED comment '作业id',
     picture_url varchar(255) not null comment '图片url',
     primary key (submission_id,picture_url)
-);
+)comment '竞赛作品的提交图片';
 
 create table participant(
     division_id int UNSIGNED comment '组别id',
@@ -935,6 +936,7 @@ create table final_review(
 create table final_rank(
     submission_id int UNSIGNED primary key comment '作品id',
     rk int comment '排名',
+    division_id int UNSIGNED comment '组别id',
     level varchar(10) comment '等级如一等奖',
     score tinyint not null comment '最终评分得分',
     updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'

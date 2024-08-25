@@ -61,27 +61,27 @@
           <el-table-column
             prop="name"
             label="组别"
-            width="170">
+            width="130">
           </el-table-column>
           <el-table-column
             prop="state"
             label="竞赛状态"
-            width="105">
+            width="85">
           </el-table-column>
           <el-table-column
             prop="submissionNumber"
             label="竞赛作品数"
-            width="100">
+            width="80">
           </el-table-column>
           <el-table-column
             prop="teacherNumber"
             label="参与评阅的教师数量"
-            width="100">
+            width="80">
           </el-table-column>
           <el-table-column
             prop="reviewedNumber"
             label="初级评阅已评作品数"
-            width="100">
+            width="80">
           </el-table-column>
           
           <el-table-column fixed="right" label="操作">                         
@@ -505,12 +505,28 @@ export default {
       })
     },
     //进入最终评阅阶段
-    becomeFinal(){
-
-
+    becomeFinal(row){
+      this.request.put("/review-management/become-final",{
+        divisionId:row.id
+      }).then(res=>{
+        if(res.code=='200'){
+          this.$message.success('此组别已进入评阅阶段！');
+        }else{
+          this.$message.error('变化失败，原因：'+res.msg);
+        }
+      })
     },
-    endFinal(){
-
+    //结束最终评阅阶段，进入已结束阶段
+    endFinal(row){
+      this.request.put("/review-management/end-final",{
+        divisionId:row.id
+      }).then(res=>{
+        if(res.code=='200'){
+          this.$message.success('此组别已结束评阅阶段，处于已结束阶段！');
+        }else{
+          this.$message.error('变化失败，原因：'+res.msg);
+        }
+      })
     },
 
 

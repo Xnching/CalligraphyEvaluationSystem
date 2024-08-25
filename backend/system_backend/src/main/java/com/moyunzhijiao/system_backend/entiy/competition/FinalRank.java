@@ -14,4 +14,9 @@ public class FinalRank {
     private String level;
     private Byte score;
     private String updatedTime;
+    private Integer divisionId;
+    public FinalRank(){}
+    public FinalRank(Integer submissionId){
+        this.submissionId = submissionId;
+    }
 }

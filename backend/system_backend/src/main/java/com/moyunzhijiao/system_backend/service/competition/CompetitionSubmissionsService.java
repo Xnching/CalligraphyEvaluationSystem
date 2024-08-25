@@ -9,7 +9,10 @@ import com.moyunzhijiao.system_backend.entiy.competition.FinalRank;
 import com.moyunzhijiao.system_backend.mapper.competition.CompetitionSubmissionsMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Service
@@ -59,5 +62,19 @@ public class CompetitionSubmissionsService extends ServiceImpl<CompetitionSubmis
         Long total = competitionSubmissionsMapper.countInitialOfTeacher(divisionId,teacherId);
         page.setTotal(total);
         return page;
+    }
+
+    /*
+     * 为一个组别更新排名,并返回前百分比的作品id
+     * */
+    @Transactional
+    public List<Integer> updateInitialRank(Integer divisionId, BigDecimal percentage) {
+        competitionSubmissionsMapper.updateInitialRank(divisionId);
+        // 计算需要返回的记录数
+        Long totalCount = competitionSubmissionsMapper.selectCount(new QueryWrapper<CompetitionSubmissions>().eq("division_id", divisionId));
+        int limit = percentage.multiply(new BigDecimal(totalCount)).setScale(0, RoundingMode.CEILING).intValue();
+
+        // 查询并返回前百分比的 submission_id
+        return competitionSubmissionsMapper.getTopPercentageSubmissions(divisionId, limit);
     }
 }

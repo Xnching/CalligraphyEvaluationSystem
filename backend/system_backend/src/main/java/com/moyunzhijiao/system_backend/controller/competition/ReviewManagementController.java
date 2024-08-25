@@ -6,20 +6,21 @@ import com.moyunzhijiao.system_backend.common.Result;
 import com.moyunzhijiao.system_backend.controller.dto.front.TeacherDTO;
 import com.moyunzhijiao.system_backend.entiy.competition.CompetitionRules;
 import com.moyunzhijiao.system_backend.entiy.competition.Division;
+import com.moyunzhijiao.system_backend.entiy.competition.FinalRank;
 import com.moyunzhijiao.system_backend.entiy.competition.Reviewers;
 import com.moyunzhijiao.system_backend.entiy.front.Teacher;
-import com.moyunzhijiao.system_backend.service.competition.CompetitionRulesService;
-import com.moyunzhijiao.system_backend.service.competition.DivisionService;
-import com.moyunzhijiao.system_backend.service.competition.ReviewersService;
+import com.moyunzhijiao.system_backend.service.competition.*;
 import com.moyunzhijiao.system_backend.service.front.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/backend/review-management")
@@ -32,6 +33,10 @@ public class ReviewManagementController {
     ReviewersService reviewersService;
     @Autowired
     TeacherService teacherService;
+    @Autowired
+    CompetitionSubmissionsService competitionSubmissionsService;
+    @Autowired
+    FinalRankService finalRankService;
     /*
     * 修改规则
     * */
@@ -205,6 +210,38 @@ public class ReviewManagementController {
         Integer teacherId = params.get("teacherId");
         Integer divisionId = params.get("divisionId");
         reviewersService.urgeTeacherInDivision(teacherId,divisionId);
+        return Result.success();
+    }
+
+    /*
+    * 使一个组别进入最终评阅阶段
+    * */
+    @PutMapping("/become-final")
+    @Transactional
+    public Result becomeFinal(@RequestBody Map<String, Integer> params){
+        Integer divisionId = params.get("divisionId");
+        //获取进入最终评阅阶段的百分比
+        Integer ration = competitionRulesService.getByField("ration");
+        BigDecimal percentage = BigDecimal.valueOf(ration*0.01);
+        //更新排名并获取进入最终评阅阶段的作品的id
+        List<Integer> submissionIdList = competitionSubmissionsService.updateInitialRank(divisionId, percentage);
+        //进入最终评阅阶段的作品的id更新到fina_rank表里表示进入最终评阅阶段了
+        List<FinalRank> finalRanks = submissionIdList.stream().map(submissionId->{
+            FinalRank finalRank = new FinalRank(submissionId);
+            finalRank.setDivisionId(divisionId);
+            return finalRank;
+        }).collect(Collectors.toList());
+        finalRankService.saveBatch(finalRanks);
+        return Result.success();
+    }
+
+    /*
+     * 使一个组别结束最终评阅阶段
+     * */
+    @PutMapping("/end-final")
+    public Result endFinal(@RequestBody Map<String, Integer> params){
+        Integer divisionId = params.get("divisionId");
+        finalRankService.updateScoreAndRanks(divisionId);
         return Result.success();
     }
 }

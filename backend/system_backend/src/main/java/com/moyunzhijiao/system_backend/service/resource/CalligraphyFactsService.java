@@ -20,8 +20,7 @@ public class CalligraphyFactsService extends ServiceImpl<CalligraphyFactsMapper,
 
     @Autowired
     CalligraphyFactsMapper calligraphyFactsMapper;
-    
-    
+
     public List<CalligraphyFactsDTO> findPage(){
         QueryWrapper<CalligraphyFacts> queryWrapper = new QueryWrapper<>();
         List<CalligraphyFacts> list = list(queryWrapper);

@@ -3,6 +3,7 @@ package com.moyunzhijiao.system_backend.mapper.competition;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.moyunzhijiao.system_backend.controller.dto.front.TeacherDTO;
+import com.moyunzhijiao.system_backend.entiy.competition.Division;
 import com.moyunzhijiao.system_backend.entiy.competition.Reviewers;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -82,4 +83,9 @@ public interface ReviewersMapper extends BaseMapper<Reviewers> {
     })
     void setUrged(@Param("list") List<Reviewers> reviewersList);
 
+    @Select("select division.id,division.name " +
+            "from reviewers " +
+            "join division on reviewers.division_id = division.id " +
+            "where reviewers.teacher_id = #{teacherId} ")
+    List<Division> getDivisionOfTeacher(Integer teacherId);
 }

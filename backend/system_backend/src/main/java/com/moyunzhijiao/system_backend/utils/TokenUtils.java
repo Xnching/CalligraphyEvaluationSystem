@@ -17,8 +17,9 @@ public class TokenUtils {
     /*
      * 生成Token
      */
-    public static String genToken(String userId,String sign){
+    public static String genToken(String userId, String userType,String sign){
         return JWT.create().withAudience(userId)    // 将 user id 保存到 token 里面,作为载荷
+                .withClaim("userType", userType)  // 将用户类型保存到 token 里面,作为载荷
                 .withExpiresAt(DateUtil.offsetHour(new Date(),24))   //24小时后token过期
                 .sign(Algorithm.HMAC256(sign));     // 以 password 作为 token 的密钥
     }
@@ -26,9 +27,9 @@ public class TokenUtils {
     /*
     * 检查token
     * */
-    public static String checkToken(String token,String userId,String sign) {
+    public static String checkToken(String token,String userId, String userType,String sign) {
         if(StrUtil.isBlank(token)){
-            return genToken(userId, sign);
+            return genToken(userId, userType,sign);
         }
         else {
             try {
@@ -38,11 +39,11 @@ public class TokenUtils {
                 Date expiresAt = jwt.getExpiresAt();
                 // 如果令牌已经过期，生成新的令牌
                 if (expiresAt.before(new Date())) {
-                    return genToken(userId, sign);
+                    return genToken(userId, userType,sign);
                 }
             } catch (JWTDecodeException exception){
                 // 如果令牌无效（例如，因为它被篡改），生成新的令牌
-                return genToken(userId, sign);
+                return genToken(userId, userType,sign);
             }
             // 如果令牌没有过期，返回原令牌
             return token;

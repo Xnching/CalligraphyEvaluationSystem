@@ -53,7 +53,7 @@ public class UserService extends ServiceImpl<UserMapper,User> {
             //hutool里的
             BeanUtil.copyProperties(one,userDTO,true);
             //设置token
-            String token= TokenUtils.checkToken(userDTO.getToken(),one.getId().toString(),one.getPassword());
+            String token= TokenUtils.checkToken(userDTO.getToken(),one.getId().toString(),"系统用户",one.getPassword());
             userDTO.setToken(token);
             Integer userGroupId = one.getUserGroupId();
             //判断下所属用户组是否激活
