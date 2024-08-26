@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -51,6 +52,16 @@ public class StudentController {
         return Result.success(list);
     }
 
-
+    @PostMapping("/cieps/update-avatar")
+    public Result updateAvatar(@RequestHeader("authorization") String token,@RequestPart("avatar") MultipartFile avatar){
+        if(avatar.isEmpty()){
+            return Result.error(Constants.CODE_400,"文件为空！");
+        }
+        DecodedJWT jwt = JWT.decode(token);
+        // 从载荷中获取用户 ID
+        Integer stuId = Integer.valueOf(jwt.getAudience().get(0));
+        String url = studentService.updateAvatar(stuId,avatar);
+        return Result.success(url);
+    }
 
 }

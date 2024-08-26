@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/ciep")
 public class QAFController {
     @Autowired
     QuestionService questionService;
@@ -28,7 +27,7 @@ public class QAFController {
             @Parameter(name = "type",description = "请求类型",in = ParameterIn.PATH),
             @Parameter(name = "token",description = "请求token",required = true,in = ParameterIn.HEADER),
     })
-    @GetMapping("/help-center")
+    @GetMapping("/ciep/help-center")
     public Result findQAF(@RequestHeader("authorization") String token, @RequestParam String type){
         int t = Integer.valueOf(type);
         //解码token
@@ -49,9 +48,44 @@ public class QAFController {
         return Result.success(qafdto);
     }
 
-    @Operation(summary = "教师获取1.常见问题2.建议与反馈")
-    @PostMapping("/feedback")
+    @Operation(summary = "教师新增反馈")
+    @PostMapping("/ciep/feedback")
     public Result addFeedback(@RequestHeader("authorization") String token,@RequestBody Feedback feedback){
+        //解码token
+        DecodedJWT jwt = JWT.decode(token);
+        // 从载荷中获取用户 ID
+        Integer userId = Integer.valueOf(jwt.getAudience().get(0));
+        String userType = jwt.getClaim("userType").asString();
+        feedback.setProviderType(userType);
+        feedback.setProviderId(userId);
+        feedbackService.insertFeedback(feedback);
+        return Result.success();
+    }
+
+    @GetMapping("/cieps/help-center")
+    public Result findQAFofStu(@RequestHeader("authorization") String token, @RequestParam String type){
+        int t = Integer.valueOf(type);
+        //解码token
+        DecodedJWT jwt = JWT.decode(token);
+        // 从载荷中获取用户 ID
+        Integer userId = Integer.valueOf(jwt.getAudience().get(0));
+        String userType = jwt.getClaim("userType").asString();
+        QAFDTO qafdto;
+        switch (t){
+            case 1:
+                qafdto = questionService.getQuestions();
+                break;
+            case 2:
+                qafdto = feedbackService.getFeedback(userType,userId);
+                break;
+            default:return Result.error(Constants.CODE_400,"错误的type类型！");
+        }
+        return Result.success(qafdto);
+    }
+
+    @Operation(summary = "学生新增反馈")
+    @PostMapping("/cieps/feedback")
+    public Result addFeedbackofStu(@RequestHeader("authorization") String token,@RequestBody Feedback feedback){
         //解码token
         DecodedJWT jwt = JWT.decode(token);
         // 从载荷中获取用户 ID
