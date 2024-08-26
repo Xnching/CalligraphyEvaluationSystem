@@ -35,6 +35,7 @@ public class StudentService extends ServiceImpl<StudentMapper, Student> {
             BeanUtil.copyProperties(one,studentDTO);
             String token = TokenUtils.checkToken(studentDTO.getToken(),one.getId().toString(),"学生",one.getPassword());
             studentDTO.setToken(token);
+
             return studentDTO;
         }else {
             throw new ServiceException(Constants.CODE_600,"用户名或密码错误");

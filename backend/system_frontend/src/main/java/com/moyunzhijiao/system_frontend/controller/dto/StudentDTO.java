@@ -15,4 +15,5 @@ public class StudentDTO {
     String klass;
     Integer klassId;
     String token;
-}
+    String phone;
+    String idNumber;}

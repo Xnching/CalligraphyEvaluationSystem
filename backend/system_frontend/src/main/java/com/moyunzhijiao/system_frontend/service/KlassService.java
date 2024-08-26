@@ -110,4 +110,8 @@ public class KlassService extends ServiceImpl<KlassMapper, Klass> {
         return klassDetailDTO;
     }
 
+    public KlassDTO getKlassById(Integer id){
+        KlassDTO klassDTO=klassMapper.getKlassById(id);
+        return klassDTO;
+    }
 }

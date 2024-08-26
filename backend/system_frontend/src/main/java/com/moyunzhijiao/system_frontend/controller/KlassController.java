@@ -1,5 +1,6 @@
 package com.moyunzhijiao.system_frontend.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -103,4 +104,12 @@ public class KlassController {
         return Result.success(stuInKlassDTO);
     }
 
+    @GetMapping("/s/class")
+    public Result stuGetClass(@RequestHeader("authorization") String token,Integer klassId){
+        DecodedJWT jwt = JWT.decode(token);
+        KlassDTO klassDTO=klassService.getKlassById(klassId);
+        klassDTO.setGrade(StrUtil.removeAll(klassDTO.getGrade(),"六三制"));
+        klassDTO.setGrade(StrUtil.removeAll(klassDTO.getGrade(),"五四制"));
+        return Result.success(klassDTO);
+    }
 }

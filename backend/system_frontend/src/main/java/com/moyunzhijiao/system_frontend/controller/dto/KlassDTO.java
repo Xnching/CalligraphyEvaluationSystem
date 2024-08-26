@@ -10,4 +10,6 @@ public class KlassDTO {
     Integer gradeId;
     String year;
     Integer total;
+    String school;
+    String teacher;
 }

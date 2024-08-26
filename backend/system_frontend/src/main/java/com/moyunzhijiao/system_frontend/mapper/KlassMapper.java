@@ -45,4 +45,22 @@ public interface KlassMapper extends BaseMapper<Klass> {
             "and klass.name LIKE CONCAT('%',#{klass},'%')" +
             "and year LIKE CONCAT('%',#{year},'%'))")
     public Integer countKlassByTeacherNotOwn(@Param("teacherId") Integer teacherId,@Param("schoolId")Integer schoolId,@Param("grade") String grade , @Param("klass") String klass,@Param("year") String year);
+
+    @Select("SELECT \n" +
+            "    k.name AS name, " +
+            "    s.name AS school, " +
+            "    t.name AS teacher, " +
+            "    g.name AS grade, " +
+            "    k.year "+
+            "FROM " +
+            "    klass k " +
+            "LEFT JOIN " +
+            "    school s ON k.school_id = s.id " +
+            "LEFT JOIN " +
+            "    teacher t ON k.teacher_id = t.id " +
+            "LEFT JOIN " +
+            "    grade g ON k.grade_id = g.id " +
+            "WHERE " +
+            "    k.id = #{id}")
+    public KlassDTO getKlassById(@Param("id")Integer id);
 }

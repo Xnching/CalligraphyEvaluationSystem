@@ -51,7 +51,6 @@ public class TeacherController {
         DecodedJWT jwt = JWT.decode(token);
         // 从载荷中获取用户 ID
         Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
-        System.out.println("让我看下controller里的id是多少"+teacherId);
         TeacherDTO teacherDTO = teacherService.getInformation(teacherId);
         return Result.success(teacherDTO);
     }
