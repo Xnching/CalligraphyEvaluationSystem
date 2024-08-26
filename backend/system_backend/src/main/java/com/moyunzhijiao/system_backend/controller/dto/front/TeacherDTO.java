@@ -10,5 +10,7 @@ public class TeacherDTO {
     String password;
     String idNumber;
     Integer schoolId;
+    String school;
+    Integer finishReviewed;     //已评阅完的作品数
     String workno;
 }

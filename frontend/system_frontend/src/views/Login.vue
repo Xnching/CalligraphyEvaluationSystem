@@ -13,6 +13,7 @@
            </el-form-item>
            <div style="margin:10px 0; text-align:center">
              <el-button type="primary" size="small" @click="login" >登录</el-button>
+             <el-button type="primary" size="small" @click="teacherLogin" >登录</el-button>
              <el-button type="warning" size="small" @click="resetLoginForm">重置</el-button>
            </div> 
          </el-form> 
@@ -60,6 +61,9 @@ export default {
             })
           }
         })
+      },
+      teacherLogin(){
+
       },
       resetLoginForm(){
         this.$refs.LoginFormRef.resetFields()

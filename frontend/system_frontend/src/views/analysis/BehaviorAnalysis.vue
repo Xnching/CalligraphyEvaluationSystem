@@ -30,7 +30,7 @@
           <el-form-item label="区域名称：北京市" prop="name"> </el-form-item>
           <el-form-item label="反馈数量：100%" prop="loginName"> </el-form-item>
           <el-form-item label="作业布置数量排行：第一名" prop="password">  </el-form-item>
-          <el-form-item label="反馈数量排行：第一名"prop="phone"> </el-form-item>
+          <el-form-item label="反馈数量排行：第一名" prop="phone"> </el-form-item>
           <el-form-item label="作业平均分：85分" prop="userGroup"></el-form-item>
           <el-form-item label="平均参加竞赛人数排行：第一名" prop="userGroup"></el-form-item>
           <el-form-item label="系统平均使用时间：8H" prop="userGroup"></el-form-item>

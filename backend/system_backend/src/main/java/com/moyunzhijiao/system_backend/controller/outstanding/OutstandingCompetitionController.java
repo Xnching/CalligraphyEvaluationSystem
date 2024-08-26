@@ -3,7 +3,7 @@ package com.moyunzhijiao.system_backend.controller.outstanding;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moyunzhijiao.system_backend.common.Result;
-import com.moyunzhijiao.system_backend.controller.dto.competition.OutstandingCompetitionDTO;
+import com.moyunzhijiao.system_backend.controller.dto.outstanding.OutstandingCompetitionDTO;
 import com.moyunzhijiao.system_backend.service.outstanding.OutstandingCompetitionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

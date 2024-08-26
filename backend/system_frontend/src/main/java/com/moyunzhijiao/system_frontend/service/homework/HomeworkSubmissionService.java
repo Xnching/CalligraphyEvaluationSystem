@@ -1,5 +1,6 @@
 package com.moyunzhijiao.system_frontend.service.homework;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -72,6 +73,8 @@ public class HomeworkSubmissionService extends ServiceImpl<HomeworkSubmissionMap
         page = homeworkSubmissionMapper.selectStudentPage(page,homeworkId);
         QueryWrapper<HomeworkSubmission> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("homework_id",homeworkId);
+        LambdaQueryWrapper<Student> queryWrapper1 = new LambdaQueryWrapper<>();
+
         Integer total = Math.toIntExact(homeworkSubmissionMapper.selectCount(queryWrapper));
         page.setTotal(total);
         return page;

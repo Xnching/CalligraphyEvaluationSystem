@@ -57,4 +57,9 @@ public class TeacherController {
         teacherService.addTeacherBatch(id,inputStream);
         return Result.success();
     }
+    @GetMapping("/name")
+    public Result getName(@RequestParam Integer teacherId){
+        Teacher teacher = teacherService.getById(teacherId);
+        return Result.success(teacher.getName());
+    }
 }

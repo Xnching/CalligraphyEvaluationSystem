@@ -1,5 +1,6 @@
 package com.moyunzhijiao.system_frontend.service.homework;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_frontend.common.Constants;
@@ -25,7 +26,9 @@ public class TeacherHomeworkService extends ServiceImpl<TeacherHomeworkMapper, T
     * */
     public IPage<HomeworkDTO> getHomeworkPageOfTeacher(IPage<HomeworkDTO> page, Integer type, Integer teacherId, String name) {
         Integer total;
+
         switch (type){
+
             case 1://未截止集体
                 page = teacherHomeworkMapper.selectNotDeadOfKlass(page,teacherId,name);
                 total = teacherHomeworkMapper.countNotDeadOfKlass(page,teacherId,name);

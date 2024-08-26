@@ -1,4 +1,4 @@
-package com.moyunzhijiao.system_backend.controller.dto.competition;
+package com.moyunzhijiao.system_backend.controller.dto.outstanding;
 
 import lombok.Data;
 

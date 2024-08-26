@@ -46,7 +46,7 @@ public class Teacher {
     String gender;
 
     @ExcelIgnore
-    String pictureUrl;
+    String avatar;
 
     @TableField("delete_flag")
     @ExcelIgnore

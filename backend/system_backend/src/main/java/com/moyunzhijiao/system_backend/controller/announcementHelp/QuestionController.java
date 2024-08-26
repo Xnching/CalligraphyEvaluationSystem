@@ -55,4 +55,6 @@ public class QuestionController {
         questionService.removeById(id);
         return Result.success();
     }
+
+
 }

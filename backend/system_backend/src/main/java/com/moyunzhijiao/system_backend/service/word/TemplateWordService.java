@@ -51,11 +51,6 @@ public class TemplateWordService extends ServiceImpl<TemplateWordMapper, Templat
         QueryWrapper<TemplateWord> queryWrapper = new QueryWrapper<>();
         queryWrapper.like("name",str);
         queryWrapper.like("author",author);
-        System.out.println("让我们看看查询条件是什么str："+str);
-        System.out.println("让我们看看查询条件是什么structureId："+structureId);
-        System.out.println("让我们看看查询条件是什么radicalId："+radicalId);
-        System.out.println("让我们看看查询条件是什么gradeId："+gradeId);
-        System.out.println("让我们看看查询条件是什么author："+author);
         if(ObjectUtil.isNotNull(structureId)){
             queryWrapper.eq("structure_id",structureId);
         }
