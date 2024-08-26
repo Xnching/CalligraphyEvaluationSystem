@@ -77,4 +77,18 @@ public class CompetitionSubmissionsService extends ServiceImpl<CompetitionSubmis
         // 查询并返回前百分比的 submission_id
         return competitionSubmissionsMapper.getTopPercentageSubmissions(divisionId, limit);
     }
+
+    /*
+    * 给一个教师分配一个组别的作品用于初级评阅，其中根据有没有teacher_id来判断是否被评阅过
+    * */
+    public List<CompetitionSubmissions> getInitialToReview(Integer teacherId, Integer divisionId, Integer pageSize) {
+        // 该算法是查找是否有teacher_id（没有就代表还没批改），然后取出一定的量，取完之后再把他们的teacher_id设置为教师的表明被拿走批改了
+        List<CompetitionSubmissions> list = competitionSubmissionsMapper.assignSubmissions(pageSize,teacherId,divisionId);
+        list.forEach(competitionSubmissions ->
+                competitionSubmissions.setImageList(
+                        cSubmissionImageService.getImages(competitionSubmissions.getId())
+                )
+        );
+        return list;
+    }
 }
