@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class FinalRankService extends ServiceImpl<FinalRankMapper, FinalRank> {
     @Autowired
     FinalRankMapper finalRankMapper;
+    @Autowired
+    CSubmissionImageService cSubmissionImageService;
 
     /*
     * 更新最终评分均分以及排名
@@ -21,5 +23,20 @@ public class FinalRankService extends ServiceImpl<FinalRankMapper, FinalRank> {
     public void updateScoreAndRanks(Integer divisionId) {
         finalRankMapper.updateScore(divisionId);
         finalRankMapper.updateRanks(divisionId);
+    }
+
+    /*
+    * 获取一个竞赛的进入最终评阅的作品
+    * */
+    public IPage<CompetitionSubmissions> getFinalToReview(IPage<CompetitionSubmissions> page, Integer divisionId) {
+        page = finalRankMapper.selectFinalToReview(page,divisionId);
+        Long total = finalRankMapper.countFinalToReview(divisionId);
+        page.setTotal(total);
+        page.getRecords().forEach(competitionSubmissions ->
+            competitionSubmissions.setImageList(
+                    cSubmissionImageService.getImages(competitionSubmissions.getId())
+            )
+        );
+        return page;
     }
 }

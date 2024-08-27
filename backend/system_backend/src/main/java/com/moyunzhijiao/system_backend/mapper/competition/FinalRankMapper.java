@@ -1,7 +1,10 @@
 package com.moyunzhijiao.system_backend.mapper.competition;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.moyunzhijiao.system_backend.entiy.competition.CompetitionSubmissions;
 import com.moyunzhijiao.system_backend.entiy.competition.FinalRank;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 public interface FinalRankMapper extends BaseMapper<FinalRank> {
@@ -36,4 +39,15 @@ public interface FinalRankMapper extends BaseMapper<FinalRank> {
             "SET fr.rk = ranked.rank;"
     })
     void updateRanks(Integer divisionId);
+
+    @Select("select cs.id,cs.name " +
+            "from final_rank fr " +
+            "left join competition_submissions cs on fr.submission_id = cs.id " +
+            "where fr.division_id = #{divisionId} ")
+    IPage<CompetitionSubmissions> selectFinalToReview(IPage<CompetitionSubmissions> page, Integer divisionId);
+
+    @Select("select count submission_id " +
+            "from final_rank " +
+            "where division_id = #{divisionId} ")
+    Long countFinalToReview(Integer divisionId);
 }

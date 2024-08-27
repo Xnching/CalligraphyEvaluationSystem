@@ -3,44 +3,50 @@
     <!-- 上半部分 -->
     <div class="upper-section">
       <div class="back-button">
-        <el-button type="primary" @click="goBack">返回</el-button>
+        <el-button type="primary" @click="$emit('go-back')">返回</el-button>
       </div>
       <div class="title-text">
         最终作品评阅
       </div>
     </div>
-
     <!-- 下半部分 -->
     <div class="lower-section">
       <div class="left-part">
         <!-- 图片展示 -->
+         作品图片：
         <div class="image-display">
-          <img src="/images/copybook/1.jpg" alt="作品图片" />
+          <div v-for="image in submission.imageList" :key="image" class="image-item">
+            <img :src="image" :alt="image">
+          </div>
         </div>
         <!-- 文本框 -->
-        <div class="text-box" style="width:780px">
-          <textarea disabled>{{ defaultComment }}</textarea>
+        <div class="text-box" style="width:680px">
+          智能评分：
+          <el-input type="number" v-model="submission.systemScore" disabled ></el-input>
+          智能评语：
+          <el-input type="textarea" disabled v-model="submission.systemEvaluation"></el-input>
+          初级评分：
+          <el-input type="number" v-model="submission.initialScore" disabled ></el-input>
+          初级评语：
+          <el-input type="textarea" disabled v-model="submission.initialEvaluation"></el-input>
         </div>
       </div>
-
       <div class="right-part">
         <!-- 题目要求，竞赛名与组别，已阅份数，目标份数 -->
         <div class="info-section">
-          <div>题目要求：
-            <el-input type="textarea"></el-input>
+          <div>组别要求：
+            <el-input type="textarea" v-model="division.requirement"></el-input>
           </div>
-          <div>竞赛名与组别：{{ competitionName }}</div>
         </div>
         <!-- 评分，评语 -->
         <div class="input-section">
           <div>
-            评分：<input type="number" v-model="score" />
+            我的评分：<el-input type="number" v-model="mineScore"></el-input>
           </div>
         </div>
         <!-- 按钮区域 -->
         <div class="button-group">
-          <el-button type="primary" @click="previousItem">上一份</el-button>
-          <el-button type="primary" @click="nextItem">下一份</el-button>
+          <el-button type="success" @click="reviewWork">提交评阅</el-button>
         </div>
       </div>
     </div>
@@ -49,33 +55,34 @@
 
 <script>
 export default {
-  data() {
-    return {
-      imageSrc: 'path/to/your/image.jpg', // 图片路径
-      defaultComment: '（系统自动评价）',
-      questionRequirement: '****',
-      competitionName: '****',
-      score: null,
-    };
+  props: {
+    division:Object,
+    submission: Object
   },
-  methods: {
-    goBack() {
-      // 处理返回按钮的逻辑
-      this.$router.go(-1); // 假设使用了 Vue Router，返回上一页
-    },
-    previousItem() {
-      // 处理上一份的逻辑
-      console.log('Previous item clicked');
-    },
-    nextItem() {
-      // 处理下一份的逻辑
-      console.log('Next item clicked');
+  data(){
+    return{
+      mineScore:'',
     }
   },
-  mounted() {
-    // 通过 this.$route.params 获取路由参数
-    this.id = this.$route.params.id;
-   }
+  
+  methods: {
+    reviewWork(){
+      this.request.post("/review-work/final-review",{
+        params:{
+          submissionId:this.submission.id,
+          score:this.mineScore
+        }
+        }).then(res=>{
+        if(res.code == '200'){
+          this.$message.success('新增用户数据成功！');
+          this.load();
+        } else {
+          this.$message.error('新增用户数据失败，原因：' + res.msg);
+        }
+      })
+    },
+  },
+
 };
 </script>
 <style scoped>
