@@ -109,7 +109,6 @@ public class HomeworkController {
     @Operation(summary = "教师根据模板发布作业")
     @PostMapping("/ciep/publish-homework")
     public Result publishHomeworkByTemplate(@RequestHeader("authorization") String token,@RequestBody PublishByTemplateDTO publishByTemplateDTO){
-        System.out.println("让我看下类长什么样"+publishByTemplateDTO.toString());
         DecodedJWT jwt = JWT.decode(token);
         // 从载荷中获取用户 ID
         //从封装的类中取出数据

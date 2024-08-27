@@ -8,6 +8,7 @@ import com.moyunzhijiao.system_frontend.entity.homework.CharacterAnalysis;
 import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import com.moyunzhijiao.system_frontend.entity.homework.HomeworkSubmission;
 import com.moyunzhijiao.system_frontend.service.FontService;
+import com.moyunzhijiao.system_frontend.service.StudentService;
 import com.moyunzhijiao.system_frontend.service.homework.CharacterAnalysisService;
 import com.moyunzhijiao.system_frontend.service.homework.HomeworkImageService;
 import com.moyunzhijiao.system_frontend.service.homework.HomeworkService;
@@ -30,11 +31,25 @@ public class HomeworkSubmissionController {
     CharacterAnalysisService characterAnalysisService;
     @Autowired
     FontService fontService;
+    @Autowired
+    StudentService studentService;
     /*
     * 教师获取一个学生的作业详情
     * */
     @GetMapping("/ciep/stu-homework-detail")
     public Result submissionDetail(@RequestParam Integer id){
+        return findSubmission(id);
+    }
+
+    @GetMapping("/cieps/homework-detail")
+    public Result submissionDetail_(@RequestParam Integer stuNo,
+                                    @RequestParam Integer homeworkId){
+        Integer stuId=studentService.getStuIdByStuNo(stuNo);
+        Integer id=homeworkSubmissionService.getSubmissionByStuAndWork(stuId,homeworkId).getId();
+        return findSubmission(id);
+    }
+
+    public Result findSubmission(Integer id){
         HomeworkSubmission homeworkSubmission = homeworkSubmissionService.getById(id);
         Integer homeworkId = homeworkSubmission.getHomeworkId();
         HomeworkSubmissionDetailDTO homeworkSubmissionDetailDTO = new HomeworkSubmissionDetailDTO();

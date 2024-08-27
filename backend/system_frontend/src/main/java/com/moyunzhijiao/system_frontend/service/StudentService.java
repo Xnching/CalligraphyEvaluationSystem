@@ -10,6 +10,7 @@ import com.moyunzhijiao.system_frontend.controller.dto.StudentDTO;
 import com.moyunzhijiao.system_frontend.entity.Region;
 import com.moyunzhijiao.system_frontend.entity.Student;
 import com.moyunzhijiao.system_frontend.entity.Teacher;
+import com.moyunzhijiao.system_frontend.entity.homework.HomeworkSubmission;
 import com.moyunzhijiao.system_frontend.exception.ServiceException;
 import com.moyunzhijiao.system_frontend.mapper.RegionMapper;
 import com.moyunzhijiao.system_frontend.mapper.StudentMapper;
@@ -130,5 +131,11 @@ public class StudentService extends ServiceImpl<StudentMapper, Student> {
             throw new ServiceException(Constants.CODE_500, "系统保存文件失败");
         }
         return student.getPictureUrl();
+    }
+
+    public Integer getStuIdByStuNo(Integer stuNo){
+        QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("student_number",stuNo);
+        return  studentMapper.selectOne(queryWrapper).getId();
     }
 }
