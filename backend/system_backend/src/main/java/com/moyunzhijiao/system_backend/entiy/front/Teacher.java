@@ -6,7 +6,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.moyunzhijiao.system_backend.entiy.back.Permissions;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 @TableName(value="teacher")
@@ -55,5 +58,11 @@ public class Teacher {
     @TableField("created_time")
     @ExcelIgnore
     String createdTime;
+    @TableField(exist = false)
+    String token;
+    @TableField(exist = false)
+    List<Permissions> menus;
+    @TableField(exist = false)
+    String loginId;         //由于系统用户的是loginId
 
 }

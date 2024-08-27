@@ -55,10 +55,7 @@ export const setRoutes = () => {
             homeRoute.children.push({ path: '/backend/reviewManagement/teacher/:teacherName', name: '评阅管理-教师评阅详情', component: DetailedReview });
             // homeRoute.children.push({ path: '/backend/reviewManagement/teacher/:teacherName/junior/:id', name: '评阅管理-教师评阅详情-初级作品评阅详情', component: DetailedJuniorReview });
             // homeRoute.children.push({ path: '/backend/reviewManagement/teacher/:teacherName/final/:id', name: '评阅管理-教师评阅详情-最终作品评阅详情', component: DetailedFinalReview });
-          } else if (subItem.path === '/backend/reviewWorks') {
-            homeRoute.children.push({ path: '/backend/reviewWorks/junior/:id', name: '作品评阅-初级作品评阅详情', component: JuniorView });
-            homeRoute.children.push({ path: '/backend/reviewWorks/final/:id', name: '作品评阅-最终作品评阅详情', component: FinalView });
-          }
+          } 
             let subItemMenu = { path: subItem.path.replace("/", ""), name: subItem.name, component: () => import('../views/'+subItem.pagePath+'.vue') }
             homeRoute.children.push(subItemMenu)
           }

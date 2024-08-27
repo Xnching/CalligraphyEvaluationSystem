@@ -46,7 +46,7 @@ public interface FinalRankMapper extends BaseMapper<FinalRank> {
             "where fr.division_id = #{divisionId} ")
     IPage<CompetitionSubmissions> selectFinalToReview(IPage<CompetitionSubmissions> page, Integer divisionId);
 
-    @Select("select count submission_id " +
+    @Select("select count(submission_id) " +
             "from final_rank " +
             "where division_id = #{divisionId} ")
     Long countFinalToReview(Integer divisionId);

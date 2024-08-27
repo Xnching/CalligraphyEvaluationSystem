@@ -20,6 +20,7 @@ public class Division {
     private String target;
     boolean deleteFlag;
     private String createdTime;
+    private String state;
     @TableField(exist = false)
     String requirement;
     @TableField(exist = false)
@@ -30,6 +31,4 @@ public class Division {
     String competitionName;     //竞赛名
     @TableField(exist = false)
     Integer reviewedNumber;     //已评阅作品数
-    @TableField(exist = false)
-    String state;
 }

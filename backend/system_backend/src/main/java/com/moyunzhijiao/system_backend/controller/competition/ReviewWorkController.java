@@ -42,7 +42,7 @@ public class ReviewWorkController {
         // 从载荷中获取用户 ID
         Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
         String userType = jwt.getClaim("userType").asString();
-        if(userType.equals("系统用户")){
+        if(!userType.equals("教师")){
             return Result.error(Constants.CODE_400,"您不是评阅教师，您无法观看使用此界面！");
         }
         List<Division> list = reviewersService.getDivisionOfTeacher(teacherId);

@@ -360,7 +360,7 @@ create table teacher(
     password VARCHAR(100) NOT NULL comment'密码',
     id_number varchar(50) comment'身份证号',
     gender ENUM('男', '女') comment '性别',
-    phone varchar(25) comment'电话',
+    phone varchar(25) UNIQUE NOT NULL comment'电话',
     email varchar(50) comment '邮箱',
     school_id int UNSIGNED not null comment '所属学校id',
     region_id int UNSIGNED comment '所在区域id',
@@ -879,6 +879,7 @@ create table division(
     second_prize_ratio float default 10 comment '二等奖比例',
     third_prize_ratio float default 18 comment '三等奖比例',
     target enum('小学','初中','小学和初中') comment '参赛对象',
+    state varchar(10) default '同竞赛状态' comment '该组别的状态',
     delete_flag tinyint(1) not null DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '组别';

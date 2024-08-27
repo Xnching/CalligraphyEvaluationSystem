@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CompetitionSubmissionsService extends ServiceImpl<CompetitionSubmissionsMapper, CompetitionSubmissions> {
@@ -83,12 +84,20 @@ public class CompetitionSubmissionsService extends ServiceImpl<CompetitionSubmis
     * */
     public List<CompetitionSubmissions> getInitialToReview(Integer teacherId, Integer divisionId, Integer pageSize) {
         // 该算法是查找是否有teacher_id（没有就代表还没批改），然后取出一定的量，取完之后再把他们的teacher_id设置为教师的表明被拿走批改了
-        List<CompetitionSubmissions> list = competitionSubmissionsMapper.assignSubmissions(pageSize,teacherId,divisionId);
-        list.forEach(competitionSubmissions ->
-                competitionSubmissions.setImageList(
-                        cSubmissionImageService.getImages(competitionSubmissions.getId())
-                )
-        );
+        // 获取需要更新的记录
+        List<CompetitionSubmissions> list = competitionSubmissionsMapper.getSubmissionsToUpdate(divisionId, pageSize);
+        if (!list.isEmpty()) {
+            // 提取 id 列表
+            List<Integer> ids = list.stream().map(CompetitionSubmissions::getId).collect(Collectors.toList());
+            // 更新获取到的记录
+            competitionSubmissionsMapper.updateSubmissions(ids, teacherId);
+            //给每个作品设置上图片
+            list.forEach(competitionSubmissions ->
+                    competitionSubmissions.setImageList(
+                            cSubmissionImageService.getImages(competitionSubmissions.getId())
+                    )
+            );
+        }
         return list;
     }
 }

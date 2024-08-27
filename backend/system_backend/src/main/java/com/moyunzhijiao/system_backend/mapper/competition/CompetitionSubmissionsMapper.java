@@ -64,21 +64,17 @@ public interface CompetitionSubmissionsMapper extends BaseMapper<CompetitionSubm
     })
     List<Integer> getTopPercentageSubmissions(Integer divisionId, int limit);
 
-    @Update({
-            "<script>",
-            "WITH updated AS (",
-            "    SELECT id, name, system_score, system_evaluation",
-            "    FROM competition_submissions",
-            "    WHERE teacher_id IS NULL AND division_id = #{divisionId}",
-            "    ORDER BY id",
-            "    LIMIT #{limit} ",
-            "    FOR UPDATE",
-            ")",
-            "UPDATE competition_submissions",
-            "SET teacher_id = #{teacherId}",
-            "WHERE id IN (SELECT id FROM updated)",
-            "RETURNING *",
-            "</script>"
-    })
-    List<CompetitionSubmissions> assignSubmissions(Integer pageSize, Integer teacherId, Integer divisionId);
+    @Select("SELECT id,name,system_score,system_evaluation FROM competition_submissions " +
+            "WHERE teacher_id IS NULL AND division_id = #{divisionId} " +
+            "ORDER BY id " +
+            "LIMIT #{limit} " +
+            "FOR UPDATE")
+    List<CompetitionSubmissions> getSubmissionsToUpdate(@Param("divisionId") Integer divisionId, @Param("limit") Integer limit);
+    @Update("<script>" +
+            "UPDATE competition_submissions SET teacher_id = #{teacherId} WHERE id IN " +
+            "<foreach item='id' collection='ids' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            "</script>")
+    void updateSubmissions(@Param("ids") List<Integer> ids, @Param("teacherId") Integer teacherId);
 }

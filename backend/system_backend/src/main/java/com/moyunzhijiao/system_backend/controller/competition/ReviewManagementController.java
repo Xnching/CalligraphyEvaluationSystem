@@ -4,12 +4,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moyunzhijiao.system_backend.common.Result;
 import com.moyunzhijiao.system_backend.controller.dto.front.TeacherDTO;
-import com.moyunzhijiao.system_backend.entiy.competition.CompetitionRules;
-import com.moyunzhijiao.system_backend.entiy.competition.Division;
-import com.moyunzhijiao.system_backend.entiy.competition.FinalRank;
-import com.moyunzhijiao.system_backend.entiy.competition.Reviewers;
+import com.moyunzhijiao.system_backend.entiy.competition.*;
 import com.moyunzhijiao.system_backend.entiy.front.Teacher;
 import com.moyunzhijiao.system_backend.service.competition.*;
+import com.moyunzhijiao.system_backend.service.front.NoteService;
 import com.moyunzhijiao.system_backend.service.front.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +35,10 @@ public class ReviewManagementController {
     CompetitionSubmissionsService competitionSubmissionsService;
     @Autowired
     FinalRankService finalRankService;
+    @Autowired
+    CompetitionService competitionService;
+    @Autowired
+    NoteService noteService;
     /*
     * 修改规则
     * */
@@ -72,6 +74,12 @@ public class ReviewManagementController {
     @GetMapping("/division-ing")
     public Result getIngDivision(){
         List<Division> divisions = divisionService.getIngList();
+        divisions.forEach(division -> {
+            if(division.getState().equals("同竞赛状态")){
+                Competition competition = competitionService.getById(division.getCompetitionId());
+                division.setState(competition.getState());
+            }
+        });
         return Result.success(divisions);
     }
 
@@ -232,6 +240,10 @@ public class ReviewManagementController {
             return finalRank;
         }).collect(Collectors.toList());
         finalRankService.saveBatch(finalRanks);
+        //接着组别更新状态
+        Division division = divisionService.getById(divisionId);
+        division.setState("最终评阅中");
+        divisionService.updateById(division);
         return Result.success();
     }
 
@@ -239,9 +251,23 @@ public class ReviewManagementController {
      * 使一个组别结束最终评阅阶段
      * */
     @PutMapping("/end-final")
+    @Transactional
     public Result endFinal(@RequestBody Map<String, Integer> params){
         Integer divisionId = params.get("divisionId");
         finalRankService.updateScoreAndRanks(divisionId);
+        //接着组别更新状态
+        Division division = divisionService.getById(divisionId);
+        division.setState("已结束");
+        divisionService.updateById(division);
+        //检查该竞赛下面的所有组别是否都是已结束，如果都是已结束就让竞赛也进入已结束状态
+        Integer competitionId = division.getCompetitionId();
+        boolean can = divisionService.canCompetitionToEnd(competitionId);
+        if(can){
+            Competition competition = competitionService.getById(competitionId);
+            competition.setState("已结束");
+            competitionService.updateById(competition);
+            noteService.endCompetition(competition);
+        }
         return Result.success();
     }
 }

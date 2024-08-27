@@ -3,7 +3,9 @@ package com.moyunzhijiao.system_backend.controller.front;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.moyunzhijiao.system_backend.common.Constants;
 import com.moyunzhijiao.system_backend.common.Result;
+import com.moyunzhijiao.system_backend.controller.dto.back.UserDTO;
 import com.moyunzhijiao.system_backend.entiy.front.Teacher;
 import com.moyunzhijiao.system_backend.service.front.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,5 +63,22 @@ public class TeacherController {
     public Result getName(@RequestParam Integer teacherId){
         Teacher teacher = teacherService.getById(teacherId);
         return Result.success(teacher.getName());
+    }
+
+    /*
+     * 评阅教师的登录接口
+     * */
+    @PostMapping("/login")
+    public Result login(@RequestBody Teacher teacher){
+        String phone = teacher.getLoginId();
+        teacher.setPhone(phone);
+        String password = teacher.getPassword();
+
+        //调用hutool工具中的StrUtil函数实现用户名和密码是否为空的判断
+        if(StrUtil.isBlank(phone) || StrUtil.isBlank(password)){
+            return Result.error(Constants.CODE_400,"参数错误");
+        }
+        Teacher dto = teacherService.login(teacher);
+        return Result.success(dto);
     }
 }
