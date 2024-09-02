@@ -25,7 +25,7 @@ public class RegionService extends ServiceImpl<RegionMapper, Region> {
     /*
      * 用于查出地区，有模糊查询
      * */
-    public List<RegionDTO> findRegions(String name){
+    public List<Region> findRegions(String name){
         QueryWrapper<Region> queryWrapper=new QueryWrapper<>();
         if(StrUtil.isNotBlank(name)){
             //模糊查询
@@ -33,15 +33,12 @@ public class RegionService extends ServiceImpl<RegionMapper, Region> {
         }
         List<Region> list = list(queryWrapper);
         List<Region> parentNodes=list.stream()
-                .filter(region -> region.getLevel() == 1).collect(Collectors.toList());
+                .filter(region -> region.getLevel() == 1).toList();
         for(Region region:parentNodes){
             region.setChildren(getChildren(region, list));
         }
-        // 转换为 DTO
-        List<RegionDTO> dtoList = parentNodes.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
-        return dtoList;
+
+        return list;
     }
 
     /*

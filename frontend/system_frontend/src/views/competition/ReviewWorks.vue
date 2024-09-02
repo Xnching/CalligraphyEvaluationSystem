@@ -3,7 +3,7 @@
     <div v-if="showMainPage">
 
       <div>
-        <el-select v-model="selectedDivision" filterable placeholder="请选择导入人" @change="selectChange" style="width: 150px;margin-right: 20px;" clearable>
+        <el-select v-model="selectedDivision" filterable placeholder="请选择组别" @clear="clearSelection" @change="selectChange" style="width: 150px;margin-right: 20px;" clearable>
           <el-option
             v-for="item in divisionOptions"
             :key="item.id"
@@ -148,6 +148,9 @@ export default {
       initialSubmission:{},
       finalSubmission:{},
       reviews: [], // 存储评阅结果的数组
+      showMainPage:true,
+      showFinalReview:false,
+      showJuniorReview:false,
     };
   },
   created(){
@@ -166,7 +169,11 @@ export default {
     },
     //获取组别的竞赛信息
     getInformation(){
-      this.request.get("/division/information").then(res=>{
+      this.request.get("/division/information",{
+        params:{
+          divisionId:this.selectedDivision
+        }
+      }).then(res=>{
         if(res.code=='200'){
           this.divisionInformation=res.data;
         }else{
@@ -188,6 +195,15 @@ export default {
           this.$message.error('获取全部数据失败，原因：'+res.msg);
         }
       })
+    },
+    //分页用的功能
+    finalCurrentChange(val) {
+      this.pageNum = val;   //获取当前第几页
+      this.load();
+    },
+    finalSizeChange(val) {
+      this.pageSize = val;  //获取当前每页显示条数
+      this.load();
     },
     //获取作品用于最终评阅
     getFianl(){
@@ -211,6 +227,10 @@ export default {
       this.getInformation();
       this.getInitial();
       this.getFianl();
+    },
+    clearSelection() {
+      // 清除选择时不做任何操作
+      this.selectedDivision='';
     },
 
     //初级作品评阅的评阅按钮

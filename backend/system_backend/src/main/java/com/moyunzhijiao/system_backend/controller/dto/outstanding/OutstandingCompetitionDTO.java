@@ -14,6 +14,6 @@ public class OutstandingCompetitionDTO {
     BigDecimal averageFinalScore;
     Integer rk;
     String level;
-    String finalEvaluation;
+    String initialEvaluation;
     List<String> imageSrcList;
 }

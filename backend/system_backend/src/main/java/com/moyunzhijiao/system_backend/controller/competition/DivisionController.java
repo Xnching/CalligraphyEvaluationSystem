@@ -31,7 +31,9 @@ public class DivisionController {
     public Result getInformation(@RequestParam Integer divisionId){
         Division division = divisionService.getById(divisionId);
         DivisionRequirements divisionRequirements = divisionRequirementsService.getById(divisionId);
-        division.setRequirement(divisionRequirements.getRequirements());
+        if(divisionRequirements!=null){
+            division.setRequirement(divisionRequirements.getRequirements());
+        }
         return Result.success(division);
     }
 

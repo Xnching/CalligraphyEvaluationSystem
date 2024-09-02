@@ -10,8 +10,7 @@ import java.util.List;
 public interface DivisionMapper extends BaseMapper<Division> {
     @Select("<script>" +
             "SELECT d.*, " +
-            "c.name AS competitionName," +
-            "c.state as state, " +
+            "c.name AS competitionName, " +
             "COUNT(DISTINCT r.teacher_id) AS teacherNumber, " +
             "COUNT(DISTINCT cs.id) AS submissionNumber, " +
             "COUNT(DISTINCT CASE WHEN cs.initial_score != -1 THEN cs.id END) AS reviewedNumber " +

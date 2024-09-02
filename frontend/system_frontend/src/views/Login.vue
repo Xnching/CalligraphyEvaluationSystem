@@ -12,8 +12,8 @@
               <el-input size="medium" style="margin:10px 0px;width: 300px;margin-left:25px" show-password v-model="loginForm.password" prefix-icon="el-icon-lock" type="password"></el-input>
            </el-form-item>
            <div style="margin:10px 0; text-align:center">
-             <el-button type="primary" size="small" @click="login" >登录</el-button>
-             <el-button type="primary" size="small" @click="teacherLogin" >登录</el-button>
+             <el-button type="primary" size="small" @click="login" >系统用户登录</el-button>
+             <el-button type="primary" size="small" @click="teacherLogin" >评阅教师登录</el-button>
              <el-button type="warning" size="small" @click="resetLoginForm">重置</el-button>
            </div> 
          </el-form> 
@@ -63,7 +63,23 @@ export default {
         })
       },
       teacherLogin(){
-
+        this.$refs['LoginFormRef'].validate(async (valid) =>{
+          if(valid){
+            this.request.post("http://localhost:8084/api/backend/teacher/login",this.loginForm).then(res=>{
+              if(res.code=='200'){
+                console.log(res.data.token)
+                localStorage.setItem("user",JSON.stringify(res.data));//存储用户信息到浏览器
+                //动态设置当前用户的路由
+                localStorage.setItem("menus",JSON.stringify(res.data.menus));//存储用户权限菜单信息到浏览器
+                setRoutes()
+                this.$router.push("/backend/reviewWorks");
+                this.$message.success("登录成功");
+              }else{
+                this.$message.error(res.msg);
+              }
+            })
+          }
+        })
       },
       resetLoginForm(){
         this.$refs.LoginFormRef.resetFields()

@@ -2,7 +2,6 @@ package com.moyunzhijiao.system_backend.service.competition;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.moyunzhijiao.system_backend.entiy.competition.Competition;
 import com.moyunzhijiao.system_backend.entiy.competition.Division;
 import com.moyunzhijiao.system_backend.entiy.competition.DivisionRequirements;
 import com.moyunzhijiao.system_backend.mapper.competition.DivisionMapper;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,5 +68,20 @@ public class DivisionService extends ServiceImpl<DivisionMapper, Division> {
     }
 
 
-
+    /*
+    * 返回该竞赛下面的所有组别是否都处于已结束状态
+    * */
+    public boolean canCompetitionToEnd(Integer competitionId) {
+        AtomicBoolean can = new AtomicBoolean(true);
+        QueryWrapper<Division> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("competition_id",competitionId);
+        List<Division> divisions = list(queryWrapper);
+        divisions.forEach(division -> {
+            //有一个不是已结束那么竞赛就返回false
+            if(!division.getState().equals("已结束")){
+                can.set(false);
+            }
+        });
+        return can.get();
+    }
 }

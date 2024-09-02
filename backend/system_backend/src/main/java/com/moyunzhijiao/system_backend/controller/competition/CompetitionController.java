@@ -14,6 +14,7 @@ import com.moyunzhijiao.system_backend.entiy.competition.Division;
 import com.moyunzhijiao.system_backend.entiy.front.Student;
 import com.moyunzhijiao.system_backend.service.ConfigService;
 import com.moyunzhijiao.system_backend.service.competition.*;
+import com.moyunzhijiao.system_backend.service.front.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +39,8 @@ public class CompetitionController {
     ParticipantService participantService;
     @Autowired
     CompetitionSubmissionsService competitionSubmissionsService;
+    @Autowired
+    NoteService noteService;
     /*
     * 竞赛列表
     * */
@@ -87,6 +90,7 @@ public class CompetitionController {
                 CompetitionRequirements competitionRequirements = new CompetitionRequirements();
                 //保存竞赛
                 competitionService.save(competition);
+                noteService.addCompetition(competition);
                 competitionRequirements.setCompetitionId(competition.getId());
                 competitionRequirements.setRequirements(competition.getRequirement());
                 //保存要求
