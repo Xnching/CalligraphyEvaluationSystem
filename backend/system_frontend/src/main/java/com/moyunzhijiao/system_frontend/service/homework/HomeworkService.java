@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_frontend.common.Constants;
 import com.moyunzhijiao.system_frontend.controller.dto.KlassHomeworkDetailDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.PublishByTemplateDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.StudentDTO;
 import com.moyunzhijiao.system_frontend.entity.Klass;
 import com.moyunzhijiao.system_frontend.entity.Student;
 import com.moyunzhijiao.system_frontend.entity.homework.Homework;
@@ -75,7 +76,7 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
         klassHomeworkDetailDTO.setFont(fontService.getNameById(homework.getFontId()));
         //根据发布作业对象设置该作业里的接受作业的对象列表
         if(klassHomeworkDetailDTO.getTarget().equals("个人")){
-            IPage<Student> page = new Page<>(currentPage,pageSize);
+            IPage<StudentDTO> page = new Page<>(currentPage,pageSize);
             klassHomeworkDetailDTO.setStudentList(homeworkSubmissionService.getStudentPage(homeworkId,page));
         }else if(klassHomeworkDetailDTO.getTarget().equals("集体")){
             IPage<Klass> page = new Page<>(currentPage,pageSize);

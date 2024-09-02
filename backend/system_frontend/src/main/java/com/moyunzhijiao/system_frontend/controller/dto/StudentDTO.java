@@ -20,4 +20,5 @@ public class StudentDTO {
     String region;
     String regionId;
     String email;
+    String score;
 }

@@ -27,6 +27,6 @@ public class KlassHomeworkDetailDTO {
     String deadline;
     Integer difficulty;
     String createdTime;
-    IPage<Student> studentList;
+    IPage<StudentDTO> studentList;
     IPage<Klass> classList;
 }

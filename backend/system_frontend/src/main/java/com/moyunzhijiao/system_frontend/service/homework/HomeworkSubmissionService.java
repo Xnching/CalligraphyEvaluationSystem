@@ -7,9 +7,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_frontend.controller.dto.HomeworkSubmissionDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.HomeworkSubmissionDetailDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.KlassDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.StudentDTO;
 import com.moyunzhijiao.system_frontend.entity.Student;
 import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import com.moyunzhijiao.system_frontend.entity.homework.HomeworkSubmission;
+import com.moyunzhijiao.system_frontend.mapper.KlassMapper;
+import com.moyunzhijiao.system_frontend.mapper.StudentMapper;
 import com.moyunzhijiao.system_frontend.mapper.homework.HomeworkSubmissionMapper;
 import com.moyunzhijiao.system_frontend.service.KlassService;
 import com.moyunzhijiao.system_frontend.service.StudentService;
@@ -24,7 +28,10 @@ import java.util.stream.Collectors;
 public class HomeworkSubmissionService extends ServiceImpl<HomeworkSubmissionMapper, HomeworkSubmission> {
     @Autowired
     HomeworkSubmissionMapper homeworkSubmissionMapper;
-
+    @Autowired
+    StudentMapper studentMapper;
+    @Autowired
+    KlassMapper klassMapper;
 
     public IPage<HomeworkSubmissionDTO> getUnSubmitedPage(Integer stuId, Integer currentPage, Integer pageSize) {
         IPage<HomeworkSubmissionDTO> homeworkIPage = new Page<>(currentPage,pageSize);
@@ -69,8 +76,29 @@ public class HomeworkSubmissionService extends ServiceImpl<HomeworkSubmissionMap
     /*
     * 根据个人作业，查找学生信息
     * */
-    public IPage<Student> getStudentPage(Integer homeworkId,IPage<Student> page){
+    public IPage<StudentDTO> getStudentPage(Integer homeworkId, IPage<StudentDTO> page){
         page = homeworkSubmissionMapper.selectStudentPage(page,homeworkId);
+        page.getRecords().forEach(student -> {
+            Integer studentId = student.getStuId();
+            // 根据studentId查询klassId和studentNumber (你需要根据你的数据库结构调整查询)
+            Student studentInfo = studentMapper.selectById(studentId);
+            if (studentInfo != null) {
+                Integer klassId = studentInfo.getKlassId();
+                String studentNumber = studentInfo.getStudentNumber(); // 假设studentNumber存储在student表中
+
+                // 根据klassId查询klassName
+                if (klassId != null) {
+                    KlassDTO klassDTO = klassMapper.getKlassById(klassId);
+                    if (klassDTO != null) {
+                        student.setKlass(klassDTO.getName());
+                    }
+                }
+
+                // 设置studentNumber
+                student.setStuno(studentNumber);
+            }
+        });
+
         QueryWrapper<HomeworkSubmission> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("homework_id",homeworkId);
         LambdaQueryWrapper<Student> queryWrapper1 = new LambdaQueryWrapper<>();
