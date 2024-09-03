@@ -41,6 +41,12 @@
             <artifactId>easyexcel</artifactId>
             <version>3.2.0</version>
         </dependency>
+        <!-- 服务器端发送消息的依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

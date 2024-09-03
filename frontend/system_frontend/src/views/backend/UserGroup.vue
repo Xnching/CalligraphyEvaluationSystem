@@ -388,10 +388,6 @@ export default {
         permission:"书法知识管理",
         children:[
             {
-            id:'39',
-            permission:"类型管理",
-            },
-            {
             id:'40',
             permission:"添加书法知识",
             },

@@ -104,7 +104,7 @@
       <!--下面是图片展示区域-->
       <div class="image-grid">
         <div v-for="image in images" :key="image.id" class="image-item">
-          <img :src="image.pictureUrl" :alt="image.name" @click="handleEdit1(image)">
+          <img :src="image.pictureUrl" :alt="image.name" @click="handleEdit1(image)" style="max-height: 80%;">
           <p style=" text-align: center;">{{ image.name }}</p> <!-- 添加这一行来显示图片标题 -->
         </div>
       </div>
@@ -312,6 +312,7 @@ export default {
   border: 2px solid #ccc; /* 边框样式 */
   padding: 10px;          /* 可选：内边距 */
   position: relative;     /* 设置为相对定位 */
+  height:200px;
 }
 
 .image-item img {

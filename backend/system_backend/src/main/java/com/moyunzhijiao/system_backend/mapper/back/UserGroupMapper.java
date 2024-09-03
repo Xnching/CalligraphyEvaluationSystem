@@ -12,7 +12,7 @@ public interface UserGroupMapper extends BaseMapper<UserGroup> {
 
     /*  根据id查找状态
     * */
-    @Select("select id , name from user_group where state ='已激活' ")
+    @Select("select id , name from user_group where state ='已激活' and delete_flag =0 ")
     List<Map<String ,Object>>selectIdAndName();
 
     /*  用户组分页查询和模糊查询

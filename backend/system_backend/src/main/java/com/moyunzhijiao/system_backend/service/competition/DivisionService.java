@@ -2,6 +2,7 @@ package com.moyunzhijiao.system_backend.service.competition;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.moyunzhijiao.system_backend.entiy.competition.Competition;
 import com.moyunzhijiao.system_backend.entiy.competition.Division;
 import com.moyunzhijiao.system_backend.entiy.competition.DivisionRequirements;
 import com.moyunzhijiao.system_backend.mapper.competition.DivisionMapper;

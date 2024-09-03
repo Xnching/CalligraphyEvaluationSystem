@@ -1,6 +1,7 @@
 package com.moyunzhijiao.system_backend.service.front;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.moyunzhijiao.system_backend.config.handler.MyWebSocketHandler;
 import com.moyunzhijiao.system_backend.entiy.competition.Competition;
 import com.moyunzhijiao.system_backend.entiy.front.Note;
 import com.moyunzhijiao.system_backend.entiy.front.NoteContent;
@@ -12,11 +13,14 @@ import org.springframework.stereotype.Service;
 public class NoteService extends ServiceImpl<NoteMapper, Note> {
     @Autowired
     NoteContentService noteContentService;
+    @Autowired
+    MyWebSocketHandler myWebSocketHandler;
     public void addCompetition(Competition competition) {
         Note note = new Note();
         NoteContent noteContent = new NoteContent();
         note.setType("竞赛消息");
-        note.setTarget("全体");
+        note.setTarget("全部");
+        myWebSocketHandler.sendMessageToAll("有新消息");
         note.setName("竞赛:"+competition.getName()+"即将举办！");
         note.setSender("官方");
         note.setAssociationId(competition.getId());
@@ -46,7 +50,7 @@ public class NoteService extends ServiceImpl<NoteMapper, Note> {
         Note note = new Note();
         NoteContent noteContent = new NoteContent();
         note.setType("竞赛消息");
-        note.setTarget("全体");
+        note.setTarget("全部");
         note.setName("竞赛:"+competition.getName()+"已落下帷幕！");
         note.setSender("官方");
         note.setAssociationId(competition.getId());

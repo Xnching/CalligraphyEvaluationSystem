@@ -167,6 +167,19 @@ export default {
         }
       })
     },
+    getUrged(){
+      this.request.get("/review-work/get-urge",{
+        params:{
+          divisionId:this.selectedDivision
+        }
+      }).then(res=>{
+        if(res.code=='200'){
+          this.isUrged=res.data;
+        }else{
+          this.$message.error('获取全部组别数据失败，原因：'+res.msg);
+        }
+      })
+    },
     //获取组别的竞赛信息
     getInformation(){
       this.request.get("/division/information",{
@@ -224,6 +237,7 @@ export default {
     },
     //根据组别选择变化进行刷新数据
     selectChange(){
+      this.getUrged();
       this.getInformation();
       this.getInitial();
       this.getFianl();

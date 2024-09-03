@@ -490,7 +490,7 @@ create table klass_homework(
 create table teacher_homework(
     teacher_id int UNSIGNED not null comment '教师id',
     homework_id int UNSIGNED not null comment '作业id',
-    template_id int UNSIGNED not null comment '模板id',
+    template_id int UNSIGNED comment '模板id',
     template_type enum('自定义','系统') comment '模板类型',
     primary key (teacher_id,homework_id)
 )comment '教师对作业的布置，同时记录是否使用了模板';
@@ -508,7 +508,7 @@ create table teacher_homework(
 create table student_homework(
     student_id int UNSIGNED not null comment '学生id',
     homework_id int UNSIGNED not null comment '作业id',
-    template_id int UNSIGNED not null comment '模板id',
+    template_id int UNSIGNED comment '模板id',
     template_type enum('自定义','系统') comment '模板类型',
     primary key (student_id,homework_id)
 )comment '学生创建作业的表';
