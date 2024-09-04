@@ -50,7 +50,7 @@
           </el-form-item>
           <el-form-item label="公告内容：">
             <el-form-item >
-              <div v-html="sanitizedContent"></div>
+              <wang-editor ref="myEditor" v-model="valueHtml"></wang-editor>
             </el-form-item>
           </el-form-item>
         </el-form>
@@ -144,6 +144,7 @@ export default {
       dialogVisible: false,
       editForm:{},
       pageNum:1,
+      valueHtml:'',
       pageSize:20,
       total:0,
       sanitizedContent:'',
@@ -171,9 +172,9 @@ export default {
       }).then(res=>{
         if(res.code=='200'){
 					console.log(res);
-          this.sanitizedContent = res.data;
+          this.$refs.myEditor.setHtml(res.data.message);
         }else{
-          this.$message.error('获取全部用户数据失败，原因：'+res.msg);
+          this.$message.error('获取数据失败，原因：'+res.msg);
         }
       })
     },

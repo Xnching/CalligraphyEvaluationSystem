@@ -6,8 +6,8 @@
         <el-table :data="tableData" 
         style="width: 100%"
         stripe>
-          <el-table-column prop="q" label="问题"></el-table-column>
-          <el-table-column prop="a" label="答案"></el-table-column>
+          <el-table-column prop="title" label="标题"></el-table-column>
+          <el-table-column prop="type" label="类型"></el-table-column>
           <el-table-column prop="editor" label="编辑人"></el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
@@ -31,6 +31,21 @@
         
         <el-dialog :visible.sync="dialogVisible1" width="50%">
           <el-form ref="form" :model="editForm" label-width="80px">
+            <el-form-item label="标题">
+              <el-input v-model="editForm.title"></el-input>
+            </el-form-item>
+            <el-form-item label="类型">
+              <el-select v-model="editForm.type" placeholder="请选择问题类型">
+                <el-option label="登录" value="登录"></el-option>
+                <el-option label="账号" value="账号"></el-option>
+                <el-option label="学校" value="学校"></el-option>
+                <el-option label="反馈" value="反馈"></el-option>
+                <el-option label="作业" value="作业"></el-option>
+                <el-option label="竞赛" value="竞赛"></el-option>
+                <el-option label="资源" value="资源"></el-option>
+                <el-option label="其他" value="其他"></el-option>
+              </el-select>
+            </el-form-item>
             <el-form-item label="问题">
               <el-input v-model="editForm.q"></el-input>
             </el-form-item>
@@ -47,6 +62,21 @@
 
         <el-dialog :visible.sync="dialogVisible2" width="50%">
           <el-form ref="form" :model="addForm" label-width="80px">
+            <el-form-item label="标题">
+              <el-input v-model="addForm.title"></el-input>
+            </el-form-item>
+            <el-form-item label="类型">
+              <el-select v-model="addForm.type" placeholder="请选择问题类型">
+                <el-option label="登录" value="登录"></el-option>
+                <el-option label="账号" value="账号"></el-option>
+                <el-option label="学校" value="学校"></el-option>
+                <el-option label="反馈" value="反馈"></el-option>
+                <el-option label="作业" value="作业"></el-option>
+                <el-option label="竞赛" value="竞赛"></el-option>
+                <el-option label="资源" value="资源"></el-option>
+                <el-option label="其他" value="其他"></el-option>
+              </el-select>
+            </el-form-item>
             <el-form-item label="问题">
               <el-input v-model="addForm.q"></el-input>
             </el-form-item>
@@ -69,8 +99,16 @@ export default {
       pageNum:1,
       pageSize:20,
       total:0,
-      editForm: {},
+      editForm: {
+        id:'',
+        type:'',
+        title:'',
+        q:'',
+        a:''
+      },
       addForm:{
+        title:'',
+        type:'',
         q:'',
         a:''
       },
@@ -97,6 +135,7 @@ export default {
         if(res.code == '200'){
           this.$message.success('添加数据成功！');
           this.dialogVisible1=false;
+          this.load();
         } else {
           this.$message.error('添加数据失败，原因：' + res.msg);
         }
@@ -136,10 +175,11 @@ export default {
     handleSave(){
       this.request.put("/question/update",this.editForm).then(res=>{
         if(res.code == '200'){
-          this.$message.success('修改样本字数据成功！');
+          this.$message.success('修改数据成功！');
           this.dialogVisible1=false;
+          this.load();
         } else {
-          this.$message.error('修改样本字数据失败，原因：' + res.msg);
+          this.$message.error('修改数据失败，原因：' + res.msg);
         }
       })
       this.dialogVisible1=false;     

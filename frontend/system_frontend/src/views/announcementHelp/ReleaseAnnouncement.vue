@@ -21,12 +21,12 @@
         </el-select>
       </el-form-item>
       <el-form-item label="发布时间：">
-        <el-radio-group v-model="form.releaseType">
+        <el-radio-group v-model="form.type">
           <el-radio label="立即发布">立即发布</el-radio>
           <el-radio label="定时发布">定时发布</el-radio>
         </el-radio-group>
         <el-time-picker
-            v-if="form.releaseType === 'scheduled'"
+            v-if="form.type === 'scheduled'"
             v-model="form.releaseTime"
             placeholder="选择发布时间"
             :picker-options="pickerOptions"

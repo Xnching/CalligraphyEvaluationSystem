@@ -107,4 +107,18 @@ public class ReviewersService extends ServiceImpl<ReviewersMapper, Reviewers> {
     public List<Division> getDivisionOfTeacher(Integer teacherId) {
         return reviewersMapper.getDivisionOfTeacher(teacherId);
     }
+
+    /*
+    * 获取一个教师在一个组别中是否被催促
+    * */
+    public boolean getIsUrged(Integer teacherId, Integer divisionId) {
+        QueryWrapper<Reviewers> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("division_id",divisionId);
+        queryWrapper.eq("teacher_id",teacherId);
+        Reviewers reviewers = reviewersMapper.selectOne(queryWrapper);
+        boolean is = reviewers.isUrged();
+        reviewers.setUrged(false);
+        reviewersMapper.update(reviewers,queryWrapper);
+        return is;
+    }
 }

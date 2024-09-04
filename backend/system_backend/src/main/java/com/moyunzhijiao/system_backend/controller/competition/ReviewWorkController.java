@@ -113,4 +113,17 @@ public class ReviewWorkController {
         finalReviewService.save(finalReview);
         return Result.success();
     }
+
+    /*
+    * 获取是否在一个组别中是否被催促
+    * */
+    @GetMapping("/get-urge")
+    public Result getIsUrged(@RequestHeader("token") String token,@RequestParam Integer divisionId){
+        // 解码 token
+        DecodedJWT jwt = JWT.decode(token);
+        // 从载荷中获取用户 ID
+        Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
+        boolean isUrged = reviewersService.getIsUrged(teacherId,divisionId);
+        return Result.success(isUrged);
+    }
 }

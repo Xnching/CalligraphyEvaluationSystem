@@ -20,11 +20,6 @@
               width="125">
           </el-table-column>
           <el-table-column
-              prop="name"
-              label="作品名称"
-              width="220">
-          </el-table-column>
-          <el-table-column
               prop="systemScore"
               label="系统评分"
               width="120">
@@ -71,11 +66,6 @@
               prop="id"
               label="作品编号"
               width="125">
-          </el-table-column>
-          <el-table-column
-              prop="name"
-              label="作品名称"
-              width="220">
           </el-table-column>
           <el-table-column
               prop="systemScore"
@@ -128,9 +118,6 @@
             <img :src="image" :alt="image">
           </div>
         </el-form-item>
-          <el-form-item label="作品名称：">
-            <el-input v-model="submissionForm.name"></el-input>
-          </el-form-item>
           <el-form-item label="系统评分：">
               <el-input v-model="submissionForm.systemScore"></el-input>
           </el-form-item>
@@ -224,6 +211,8 @@ export default {
       }).then(res=>{
         //console.log(res);
         if(res.code=='200'){
+          console.log(res);
+          
           this.initialTableData=res.data.records;
           this.initialTotal=res.data.total;
         }else{
@@ -242,7 +231,7 @@ export default {
     },
     //请求分页查询数据
     loadFinal(){
-      this.request.get("detailed-review/initial-page",{
+      this.request.get("detailed-review/final-page",{
         params:{
           pageNum:this.finalPageNum,
           pageSize:this.finalPageSize,

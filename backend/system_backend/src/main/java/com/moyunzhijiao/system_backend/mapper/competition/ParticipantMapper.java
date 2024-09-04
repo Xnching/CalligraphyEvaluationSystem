@@ -34,39 +34,39 @@ public interface ParticipantMapper extends BaseMapper<Participant> {
     @Select("<script>" +
             "select count(*) " +
             "from participant " +
-            "left join student on participant.student_id = student.id " +
+            "   left join student on participant.student_id = student.id " +
             "where participant.competition_id = #{competitionId} " +
-            "and student.name like CONCAT('%', #{str}, '%') " +
+            "   and student.name like CONCAT('%', #{str}, '%') " +
             "<if test='gradeId != null'> " +
-            "and student.grade_id = #{gradeId} " +
+            "   and student.grade_id = #{gradeId} " +
             "</if> " +
             "<if test='status != null'> " +
             "<if test='status == 0'> " +
-            "and submission_id = 0 " +
+            "   and submission_id = 0 " +
             "</if> " +
             "<if test='status == 1'> " +
-            "and submission_id != 0 " +
+            "   and submission_id != 0 " +
             "</if> " +
             "</if> " +
             "</script>")
     int countStudentByCompetition(@Param("str") String str, @Param("competitionId") Integer competitionId, @Param("gradeId") Integer gradeId, @Param("status") Integer status);
     @Select("<script>" +
             "SELECT cs.*, " +
-            "fr.level AS level, " +
-            "s.name AS student, " +
-            "GROUP_CONCAT(ci.picture_url) AS imageList " +
-            "FROM participant p " +
-            "LEFT JOIN competition_submissions cs ON cs.id = p.submission_id " +
-            "LEFT JOIN final_rank fr ON cs.id = fr.submission_id " +
-            "LEFT JOIN student s ON p.student_id = s.id " +
-            "LEFT JOIN csubmission_image ci ON cs.id = ci.submission_id " +
+            "   fr.level AS level, " +
+            "   s.name AS student, " +
+            "   GROUP_CONCAT(ci.picture_url) AS imageList " +
+            "FROM competition_submissions cs " +
+            "   LEFT JOIN participant p ON cs.id = p.submission_id " +
+            "   LEFT JOIN final_rank fr ON cs.id = fr.submission_id " +
+            "   LEFT JOIN student s ON p.student_id = s.id " +
+            "   LEFT JOIN csubmission_image ci ON cs.id = ci.submission_id " +
             "WHERE cs.competition_id = #{competitionId} " +
-            "AND (cs.name LIKE CONCAT('%', #{str}, '%') OR s.name LIKE CONCAT('%', #{str}, '%')) " +
+            "   AND (cs.name LIKE CONCAT('%', #{str}, '%') OR s.name LIKE CONCAT('%', #{str}, '%')) " +
             "<if test='gradeId != null'> " +
-            "AND s.grade_id = #{gradeId} " +
+            "   AND s.grade_id = #{gradeId} " +
             "</if> " +
             "<if test='level != null'> " +
-            "AND fr.level = #{level} " +
+            "   AND fr.level = #{level} " +
             "</if> " +
             "GROUP BY cs.id, fr.level, s.name " + // Include all non-aggregated columns
             "</script>")

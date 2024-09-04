@@ -17,7 +17,12 @@ public class InterceptorConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry){
         registry.addInterceptor(jwtInterceptor())
                 .addPathPatterns("")     //拦截所有请求，通过判断token是否合法来决定是否登录
-                .excludePathPatterns("/api/backend/login","/**/export","/**/import","/upload/**");//排除这些接口，也就是说，这些接口可以放行
+                .excludePathPatterns("/api/backend/login"
+                        ,"/**/export"
+                        ,"/**/import"
+                        ,"/upload/**",
+                        "/ws/**"    //此为websocket接口
+                );//排除这些接口，也就是说，这些接口可以放行
 
     }
 

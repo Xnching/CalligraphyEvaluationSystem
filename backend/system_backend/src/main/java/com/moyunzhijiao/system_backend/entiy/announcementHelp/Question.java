@@ -12,4 +12,6 @@ public class Question {
     String q;
     String a;
     String editor;
+    String type;
+    String title;
 }
