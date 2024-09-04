@@ -113,7 +113,6 @@ public class HomeworkSubmissionService extends ServiceImpl<HomeworkSubmissionMap
     * */
     @Transactional
     public void addByHomework(Integer homeworkId, List<Integer> list) {
-        System.out.println("让我看看有没有保存作业");
         List<HomeworkSubmission> homeworkSubmissionList = list.stream().map(studentId->{
             HomeworkSubmission homeworkSubmission = new HomeworkSubmission();
             homeworkSubmission.setHomeworkId(homeworkId);
@@ -122,8 +121,6 @@ public class HomeworkSubmissionService extends ServiceImpl<HomeworkSubmissionMap
             homeworkSubmission.setReviewed(0);
             return homeworkSubmission;
         }).toList();
-        //批量保存
-        System.out.println("让我看看列表，"+homeworkSubmissionList);
         saveBatch(homeworkSubmissionList);
     }
 
