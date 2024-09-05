@@ -15,4 +15,5 @@ public class CompetitionDetailDTO {
     Integer systemScore;
     String systemEvaluation;
     Integer finalScore;
+    String judgeEvaluation;
 }

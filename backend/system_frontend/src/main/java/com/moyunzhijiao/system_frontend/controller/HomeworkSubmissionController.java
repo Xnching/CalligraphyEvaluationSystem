@@ -42,7 +42,7 @@ public class HomeworkSubmissionController {
     }
 
     @GetMapping("/cieps/homework-detail")
-    public Result submissionDetail_(@RequestParam Integer stuNo,
+    public Result submissionDetail_(@RequestParam(required = false) Integer stuNo,
                                     @RequestParam Integer homeworkId){
         Integer stuId=studentService.getStuIdByStuNo(stuNo);
         Integer id=homeworkSubmissionService.getSubmissionByStuAndWork(stuId,homeworkId).getId();

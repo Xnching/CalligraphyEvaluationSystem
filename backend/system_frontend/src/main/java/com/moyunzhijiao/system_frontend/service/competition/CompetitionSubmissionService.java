@@ -28,8 +28,19 @@ public class CompetitionSubmissionService {
     CsubmissionImageMapper csubmissionImageMapper;
 
     public CompetitionDetailDTO getCompetitionDetail(Integer comId,Integer stuNo){
-        CompetitionDetailDTO competitionDetailDTO=new CompetitionDetailDTO();
+
         Integer stuId=studentService.getStuIdByStuNo(stuNo);
+        return getDetail(comId,stuId);
+    }
+
+    public CompetitionDetailDTO getOutstandingDetail(Integer submissionId){
+        Integer comId=competitionSubmissionMapper.selectById(submissionId).getCompetitionId();
+        Integer stuId=competitionSubmissionMapper.selectById(submissionId).getAuthorId();
+        return getDetail(comId,stuId);
+    }
+
+    public CompetitionDetailDTO getDetail(Integer comId,Integer stuId){
+        CompetitionDetailDTO competitionDetailDTO=new CompetitionDetailDTO();
         competitionDetailDTO = competitionSubmissionMapper.selectCompetitionDetail(comId,stuId);
         QueryWrapper<CsubmissionImage> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("submission_id", competitionDetailDTO.getCompetitionSubmissionId())

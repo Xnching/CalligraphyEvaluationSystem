@@ -24,4 +24,12 @@ public class CompetitionSubmissionController {
         CompetitionDetailDTO competitionDetailDTO=competitionSubmissionService.getCompetitionDetail(comId,stuNo);
         return Result.success(competitionDetailDTO);
     }
+
+    @GetMapping("/cieps/outstanding-competition-submission-detail")
+    public Result getCompetitionDetail(@RequestHeader("authorization") String token,
+                                       @RequestParam Integer submissionId){
+        DecodedJWT jwt = JWT.decode(token);
+        CompetitionDetailDTO competitionDetailDTO=competitionSubmissionService.getOutstandingDetail(submissionId);
+        return Result.success(competitionDetailDTO);
+    }
 }

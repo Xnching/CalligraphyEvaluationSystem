@@ -13,12 +13,12 @@ public interface CompetitionSubmissionMapper extends BaseMapper<CompetitionSubmi
             "            fr.level AS level, " +
             "            cs.system_score AS systemScore, " +
             "            cs.system_evaluation AS systemEvaluation, " +
-            "            fr.score AS finalScore " +
+            "            fr.score AS finalScore, " +
+            "            cs.initial_evaluation as judgeEvaluation " +
             "        FROM competition_submissions cs " +
             "        JOIN competition c ON cs.competition_id = c.id " +
             "        JOIN division d ON cs.division_id = d.id " +
             "        LEFT JOIN final_rank fr ON cs.id = fr.submission_id " +
-            "        LEFT JOIN csubmission_image csi ON cs.id = csi.submission_id " +
             "        WHERE cs.author_id = #{stuId} AND cs.competition_id = #{comId} " )
     public CompetitionDetailDTO selectCompetitionDetail(Integer comId,Integer stuId);
 }
