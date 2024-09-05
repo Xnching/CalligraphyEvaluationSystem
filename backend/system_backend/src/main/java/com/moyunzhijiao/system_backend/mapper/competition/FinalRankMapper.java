@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.moyunzhijiao.system_backend.entiy.competition.CompetitionSubmissions;
 import com.moyunzhijiao.system_backend.entiy.competition.FinalRank;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -50,4 +51,25 @@ public interface FinalRankMapper extends BaseMapper<FinalRank> {
             "from final_rank " +
             "where division_id = #{divisionId} ")
     Long countFinalToReview(Integer divisionId);
+
+    @Update({
+            "UPDATE final_rank",
+            "SET level = CASE",
+            "  WHEN rk <= #{specialPrizeLimit} THEN '特等奖'",
+            "  WHEN rk <= #{firstPrizeLimit} THEN '一等奖'",
+            "  WHEN rk <= #{secondPrizeLimit} THEN '二等奖'",
+            "  WHEN rk <= #{thirdPrizeLimit} THEN '三等奖'",
+            "  ELSE '未获奖'",
+            "END",
+            "WHERE division_id = #{divisionId}"
+    })
+    void updateLevel(
+            @Param("divisionId") Integer divisionId,
+            @Param("specialPrizeLimit") Integer specialPrizeLimit,
+            @Param("firstPrizeLimit") Integer firstPrizeLimit,
+            @Param("secondPrizeLimit") Integer secondPrizeLimit,
+            @Param("thirdPrizeLimit") Integer thirdPrizeLimit
+    );
+
+
 }

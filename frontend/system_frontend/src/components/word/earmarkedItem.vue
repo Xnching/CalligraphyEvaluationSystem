@@ -1,5 +1,4 @@
 <script>
-import { onMounted, ref } from 'vue'
 export default {
   props: {
     templateType: Array,
@@ -9,41 +8,20 @@ export default {
       formModel: {
         name: '',
         radical: '',
-        font: '楷书',
+        font: '',
         difficulty: 0
       },
       radicalOptions: [
         {
-          value: '专项练习(偏旁部首)',
-          label: '专项练习(偏旁部首)'
+          value: '专项练习(部首)',
+          label: '专项练习(部首)'
         },
         {
           value: '专项练习(结构)',
           label: '专项练习(结构)'
-        },
-        {
-          value: '专项练习(字体)',
-          label: '专项练习(字体)'
         }
       ],
-      fontOptions: [
-        {
-          value: '楷书',
-          label: '楷书'
-        },
-        {
-          value: '行书',
-          label: '行书'
-        },
-        {
-          value: '草书',
-          label: '草书'
-        },
-        {
-          value: '隶书',
-          label: '隶书'
-        }
-      ],
+      fontOptions: [],
       imgCount: 30, // 总共有 143 张图片
       imgUrls:[],
       
@@ -53,7 +31,13 @@ export default {
       wordImgBlobs: [],
       candidateWordList: [],
       imgShow: false,
-      visible: false 
+      visible: false,
+      tablePageNum: 1,
+      tablePageSize: 20,
+      tableTotal: 0, 
+      wordPageNum: 1,
+      wordPageSize: 20,
+      wordTotal: 0, 
     }
   },
   mounted() {
@@ -71,6 +55,8 @@ export default {
       this.formModel.radical = '专项练习(结构)'
     }
     this.$nextTick(() => {
+      this.getFont();
+      this.getRadical();
       this.fetchImages(); 
     });
   },
@@ -130,6 +116,33 @@ export default {
     handleClick(){
 
     },
+    //获取字体
+    getFont(){
+      this.request.get("/font/fonts").then(res=>{
+        if(res.code=='200'){
+          this.fontOptions=res.data;
+        }else{
+          this.$message.error('获取全部字体数据失败，原因：'+res.msg);
+        }
+
+      })
+    },
+    //获取部首列表
+    getRadical(){
+      this.request.get("/radical/page",{
+        params:{
+          pageNum:this.tablePageNum,
+          pageSize:this.tablePageSize,
+        }
+      }).then(res=>{
+        if(res.code=='200'){
+          this.tableData=res.data.records;
+          this.tableTotal=res.data.total;
+        }else{
+          this.$message.error('获取全部部首失败，原因：'+res.msg);
+        }
+      })
+    },
   }
 }
 
@@ -158,45 +171,59 @@ export default {
       <el-select v-model="formModel.font" size="large" style="width: 240px">
         <el-option
           v-for="item in fontOptions"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id"
         />
       </el-select>
-      <el-rate v-model="formModel.difficulty" size="large" />
+      难度：<el-rate v-model="formModel.difficulty" size="large" />
     </div>
     <div class="main">
       <div class="left">
-        <div>偏旁部首</div>
-        <div style="border: black solid 2px; width: 30vw">
+        <div>部首</div>
+        <div style="border: black solid 2px; width: 32vw">
           <el-scrollbar height="400px">
-            <div
-              style="
-                display: flex;
-                justify-content: space-around;
-                flex-wrap: wrap;
-              "
-            >
-              <span
-                v-for="(imgBlob, index) in imgBlobs"
-                :key="index"
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                  margin: 5px;
-                "
-                v-if="imgBlobs.length > 0"
-              >
-                <img :src="createObjectURL_(imgBlob)" @click="handleClick" />
-              </span>
+            <el-table
+              ref="fontTable"
+              :data="tableData"
+              stripe
+              tooltip-effect="dark"
+              style="width: 100%">
+              <el-table-column
+                prop="id"
+                label="字体编号"
+                width="95">
+              </el-table-column>
+              <el-table-column
+                prop="name"
+                label="字体名"
+                width="100">
+              </el-table-column>
+              <el-table-column fixed="right" label="操作">                         
+                <template slot-scope="scope">
+                  <el-button type="primary" size="small" icon="el-icon-info" @click="handleShow(scope.row)">展示该部首的模板字</el-button>
+                </template>
+              </el-table-column> 
+            </el-table>
+
+            <!-- 分页栏-->
+            <div style="padding:10px">
+              <el-pagination
+                @size-change="tableSizeChange"
+                @current-change="tableCurrentChange"
+                :current-page="tablePageNum"
+                :page-size="tablePageSize"
+                layout="total, prev, pager, next"
+                :total="tableTotal">
+              </el-pagination>
             </div>
+
           </el-scrollbar>
         </div>
       </div>
       <div class="right">
         <div>汉字列表</div>
-        <div style="border: black solid 2px; width: 30vw">
+        <div style="border: black solid 2px; width: 32vw">
           <el-scrollbar height="400px">
             <div
               style="
@@ -223,6 +250,17 @@ export default {
                   style="width: 90px"
                 />
               </span>
+              <!-- 分页栏-->
+              <div style="padding:10px">
+                <el-pagination
+                  @size-change="wordSizeChange"
+                  @current-change="wordCurrentChange"
+                  :current-page="wordPageNum"
+                  :page-size="wordPageSize"
+                  layout="total, prev, pager, next"
+                  :total="wordTotal">
+                </el-pagination>
+              </div>
             </div>
           </el-scrollbar>
         </div>
@@ -239,7 +277,7 @@ export default {
           <img
             v-show="imgShow"
             src="/images/叉号.svg"             
-            style="position: absolute; bottom: 55px; right: 0; cursor: pointer"
+            style="position: absolute; bottom: 90px; right: 0; cursor: pointer ; width: 23px; height: 23px;"
             @click="onDel(index)"
           />
         </span>
@@ -260,6 +298,7 @@ export default {
         >
       </div>
     </div>
+    <el-button type="primary" @click="submitAdd()" style="margin-left:85%; margin-top: 50px;">确定生成</el-button>
   </div>
 </template>
 <style lang="scss" scoped>

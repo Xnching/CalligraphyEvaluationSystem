@@ -287,9 +287,6 @@ export default {
       //下面三个是穿梭框的
       simpleData: [],
       selectedRecommended:null,
-      editData:{
-
-      },
       addVideoDialogVisible: false,
 
       //下面三个是自定义标签所需要的

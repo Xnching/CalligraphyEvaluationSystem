@@ -82,6 +82,12 @@ public class ConfigService {
     private static final String COMPETITION_BASE_URL = "/upload/images/competition";
     private static final String COMPETITION_PATH = "/resources/image/competition/";
 
+    //编辑器的图片
+    private static String editorImageFilePath;
+    private static String editorImageUrl;
+    private static final String EDITOR_IMAGE_BASE_URL = "/upload/get/editor-image";
+    private static final String EDITOR_IMAGE_PATH = "/resources/image/editorImage/";
+
     @PostConstruct
     public void init() {
         baseUrl = serverProtocol + "://" + serverIp + ":" + serverPort;
@@ -127,6 +133,10 @@ public class ConfigService {
         //竞赛图片
         competitionFilePath = projectRoot.getParentFile().getParent()+COMPETITION_PATH;
         competitionUrl = baseUrl+COMPETITION_BASE_URL;
+
+        //编辑器图片
+        editorImageFilePath = projectRoot.getParentFile().getParent()+EDITOR_IMAGE_PATH;
+        editorImageUrl = baseUrl+EDITOR_IMAGE_BASE_URL;
     }
     public static String getBaseUrl() {
         return baseUrl;
@@ -189,5 +199,11 @@ public class ConfigService {
     }
     public static String getCompetitionUrl(){
         return competitionUrl;
+    }
+    public static String getEditorImageFilePath(){
+        return editorImageFilePath;
+    }
+    public static String getEditorImageUrl(){
+        return editorImageUrl;
     }
 }

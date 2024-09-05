@@ -9,12 +9,13 @@ import org.apache.ibatis.annotations.Select;
 
 public interface KlassMapper extends BaseMapper<Klass> {
     @Select("select klass.id,klass.name ,teacher.name as teacher ,grade.name as grade,student_count as count " +
-            "from klass left join teacher on klass.teacher_id = teacher.id " +
-            "left join grade on klass.grade_id = grade.id " +
-            "where klass.delete_flag = 0 and klass.school_id = #{schoolId} and ( " +
-            "klass.name LIKE CONCAT('%',#{str},'%') " +
-            "or teacher.name LIKE CONCAT('%',#{str},'%') " +
-            "or grade.name LIKE CONCAT('%',#{str},'%'))")
+            "   from klass left join teacher on klass.teacher_id = teacher.id " +
+            "   left join grade on klass.grade_id = grade.id " +
+            "where klass.delete_flag = 0 and klass.school_id = #{schoolId} " +
+            "   and ( " +
+            "   klass.name LIKE CONCAT('%',#{str},'%') " +
+            "   or teacher.name LIKE CONCAT('%',#{str},'%') " +
+            "   or grade.name LIKE CONCAT('%',#{str},'%'))")
     IPage<KlassDTO> selectPage(IPage<KlassDTO> page, @Param("schoolId") Integer schoolId ,@Param("str") String str);
 
 

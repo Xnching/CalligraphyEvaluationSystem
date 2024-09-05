@@ -5,11 +5,21 @@
         suffix-icon="el-icon-search" 
         placeholder="请输入"
         v-model="inputVal"
-        @keyup.enter.native="Search_table()"
+        @keyup.enter.native="load"
         clearable>
         </el-input>
-        <el-button style="margin-left:20px ;margin-right:535px" type="primary">搜索</el-button>
-        <el-button type="primary" @click="handleEdit1">新增模板<i class="el-icon-circle-plus"></i></el-button>
+        <el-button style="margin-left:20px ;margin-right:35px" type="primary" @click="load">搜索</el-button>
+        <!--下面是属性选择器 ，可以手动输入搜索-->
+        <el-select v-model="selectedType" filterable placeholder="请选择模板类型" @change="load" clearable style="width: 150px;margin-right: 25%;">
+          <el-option
+            v-for="item in typeOptions"
+            :key="item"
+            :label="item"
+            :value="item">
+          </el-option>
+        </el-select>
+        
+        <el-button type="primary" @click="handleAdd" style="margin-left: auto; margin-right: 120px;">新增模板<i class="el-icon-circle-plus"></i></el-button>
       </div>       
 
       <el-table
@@ -20,7 +30,7 @@
         style="width: 100%">
         <el-table-column
           prop="id"
-          label="模板id"
+          label="模板编号"
           width="125">
         </el-table-column>
         <el-table-column
@@ -34,24 +44,19 @@
           width="120">
         </el-table-column>
         <el-table-column
-          prop="detailedType"
+          prop="detailType"
           label="详细类型"
           width="150">
         </el-table-column>
         <el-table-column
-          prop="releasePerson"
-          label="发布人"
-          width="150">
-        </el-table-column>
-        <el-table-column
-          prop="releaseTime"
-          label="发布时间"
-          width="150">
+          prop="createdTime"
+          label="创建时间"
+          width="220">
         </el-table-column>
         <el-table-column fixed="right" label="操作">                         
           <template slot-scope="scope">
-              <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit2(scope.row)">编辑</el-button>
-              <el-button type="danger" size="small"  icon="el-icon-delete">删除</el-button>
+              <el-button type="success" size="small" icon="el-icon-edit"  @click="handleEdit(scope.row)">详情</el-button>
+              <el-button type="danger" size="small"  icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column> 
 
@@ -62,11 +67,11 @@
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page="currentPage4"
+          :current-page="pageNum"
           :page-sizes="[5, 10, 15, 20]"
-          :page-size="10"
+          :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
-          :total="20">
+          :total="total">
         </el-pagination>
       </div>
 
@@ -76,7 +81,6 @@
         :visible.sync="dialogVisible1"
         width="80%"
         :close-on-click-modal="false" >
-
         <el-tabs type="border-card" @tab-click="handleTabClick">
             <el-tab-pane label="专项练习（偏旁部首）">
               <earmarkedItem
@@ -114,55 +118,49 @@
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="dialogVisible1 = false">取消</el-button>
-            <el-button type="primary" @click="handleSubmit1()">确定</el-button>
           </span>
         </template>
 
       </el-dialog>
 
-      <!-- 编辑模板的弹窗 -->
+      <!-- 查看模板的弹窗 -->
       <el-dialog
-        title="点击修改模板信息"
+        title="模板详细信息"
         :visible.sync="dialogVisible2"
         width="60%"
         :close-on-click-modal="false">
         <div class="top">
           <el-input
             v-model="formModel.name"
-            placeholder="请输入模板名称"
             style="width: 240px"
+            disabled
           ></el-input>
-          <el-select
-            v-model="formModel.radical"
-            size="large"
+          <el-input
+            v-model="formModel.type"
             style="width: 240px"
-            :disabled="true" 
-          >
-            <el-option
-              v-for="item in radicalOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-          <el-select v-model="formModel.font" size="large" style="width: 240px">
-            <el-option
-              v-for="item in fontOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-          <el-rate v-model="formModel.difficulty" size="large" />
-          <img src="/images/copybook/1.jpg" style="width: 100%;">
+            disabled
+          ></el-input>
+          <el-input
+            v-model="formModel.detailType"
+            style="width: 240px"
+            disabled
+          ></el-input>
+          <el-input
+            v-model="formModel.font"
+            style="width: 240px"
+            disabled
+          ></el-input>
+          <el-rate v-model="formModel.difficulty" size="large" disabled/>
+          <div v-for="image in formModel.imageList" :key="image" class="image-item">
+            <img :src="image" :alt="image">
+          </div>
         </div>
 
 
 
         <template #footer>
           <span class="dialog-footer">
-            <el-button @click="dialogVisible2 = false">取消</el-button>
-            <el-button type="primary" @click="handleSubmit2">确定</el-button>
+            <el-button type="primary" @click="dialogVisible2 = false">确定</el-button>
           </span>
         </template>
 
@@ -189,125 +187,109 @@ export default {
     return {
       //搜索栏要用的
       inputVal:"",
-      tableData: Array(8).fill().map(() => ({
-        id:"10000",
-        name: "第一次测试模板",
-        type:"专项",
-        detailedType:"偏旁部首",
-        releasePerson:"港衷傲",
-        releaseTime:"2024-6-11",
-      })),
-      showTable:[],
       //初始隐藏两个表单
       dialogVisible1: false,
       dialogVisible2: false,
-      templateType: [],
+      templateType: ['专项练习', '偏旁'],
       formModel: {
         name: '楷书体模板',
         radical: '专项（结构）',
         font: '楷书',
         difficulty: 3
       },
-      radicalOptions: [
-        {
-          value: '专项练习(偏旁部首)',
-          label: '专项练习(偏旁部首)'
-        },
-        {
-          value: '专项练习(结构)',
-          label: '专项练习(结构)'
-        },
-        {
-          value: '专项练习(字体)',
-          label: '专项练习(字体)'
-        }
+      tableData:[],
+      pageNum: 1,
+      pageSize: 20,
+      total: 0,
+      selectedType:'',
+      typeOptions: [
+        '专项',
+        '综合',
+        '字帖'
       ],
-      fontOptions: [
-        {
-          value: '楷书',
-          label: '楷书'
-        },
-        {
-          value: '行书',
-          label: '行书'
-        },
-        {
-          value: '草书',
-          label: '草书'
-        },
-        {
-          value: '隶书',
-          label: '隶书'
-        }
-      ],
+      fontOptions:[],
+      radicalOptions:[],
     };
   },
-  watch: {
-    //用于实现搜索栏搜索的
-    inputVal(item1) {
-      if (item1 == "") {
-        this.tableData = this.showTable;
-      }
-    },
+  created(){
+    this.load();
+    this.getFont();
+    this.getRadical();
+    this.getStructure();
   },
-
   methods: {
-    //实现搜索栏多属性搜索的
-    Search_table() {
-      const Search_List = [];
-      let res1 = this.inputVal;
-      const res = res1.replace(/\s/gi, "");
-      let searchArr = this.showTable;
-      searchArr.forEach((e) => {
-        let id = e.id;
-        let name= e.name;
-        let address= e.address;
-        let schoolType= e.schoolType;
-        let leader= e.leader;
-        let leaderPhone= e.leaderPhone;
-        if (id.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (name.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (address.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (schoolType.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (leader.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-        if (leaderPhone.includes(res)) {
-          if (Search_List.indexOf(e) == "-1") {
-            Search_List.push(e);
-          }
-        }
-      });
-      this.tableData = Search_List;
+    handleAdd(){
+      this.dialogVisible1=true;
     },
+    submitAdd(){
 
+    },
     //新增按钮跳出弹窗
-    handleEdit1(){
-      
-      this.dialogVisible1 = true;
+    //点击编辑按钮跳出弹窗填充数据
+    handleEdit(row) {
+      // 将当前行数据复制到 editForm 中，避免直接修改表格数据
+      this.editForm = Object.assign({}, row); 
+      this.dialogVisible2 = true;
     },
+    //分页用的功能
+    handleCurrentChange(val) {
+      this.pageNum = val;   //获取当前第几页
+      this.load();
+    },
+    handleSizeChange(val) {
+      this.pageSize = val;  //获取当前每页显示条数
+      this.load();
+    },
+    //请求分页查询数据
+    load(){
+      this.request.get("/system-template/page",{
+        params:{
+          pageNum:this.pageNum,
+          pageSize:this.pageSize,
+          str:this.inputVal,
+          type:this.selectedType
+        }
+      }).then(res=>{
+        if(res.code=='200'){
+					console.log(res);
+          this.tableData=res.data.records;
+          this.total=res.data.total;
+        }else{
+          this.$message.error('获取全部用户数据失败，原因：'+res.msg);
+        }
+      })
+    },
+    getFont(){
+      this.request.get("/font/fonts").then(res=>{
+        if(res.code=='200'){
+          this.fontOptions=res.data;
+        }else{
+          this.$message.error('获取全部字体数据失败，原因：'+res.msg);
+        }
 
-    handleTabClick(tab) {
-      // ...更新 templateType 的逻辑...
+      })
     },
+    getRadical(){
+      this.request.get("/radical/radicals").then(res=>{
+        if(res.code=='200'){
+          this.radicalOptions=res.data;
+        }else{
+          this.$message.error('获取全部部首数据失败，原因：'+res.msg);
+        }
+
+      })
+    },
+    getStructure(){
+      this.request.get("/structure/structures").then(res=>{
+        if(res.code=='200'){
+          this.structureOptions=res.data;
+        }else{
+          this.$message.error('获取全部字体数据失败，原因：'+res.msg);
+        }
+
+      })
+    },
+    
 
     //新增用户表单提交前判断下数据格式是否正确
     handleTabClick(tab) {
@@ -323,30 +305,9 @@ export default {
       }
     },
 
-    //点击编辑按钮跳出弹窗填充数据
-    handleEdit2(row) {
-      // 将当前行数据复制到 editForm 中，避免直接修改表格数据
-      this.editForm = Object.assign({}, row); 
-      this.dialogVisible2 = true;
-    },
 
-    //编辑用户弹窗确定提交的方法
-    handleSubmit2() {
-      // 在此处处理表格提交逻辑
-      
-      this.dialogVisible2 = false; // 关闭弹窗
-    },
     
-    
-
-    //分页用的功能
-    handleCurrentChange() {},
-    handleSizeChange() {},
-    currentPage4() {}
+  
   },
-  //把tableData数值赋给showTable
-  created(){
-    this.showTable = [...this.tableData];
-  }
 };
 </script>

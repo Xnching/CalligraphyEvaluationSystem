@@ -31,21 +31,13 @@ export default {
         // 所有的菜单配置，都要在 MENU_CONF 属性下
         // 配置上传图片
         uploadImage: {
-          server: request.defaults.baseURL + '/file/image',
+          server: 'http://localhost:8084' + '/upload/set/editor-image',
           // form-data fieldName，后端接口参数名称，默认值wangeditor-uploaded-image
           fieldName: "file",
           // 其他配置项
           maxFileSize: 10 * 1024 * 1024, // 2MB
           maxNumberOfFiles: 5,
           allowedFileTypes: ['image/jpeg', 'image/png', 'image/gif'],
-          // 自定义上传参数
-          meta: {
-              token: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).token : ''
-          },
-          // 自定义上传头部
-          headers: {
-            'Authorization': 'Bearer ' + (localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")).token : '')
-          },
           // 上传成功后的回调函数
           onSuccess: (file, res) => {
               console.log('上传成功', res);

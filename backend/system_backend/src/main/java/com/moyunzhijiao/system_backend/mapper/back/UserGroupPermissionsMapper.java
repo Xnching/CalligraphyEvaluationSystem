@@ -23,7 +23,7 @@ public interface UserGroupPermissionsMapper extends BaseMapper<UserGroupPermissi
     * */
     @Select("SELECT p.id, p.name " +
             "FROM user_group_permissions ugp " +
-            "JOIN permissions p ON ugp.permissions_id = p.id " +
+            "   JOIN permissions p ON ugp.permissions_id = p.id " +
             "WHERE ugp.user_group_id = #{userGroupId} ")
     List<PermissionsDTO> selectIdAndNameById(@Param("userGroupId") Integer userGroupId);
 }

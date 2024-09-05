@@ -80,7 +80,7 @@ export default {
           :value="item.value"
         />
       </el-select>
-      <el-rate v-model="formModel.difficulty" size="large" />
+      难度：<el-rate v-model="formModel.difficulty" size="large" />
     </div>
     <div class="main">
       <div class="left">
@@ -90,6 +90,7 @@ export default {
         <img src="" alt="这是左侧文字填写完后,后台排版后生成的一张图片" />
       </div>
     </div>
+    <el-button type="primary" @click="submitAdd()" style="margin-left:85%; margin-top: 50px;">确定生成</el-button>
   </div>
 </template>
 <style lang="scss" scoped>

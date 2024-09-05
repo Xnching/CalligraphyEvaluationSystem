@@ -142,7 +142,15 @@ export default {
       inputVal:"",
       tableData: [],
       dialogVisible: false,
-      editForm:{},
+      editForm: {
+        pictureUrl: '', // URL of the competition announcement cover image
+        name: '', // Announcement name
+        type: '', // Announcement type
+        target: '', // Target audience
+        state: '', // Release state
+        releaseTime: '', // Release time
+        valueHtml: '' // Announcement content
+      },
       pageNum:1,
       valueHtml:'',
       pageSize:20,

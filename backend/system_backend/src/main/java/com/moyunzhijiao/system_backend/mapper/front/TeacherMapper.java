@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 public interface TeacherMapper extends BaseMapper<Teacher> {
     @Select("SELECT teacher.id, teacher.name, school.name AS school " +
-            "FROM teacher " +
-            "LEFT JOIN school ON teacher.school_id = school.id " +
+            "   FROM teacher " +
+            "   LEFT JOIN school ON teacher.school_id = school.id " +
             "WHERE (teacher.name LIKE CONCAT('%', #{str}, '%') " +
-            "OR school.name LIKE CONCAT('%', #{str}, '%')) " +
+            "   OR school.name LIKE CONCAT('%', #{str}, '%')) " +
             "AND teacher.id NOT IN (" +
             "    SELECT t.id " +
             "    FROM teacher t " +
@@ -28,10 +28,10 @@ public interface TeacherMapper extends BaseMapper<Teacher> {
     IPage<TeacherDTO> selectAllTeacher(IPage<TeacherDTO> page, @Param("str") String str);
 
     @Select("SELECT count(teacher.id) " +
-            "FROM teacher " +
-            "LEFT JOIN school ON teacher.school_id = school.id " +
+            "   FROM teacher " +
+            "   LEFT JOIN school ON teacher.school_id = school.id " +
             "WHERE (teacher.name LIKE CONCAT('%', #{str}, '%') " +
-            "OR school.name LIKE CONCAT('%', #{str}, '%')) " +
+            "   OR school.name LIKE CONCAT('%', #{str}, '%')) " +
             "AND teacher.id NOT IN (" +
             "    SELECT t.id " +
             "    FROM teacher t " +
@@ -46,10 +46,10 @@ public interface TeacherMapper extends BaseMapper<Teacher> {
     Long countAllTeacher(String str);
 
     @Select("SELECT count(teacher.id) " +
-            "FROM teacher " +
-            "LEFT JOIN school ON teacher.school_id = school.id " +
+            "   FROM teacher " +
+            "   LEFT JOIN school ON teacher.school_id = school.id " +
             "WHERE (teacher.name LIKE CONCAT('%', #{str}, '%') " +
-            "OR school.name LIKE CONCAT('%', #{str}, '%')) " +
+            "   OR school.name LIKE CONCAT('%', #{str}, '%')) " +
             "AND teacher.id NOT IN (" +
             "   SELECT t.id " +
             "   FROM teacher t " +
@@ -64,10 +64,10 @@ public interface TeacherMapper extends BaseMapper<Teacher> {
     Long countAllTeacherInDivision(String str,Integer divisionId);
 
     @Select("SELECT teacher.id, teacher.name, school.name AS school " +
-            "FROM teacher " +
-            "LEFT JOIN school ON teacher.school_id = school.id " +
+            "   FROM teacher " +
+            "   LEFT JOIN school ON teacher.school_id = school.id " +
             "WHERE (teacher.name LIKE CONCAT('%', #{str}, '%') " +
-            "OR school.name LIKE CONCAT('%', #{str}, '%')) " +
+            "   OR school.name LIKE CONCAT('%', #{str}, '%')) " +
             "AND teacher.id NOT IN (" +
             "   SELECT t.id " +
             "   FROM teacher t " +

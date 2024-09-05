@@ -121,7 +121,11 @@ export default {
       inputVal: "",
       tableData: [],
       dialogVisible: false,
-      editForm: {},
+      editForm: {
+        imageSrcList: [], // Array to hold image sources
+        teacherScore: '', // Teacher's score
+        teacherFeedback: '' // Teacher's feedback
+      },
       grade:'',
       teacher:'',
       author:'',

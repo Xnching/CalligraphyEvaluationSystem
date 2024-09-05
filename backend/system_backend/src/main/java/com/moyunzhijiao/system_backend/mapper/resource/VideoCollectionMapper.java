@@ -10,10 +10,10 @@ import java.util.List;
 
 public interface VideoCollectionMapper extends BaseMapper<VideoCollection> {
     @Select("select video.id, video.name " +
-            "from video_collection " +
-            "left join video on video.id = video_collection.video_id " +
+            "   from video_collection " +
+            "   left join video on video.id = video_collection.video_id " +
             "where video_collection.collection_id = #{collectionId} " +
-            "order by video_collection.sequence ASC")
+            "   order by video_collection.sequence ASC")
     List<Video> getVideos(@Param("collectionId")Integer collectionId);
 
 

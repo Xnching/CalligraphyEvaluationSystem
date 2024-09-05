@@ -2,6 +2,7 @@ package com.moyunzhijiao.system_backend.controller.competition;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.moyunzhijiao.system_backend.common.Constants;
 import com.moyunzhijiao.system_backend.common.Result;
 import com.moyunzhijiao.system_backend.controller.dto.front.TeacherDTO;
 import com.moyunzhijiao.system_backend.entiy.competition.*;
@@ -228,6 +229,10 @@ public class ReviewManagementController {
     @Transactional
     public Result becomeFinal(@RequestBody Map<String, Integer> params){
         Integer divisionId = params.get("divisionId");
+        Division division = divisionService.getById(divisionId);
+        if(division.getState().equals("最终评阅中")){
+            return Result.error(Constants.CODE_401,"该竞赛已进入最终评阅阶段！");
+        }
         //获取进入最终评阅阶段的百分比
         Integer ration = competitionRulesService.getByField("ration");
         BigDecimal percentage = BigDecimal.valueOf(ration*0.01);
@@ -241,7 +246,6 @@ public class ReviewManagementController {
         }).collect(Collectors.toList());
         finalRankService.saveBatch(finalRanks);
         //接着组别更新状态
-        Division division = divisionService.getById(divisionId);
         division.setState("最终评阅中");
         divisionService.updateById(division);
         return Result.success();
@@ -254,9 +258,12 @@ public class ReviewManagementController {
     @Transactional
     public Result endFinal(@RequestBody Map<String, Integer> params){
         Integer divisionId = params.get("divisionId");
-        finalRankService.updateScoreAndRanks(divisionId);
-        //接着组别更新状态
         Division division = divisionService.getById(divisionId);
+        if(division.getState().equals("已结束")){
+            return Result.error(Constants.CODE_401,"该竞赛已结束最终评阅阶段！");
+        }
+        finalRankService.updateScoreAndRanks(division);
+        //接着组别更新状态
         division.setState("已结束");
         divisionService.updateById(division);
         //检查该竞赛下面的所有组别是否都是已结束，如果都是已结束就让竞赛也进入已结束状态

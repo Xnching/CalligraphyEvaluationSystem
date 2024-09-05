@@ -2,6 +2,7 @@ package com.moyunzhijiao.system_backend.controller;
 
 import cn.hutool.core.lang.UUID;
 import com.moyunzhijiao.system_backend.common.FileResponse;
+import com.moyunzhijiao.system_backend.service.ConfigService;
 import com.moyunzhijiao.system_backend.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -25,8 +26,7 @@ public class FileController {
     @Autowired
     FileService fileService;
 
-
-    @PostMapping("/editor-image")
+    @PostMapping("/set/editor-image")
     public FileResponse serveImage(@RequestPart("file") MultipartFile file){
         try {
             if (file.isEmpty()) {
@@ -34,19 +34,28 @@ public class FileController {
             }
             // 生成唯一文件名
             String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
-            // 获取项目的根目录
-            File projectRoot = new File(System.getProperty("user.dir"));
             // 构造文件的路径
-            String filePath = projectRoot.getParentFile().getParent() + "/frontend/system_frontend/public/images/articleImage/" + fileName;
-            String url = "/images/articleImage/"+fileName;
+            String filePath = ConfigService.getEditorImageFilePath() + fileName;
+            String url = ConfigService.getEditorImageUrl()+"/"+fileName;
             File dest = new File(filePath);
             // 保存文件到本地
             file.transferTo(dest);
             // 返回文件信息
-            return FileResponse.success(url, file.getOriginalFilename(), "");
+            return FileResponse.success(url, fileName, "");
         } catch (IOException e) {
+            e.printStackTrace();
             return FileResponse.error("Failed to store file");
         }
+    }
+
+    @GetMapping("/get/editor-image/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveEditorImage(@PathVariable String filename){
+        Resource resource = fileService.loadEditorImageAsResource(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
+                .body(resource);
     }
 
     @GetMapping("/images/collection-picture/{filename:.+}")

@@ -90,7 +90,7 @@ export default {
         placeholder="请输入模板名称"
         style="width: 240px"
       ></el-input>
-      <el-rate v-model="formModel.difficulty" size="large" />
+      难度：<el-rate v-model="formModel.difficulty" size="large" />
     </div>
     <div class="main">
       <div class="left">
@@ -123,6 +123,7 @@ export default {
         </el-scrollbar>
       </div>
     </div>
+    <el-button type="primary" @click="submitAdd()" style="margin-left:85%; margin-top: 50px;">确定生成</el-button>
   </div>
 </template>
 

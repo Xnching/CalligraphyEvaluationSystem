@@ -313,15 +313,13 @@
               </el-form-item>
           </el-form>
           <template #footer>
-          <span class="dialog-footer">
-              <el-button @click="dialogVisible = false">确定</el-button>
-          </span>
+            <span class="dialog-footer">
+                <el-button @click="dialogVisible = false">确定</el-button>
+            </span>
           </template>
       </el-dialog>
   </div>
 </template>
-
-
 
 <script>
 import WangEditor from '@/components/wangEditor.vue';
