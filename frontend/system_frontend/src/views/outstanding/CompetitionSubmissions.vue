@@ -128,7 +128,15 @@ export default {
       inputVal:"",
       tableData: [],
       dialogVisible: false,
-      editForm:{},
+      editForm: {
+        imageSrcList: [], // Array to hold image sources
+        author: '', // Author name
+        competition: '', // Competition name
+        division: '', // Division
+        averageFinalScore: '', // Final score
+        level: '', // Level
+        initialEvaluation: '' // Initial evaluation
+      }
     };
   },
   created(){

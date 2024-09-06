@@ -18,27 +18,27 @@ public interface UserGroupMapper extends BaseMapper<UserGroup> {
     /*  用户组分页查询和模糊查询
     * */
     @Select("SELECT * " +
-            "FROM user_group " +
+            "   FROM user_group " +
             "WHERE delete_flag = 0 AND (user_group.state LIKE CONCAT('%',#{str},'%') " +
-            "OR user_group.name LIKE CONCAT('%',#{str},'%') )")
+            "   OR user_group.name LIKE CONCAT('%',#{str},'%') )")
     List<UserGroup> selectUserGroup(String str);
 
     /*  用户组分页查询和模糊查询获取总数
      * */
     @Select("SELECT COUNT(*) " +
-            "FROM user_group " +
+            "   FROM user_group " +
             "WHERE delete_flag = 0 AND (user_group.name LIKE CONCAT('%',#{str},'%') " +
-            "OR user_group.state LIKE CONCAT('%',#{str},'%') ) ")
+            "   OR user_group.state LIKE CONCAT('%',#{str},'%') ) ")
     Integer countUserGroup(String str);
 
     /*
     *
     * */
     @Select("SELECT ug.*, ugp.permissions_id " +
-            "FROM user_group ug " +
-            "LEFT JOIN user_group_permissions ugp ON ug.id = ugp.user_group_id " +
+            "   FROM user_group ug " +
+            "   LEFT JOIN user_group_permissions ugp ON ug.id = ugp.user_group_id " +
             "WHERE ug.delete_flag = 0 AND (ug.state LIKE CONCAT('%',#{str},'%') " +
-            "OR ug.name LIKE CONCAT('%',#{str},'%') )")
+            "   OR ug.name LIKE CONCAT('%',#{str},'%') )")
     List<UserGroupWithPId> selectUserGroupWithPermissions(String str);
 
 

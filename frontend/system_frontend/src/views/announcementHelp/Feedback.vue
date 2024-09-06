@@ -92,7 +92,11 @@ export default {
       message:'',
       reply:'',
       file:'',
-      editForm:{},    
+      editForm: {
+        providerType: '', // User type
+        type: '', // Feedback type
+        providerPhone: '' // User phone number
+      }, 
     };
   },
   created(){

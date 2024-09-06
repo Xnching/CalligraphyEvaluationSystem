@@ -84,7 +84,11 @@ public class ReviewWorkController {
         List<CompetitionSubmissions> competitionSubmissionsList = list.stream()
                 .map(result -> {
                     CompetitionSubmissions competitionSubmissions = competitionSubmissionsService.getById(result.getId());
-                    competitionSubmissions.setTeacherId(teacherId);
+                    if(result.getMineScore()==null){
+                        competitionSubmissions.setTeacherId(null);
+                    }else {
+                        competitionSubmissions.setTeacherId(teacherId);
+                    }
                     competitionSubmissions.setInitialScore(result.getMineScore());
                     competitionSubmissions.setInitialEvaluation(result.getMineEvaluation());
                     return competitionSubmissions;

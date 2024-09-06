@@ -14,20 +14,20 @@ public interface UserMapper extends BaseMapper<User> {
     * 联合查询需要自定义sql语句，此处为用户表的分页查询以及模糊查询
     * */
     @Select("SELECT user.*, user_group.name AS userGroupName " +
-            "FROM user LEFT JOIN user_group ON user.user_group_id = user_group.id " +
+            "   FROM user LEFT JOIN user_group ON user.user_group_id = user_group.id " +
             "WHERE user.delete_flag = 0 AND (user.login_id LIKE CONCAT('%',#{str},'%') " +
-            "OR user.name LIKE CONCAT('%',#{str},'%') " +
-            "OR user_group.name LIKE CONCAT('%',#{str},'%'))")
+            "   OR user.name LIKE CONCAT('%',#{str},'%') " +
+            "   OR user_group.name LIKE CONCAT('%',#{str},'%'))")
     IPage<UserDTO> selectUserWithGroupName(IPage<UserDTO> page,@Param("str") String str);
 
     /*
      * 此处为用户表的分页查询以及模糊查询的获取总数
      * */
     @Select("SELECT COUNT(*) " +
-            "FROM user LEFT JOIN user_group ON user.user_group_id = user_group.id " +
+            "   FROM user LEFT JOIN user_group ON user.user_group_id = user_group.id " +
             "WHERE user.delete_flag = 0 AND (user.login_id LIKE CONCAT('%',#{str},'%') " +
-            "OR user.name LIKE CONCAT('%',#{str},'%') " +
-            "OR user_group.name LIKE CONCAT('%',#{str},'%'))")
+            "   OR user.name LIKE CONCAT('%',#{str},'%') " +
+            "   OR user_group.name LIKE CONCAT('%',#{str},'%'))")
     int countUserWithGroupName(@Param("str") String str);
 
 }
