@@ -41,12 +41,17 @@ public class HomeworkSubmissionController {
         return findSubmission(id);
     }
 
-    @GetMapping("/cieps/homework-detail")
-    public Result submissionDetail_(@RequestParam(required = false) Integer stuNo,
+    @GetMapping("/cieps/my-homework-detail")
+    public Result stuSubmissionDetail(@RequestParam(required = false) Integer stuNo,
                                     @RequestParam Integer homeworkId){
         Integer stuId=studentService.getStuIdByStuNo(stuNo);
         Integer id=homeworkSubmissionService.getSubmissionByStuAndWork(stuId,homeworkId).getId();
         return findSubmission(id);
+    }
+
+    @GetMapping("/cieps/other-homework-detail")
+    public Result stuSubmissionDetail_(@RequestParam Integer submissionId){
+        return findSubmission(submissionId);
     }
 
     public Result findSubmission(Integer id){

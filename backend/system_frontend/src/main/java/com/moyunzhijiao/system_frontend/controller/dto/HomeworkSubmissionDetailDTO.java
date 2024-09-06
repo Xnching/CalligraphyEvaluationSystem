@@ -7,6 +7,7 @@ import java.util.List;
 
 @Data
 public class HomeworkSubmissionDetailDTO {
+    String id;
     String name;
     String type;
     String target;

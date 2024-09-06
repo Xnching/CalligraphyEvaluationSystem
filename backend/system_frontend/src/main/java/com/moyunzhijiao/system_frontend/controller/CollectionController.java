@@ -36,11 +36,88 @@ public class CollectionController {
     }
 
     @GetMapping("/cieps/knowledge-collection")
-    public Result queryStatus(@RequestHeader("authorization") String token,
+    public Result queryKnowledgeStatus(@RequestHeader("authorization") String token,
                               @RequestParam Integer id){
         DecodedJWT jwt = JWT.decode(token);
         Integer stuId = Integer.valueOf(jwt.getAudience().get(0));
         if(stuCollectionService.queryKnowledgeCollection(stuId,id)){
+            Boolean flag=true;
+            return Result.success(flag);
+        }else{
+            Boolean flag=false;
+            return Result.success(flag);
+        }
+    }
+
+    @PostMapping("/cieps/video-collection")
+    public Result addVideoCollection(@RequestHeader("authorization") String token,
+                                         @RequestParam Integer id){
+        DecodedJWT jwt = JWT.decode(token);
+        Integer stuId = Integer.valueOf(jwt.getAudience().get(0));
+        if(stuCollectionService.addVideoCollection(stuId,id)){
+            return Result.success();
+        }else{
+            return Result.error();
+        }
+    }
+
+    @DeleteMapping ("/cieps/video-collection")
+    public Result delVideoCollection(@RequestHeader("authorization") String token,
+                                         @RequestParam Integer id){
+        DecodedJWT jwt = JWT.decode(token);
+        Integer stuId = Integer.valueOf(jwt.getAudience().get(0));
+        if(stuCollectionService.delVideoCollection(stuId,id)){
+            return Result.success();
+        }else{
+            return Result.error();
+        }
+    }
+
+    @GetMapping("/cieps/video-collection")
+    public Result queryVideoStatus(@RequestHeader("authorization") String token,
+                                       @RequestParam Integer id){
+        DecodedJWT jwt = JWT.decode(token);
+        Integer stuId = Integer.valueOf(jwt.getAudience().get(0));
+        if(stuCollectionService.queryVideoCollection(stuId,id)){
+            Boolean flag=true;
+            return Result.success(flag);
+        }else{
+            Boolean flag=false;
+            return Result.success(flag);
+        }
+    }
+
+    @PostMapping("/cieps/homework-collection")
+    public Result addHomeworkCollection(@RequestHeader("authorization") String token,
+                                        @RequestParam Integer id,
+                                        @RequestParam String type){
+        DecodedJWT jwt = JWT.decode(token);
+        Integer stuId = Integer.valueOf(jwt.getAudience().get(0));
+        if(stuCollectionService.addHomeworkCollection(stuId,id,type)){
+            return Result.success();
+        }else{
+            return Result.error();
+        }
+    }
+    @DeleteMapping ("/cieps/homework-collection")
+    public Result delHomeworkCollection(@RequestHeader("authorization") String token,
+                                     @RequestParam Integer id){
+        DecodedJWT jwt = JWT.decode(token);
+        Integer stuId = Integer.valueOf(jwt.getAudience().get(0));
+        if(stuCollectionService.delHomeworkCollection(stuId,id)){
+            return Result.success();
+        }else{
+            return Result.error();
+        }
+    }
+
+    @GetMapping("/cieps/homework-collection")
+    public Result queryHomeworkStatus(@RequestHeader("authorization") String token,
+                                      @RequestParam Integer id,
+                                      @RequestParam String type){
+        DecodedJWT jwt = JWT.decode(token);
+        Integer stuId = Integer.valueOf(jwt.getAudience().get(0));
+        if(stuCollectionService.queryHomeworkCollection(stuId,id,type)){
             Boolean flag=true;
             return Result.success(flag);
         }else{
