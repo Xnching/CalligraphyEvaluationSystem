@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moyunzhijiao.system_frontend.controller.dto.ArticleDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.CompetitionDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.VedioCollectionDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.VideoDTO;
 import com.moyunzhijiao.system_frontend.mapper.StudentHomepage.ArticleMapper;
 import com.moyunzhijiao.system_frontend.mapper.Competition.CompetitionMapper;
@@ -110,9 +111,9 @@ public class StudentHomepageService {
         // 3. 如果视频属于合集，则查找同属该合集的其他视频
         if (!collectionIds.isEmpty()) {
             videoDTO.setType(1); // 设置类型为合集
-            List<String> collectionNames = new ArrayList<>();
+            List<VedioCollectionDTO> collectionNames = new ArrayList<>();
             for (String collectionId : collectionIds) {
-                List<String> videoNames = videoMapper.selectVideoNamesByCollectionId(collectionId);
+                List<VedioCollectionDTO> videoNames = videoMapper.selectVideoNamesByCollectionId(collectionId);
                 collectionNames.addAll(videoNames);
             }
             videoDTO.setCollection(collectionNames);

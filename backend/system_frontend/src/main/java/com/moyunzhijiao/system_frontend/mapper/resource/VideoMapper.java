@@ -3,6 +3,7 @@ package com.moyunzhijiao.system_frontend.mapper.resource;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.moyunzhijiao.system_frontend.controller.dto.ArticleDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.VedioCollectionDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.VideoDTO;
 import com.moyunzhijiao.system_frontend.entity.resource.Video;
 import org.apache.ibatis.annotations.Param;
@@ -28,6 +29,6 @@ public interface VideoMapper extends BaseMapper<Video> {
     @Select("SELECT collection_id FROM video_collection WHERE video_id = #{id}")
     public List<String> selectCollectionIdsByVideoId(@Param("id") String id);
 
-    @Select("SELECT name FROM video WHERE id IN (SELECT video_id FROM video_collection WHERE collection_id = #{collectionId})")
-    public List<String> selectVideoNamesByCollectionId(@Param("collectionId") String id);
+    @Select("SELECT name,id FROM video WHERE id IN (SELECT video_id FROM video_collection WHERE collection_id = #{collectionId})")
+    public List<VedioCollectionDTO> selectVideoNamesByCollectionId(@Param("collectionId") String id);
 }
