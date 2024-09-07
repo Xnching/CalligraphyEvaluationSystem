@@ -1,6 +1,11 @@
 package com.moyunzhijiao.system_frontend.service.collection;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.moyunzhijiao.system_frontend.controller.dto.HomeworkCollectionDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.KnowledgeCollectionDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.VideoCollectionDTO;
 import com.moyunzhijiao.system_frontend.entity.collection.HomeworkCollection;
 import com.moyunzhijiao.system_frontend.entity.collection.KnowledgeCollection;
 import com.moyunzhijiao.system_frontend.entity.collection.VideoCollection;
@@ -10,7 +15,10 @@ import com.moyunzhijiao.system_frontend.mapper.collection.VideoCollectionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class StuCollectionService {
@@ -115,5 +123,33 @@ public class StuCollectionService {
         }else{
             return false;
         }
+    }
+
+    public IPage<HomeworkCollectionDTO> getHomeworkCollection(Integer stuId,Integer currentPage,Integer pageSize){
+        IPage<HomeworkCollectionDTO> page=new Page<HomeworkCollectionDTO>(currentPage,pageSize);
+        Integer total;
+        List<HomeworkCollectionDTO> combinedList=Stream.concat(homeworkCollectionMapper.getHomeworkCollection(page,stuId).getRecords().stream(), homeworkCollectionMapper.getHomeworkCollection_(page,stuId).getRecords().stream())
+                .collect(Collectors.toList());
+        page.setRecords(combinedList);
+        total= homeworkCollectionMapper.countHomeworkCollection(stuId) + homeworkCollectionMapper.countHomeworkCollection_(stuId);
+        page.setTotal(total);
+        return page;
+    }
+
+    public IPage<KnowledgeCollectionDTO> getKnowledgeCollection(Integer stuId, Integer currentPage, Integer pageSize){
+        IPage<KnowledgeCollectionDTO> page=new Page<KnowledgeCollectionDTO>(currentPage,pageSize);
+        Integer total;
+        page= knowledgeCollectionMapper.getKnowledgeCollection(page,stuId);
+        total= knowledgeCollectionMapper.countKnowledgeCollection(stuId);
+        page.setTotal(total);
+        return page;
+    }
+    public IPage<VideoCollectionDTO> getVideoCollection(Integer stuId, Integer currentPage, Integer pageSize){
+        IPage<VideoCollectionDTO> page=new Page<VideoCollectionDTO>(currentPage,pageSize);
+        Integer total;
+        page= videoCollectionMapper.getVideoCollection(page,stuId);
+        total= videoCollectionMapper.countVideoCollection(stuId);
+        page.setTotal(total);
+        return page;
     }
 }

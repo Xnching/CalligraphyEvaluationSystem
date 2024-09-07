@@ -13,5 +13,5 @@ public class VideoDTO {
     String content;
     String tag;
     Integer type;//1是合集;0不是合集
-    List<VedioCollectionDTO> collection;
+    List<VideoCollectionDTO> collection;
 }

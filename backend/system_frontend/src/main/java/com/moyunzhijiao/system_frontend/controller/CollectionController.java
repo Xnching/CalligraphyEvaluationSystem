@@ -2,7 +2,12 @@ package com.moyunzhijiao.system_frontend.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.moyunzhijiao.system_frontend.common.Result;
+import com.moyunzhijiao.system_frontend.controller.dto.ArticleDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.HomeworkCollectionDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.KnowledgeCollectionDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.VideoCollectionDTO;
 import com.moyunzhijiao.system_frontend.service.collection.StuCollectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -125,4 +130,34 @@ public class CollectionController {
             return Result.success(flag);
         }
     }
+
+    @GetMapping("/cieps/homework-collection-list")
+    public Result getHomeworkCollection(@RequestHeader("authorization") String token,
+                                        @RequestParam Integer currentPage,
+                                        @RequestParam Integer pageSize){
+        DecodedJWT jwt = JWT.decode(token);
+        Integer stuId = Integer.valueOf(jwt.getAudience().get(0));
+        IPage<HomeworkCollectionDTO> page=stuCollectionService.getHomeworkCollection(stuId,currentPage,pageSize);
+        return Result.success(page);
+    }
+
+    @GetMapping("/cieps/knowledge-collection-list")
+    public Result getKnowledgeCollection(@RequestHeader("authorization") String token,
+                                        @RequestParam Integer currentPage,
+                                        @RequestParam Integer pageSize){
+        DecodedJWT jwt = JWT.decode(token);
+        Integer stuId = Integer.valueOf(jwt.getAudience().get(0));
+        IPage<KnowledgeCollectionDTO> page=stuCollectionService.getKnowledgeCollection(stuId,currentPage,pageSize);
+        return Result.success(page);
+    }
+    @GetMapping("/cieps/video-collection-list")
+    public Result getVideoCollection(@RequestHeader("authorization") String token,
+                                         @RequestParam Integer currentPage,
+                                         @RequestParam Integer pageSize){
+        DecodedJWT jwt = JWT.decode(token);
+        Integer stuId = Integer.valueOf(jwt.getAudience().get(0));
+        IPage<VideoCollectionDTO> page=stuCollectionService.getVideoCollection(stuId,currentPage,pageSize);
+        return Result.success(page);
+    }
+
 }
