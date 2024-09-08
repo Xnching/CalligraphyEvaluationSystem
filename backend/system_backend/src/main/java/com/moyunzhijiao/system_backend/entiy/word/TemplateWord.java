@@ -20,6 +20,7 @@ public class TemplateWord {
     @TableField(value="radical_id")
     Integer radicalId;
     String content;     //图片的url
+    String filePath;
     String importer;
     @TableField(exist = false)
     String fileName;

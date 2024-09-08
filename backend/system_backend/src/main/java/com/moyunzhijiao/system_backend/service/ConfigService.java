@@ -26,67 +26,73 @@ public class ConfigService {
     private static String templateWordFilePath;
     private static String templateWordUrl;
     private static final String TEMPLATE_WORD_BASE_URL = "/upload/images/templateWord";
-    private static final String TEMPLATE_WORD_PATH = "/resources/image/templateWord/";
+    private static final String TEMPLATE_WORD_PATH = "\\resources\\image\\templateWord\\";
 
     //样本字的
     private static String sampleWordFilePath;
     private static String sampleWordUrl;
     private static final String SAMPLE_WORD_BASE_URL = "/upload/images/sampleWord";
-    private static final String SAMPLE_WORD_PATH = "/resources/image/sampleWord/";
+    private static final String SAMPLE_WORD_PATH = "\\resources\\image\\sampleWord\\";
 
 
     //字帖的
     private static String copybookFilePath;
     private static String copybookUrl;
     private static final String COPYBOOK_BASE_URL = "/upload/images/copybook";
-    private static final String COPYBOOK_PATH = "/resources/image/copybook/";
+    private static final String COPYBOOK_PATH = "\\resources\\image\\copybook\\";
 
     //视频的
     private static String videoFilePath;
     private static String videoUrl;
     private static final String VIDEO_BASE_URL = "/upload/videos";
-    private static final String VIDEO_PATH = "/resources/video/";
+    private static final String VIDEO_PATH = "\\resources\\video\\";
 
     //视频封面的
     private static String videoImageFilePath;
     private static String videoImageUrl;
     private static final String VIDEO_IMAGE_BASE_URL = "/upload/images/video";
-    private static final String VIDEO_IMAGE_PATH = "/resources/image/video/";
+    private static final String VIDEO_IMAGE_PATH = "\\resources\\image\\video\\";
     //字的分析的
     private static String characterFilePath;
     private static String characterUrl;
     private static final String CHARACTER_BASE_URL = "/upload/images/character";
-    private static final String CHARACTER_PATH = "/resources/image/character/";
+    private static final String CHARACTER_PATH = "\\resources\\image\\character\\";
 
     //笔画分析的
     private static String strokeFilePath;
     private static String strokeUrl;
     private static final String STROKE_BASE_URL = "/upload/images/stroke";
-    private static final String STROKE_PATH = "/resources/image/stroke/";
+    private static final String STROKE_PATH = "\\resources\\image\\stroke\\";
 
     //作业图片的
     private static String homeworkFilePath;
     private static String homeworkUrl;
     private static final String HOMEWORK_BASE_URL = "/upload/images/homework";
-    private static final String HOMEWORK_PATH = "/resources/image/homework/";
+    private static final String HOMEWORK_PATH = "\\resources\\image\\homework\\";
 
     //公告图片的
     private static String announcementFilePath;
     private static String announcementUrl;
     private static final String ANNOUNCEMENT_BASE_URL = "/upload/images/announcement";
-    private static final String ANNOUNCEMENT_PATH = "/resources/image/announcement/";
+    private static final String ANNOUNCEMENT_PATH = "\\resources\\image\\announcement\\";
 
     //竞赛图片的
     private static String competitionFilePath;
     private static String competitionUrl;
     private static final String COMPETITION_BASE_URL = "/upload/images/competition";
-    private static final String COMPETITION_PATH = "/resources/image/competition/";
+    private static final String COMPETITION_PATH = "\\resources\\image\\competition\\";
 
     //编辑器的图片
     private static String editorImageFilePath;
     private static String editorImageUrl;
     private static final String EDITOR_IMAGE_BASE_URL = "/upload/get/editor-image";
-    private static final String EDITOR_IMAGE_PATH = "/resources/image/editorImage/";
+    private static final String EDITOR_IMAGE_PATH = "\\resources\\image\\editorImage\\";
+
+    //系统模板的图片
+    private static String systemTemplateFilePath;
+    private static String systemTemplateUrl;
+    private static final String SYSTEM_TEMPLATE_BASE_URL = "/upload/images/system-template";
+    private static final String SYSTEM_TEMPLATE_PATH = "\\resources\\image\\systemTemplate\\";
 
     @PostConstruct
     public void init() {
@@ -137,6 +143,10 @@ public class ConfigService {
         //编辑器图片
         editorImageFilePath = projectRoot.getParentFile().getParent()+EDITOR_IMAGE_PATH;
         editorImageUrl = baseUrl+EDITOR_IMAGE_BASE_URL;
+
+        //系统模板的图片
+        systemTemplateFilePath = projectRoot.getParentFile().getParent()+SYSTEM_TEMPLATE_PATH;
+        systemTemplateUrl = baseUrl+SAMPLE_WORD_BASE_URL;
     }
     public static String getBaseUrl() {
         return baseUrl;
@@ -205,5 +215,11 @@ public class ConfigService {
     }
     public static String getEditorImageUrl(){
         return editorImageUrl;
+    }
+    public static String getSystemTemplateFilePath(){
+        return systemTemplateFilePath;
+    }
+    public static String getSystemTemplateUrl(){
+        return systemTemplateUrl;
     }
 }

@@ -120,4 +120,19 @@ public class TemplateWordService extends ServiceImpl<TemplateWordMapper, Templat
         BeanUtil.copyProperties(templateWordDTO,templateWord);
         return templateWord;
     }
+
+    /*
+    * 批量返回模板字的本地路径
+    * */
+    public List<String> selectFilePathBatch(List<Integer> wordIds) {
+        List<TemplateWord> templateWords = new ArrayList<>();
+        for (Integer id : wordIds) {
+            TemplateWord word = getById(id); // 假设 getById 是获取单个实例的方法
+            if (word != null) {
+                templateWords.add(word);
+            }
+        }
+        List<String> filePaths = templateWords.stream().map(TemplateWord::getFilePath).toList();
+        return filePaths;
+    }
 }

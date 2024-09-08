@@ -40,6 +40,21 @@ public class TemplateWordController {
         page = templateWordService.selectPage(page,str,structureId,radicalId,gradeId,fontId,author);
         return Result.success(page);
     }
+
+    /*
+    * 上面的是模板字管理的分页，下面是生成模板中获取模板字，由于要求必须选择font所以无法套用上面接口
+    * */
+    @GetMapping("/page2")
+    public Result findPage2(@RequestParam Integer pageNum, @RequestParam Integer pageSize,
+                           @RequestParam(defaultValue = "")String str, @RequestParam(required = false)Integer structureId,
+                           @RequestParam(required = false)Integer radicalId, @RequestParam(required = false)Integer fontId){
+        if(fontId==null){
+            return Result.error(Constants.CODE_401,"未选择字体！");
+        }
+        IPage<TemplateWord> page = new Page<>(pageNum,pageSize);
+        page = templateWordService.selectPage(page,str,structureId,radicalId,null,fontId,"");
+        return Result.success(page);
+    }
     @PutMapping("/delete")
     public Result deleteWord(@RequestBody Map<String, String> params){
         String id = params.get("id");
@@ -65,6 +80,7 @@ public class TemplateWordController {
             try {
                 file.transferTo(dest);
                 templateWord.setContent(url);
+                templateWord.setFilePath(filePath);
                 templateWordService.addTemplateWord(templateWord);
                 return Result.success();
             } catch (IOException e) {
@@ -85,7 +101,6 @@ public class TemplateWordController {
         if(templateWords.isEmpty()){
             return Result.error(Constants.CODE_400,"Excel文件中没有数据");
         }
-
         for (MultipartFile image : images) {
             if (!image.isEmpty()) {
                 String fileName = UUID.randomUUID() + "-" +image.getOriginalFilename();
@@ -100,6 +115,7 @@ public class TemplateWordController {
 
                     if (templateWord != null) {
                         templateWord.setContent(url);
+                        templateWord.setFilePath(filePath);
                         templateWord.setImporter(importer);
                         templateWordService.addTemplateWord(templateWord);
                     }

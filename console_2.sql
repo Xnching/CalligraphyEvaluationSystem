@@ -659,6 +659,7 @@ create table template_word(
     font_id int UNSIGNED not null comment '字体id',
     radical_id int UNSIGNED not null comment '偏旁id',
     content varchar(255) comment'模板字图片url',
+    file_path varchar(255) comment'模板字本地存储路径',
     importer varchar(25) comment'导入人',
     grade_id int UNSIGNED not null comment '学制年级id',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
@@ -1124,7 +1125,7 @@ create table tea_works_collection(
 create table stu_submission_collection(
     student_id int UNSIGNED not null comment '学生id',
     submission_id int UNSIGNED not null comment '作品id',
-    type enum('学校练习','自我练习','优秀学校作品','优秀竞赛作品') comment '收藏的类型',
+    type enum('学校练习','自我练习','优秀作业作品','优秀竞赛作品') comment '收藏的类型',
     primary key (student_id,submission_id,type)
 )comment '学生的关于作品的收藏';
 #

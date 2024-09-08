@@ -82,9 +82,9 @@
         width="80%"
         :close-on-click-modal="false" >
         <el-tabs type="border-card" @tab-click="handleTabClick">
-            <el-tab-pane label="专项练习（偏旁部首）">
+            <el-tab-pane label="专项练习（部首）">
               <earmarkedItem
-                  v-if="templateType[1] === '偏旁'"
+                  v-if="templateType[1] === '部首'"
                   :templateType="templateType"
               ></earmarkedItem>
             </el-tab-pane>
@@ -190,7 +190,7 @@ export default {
       //初始隐藏两个表单
       dialogVisible1: false,
       dialogVisible2: false,
-      templateType: ['专项练习', '偏旁'],
+      templateType: ['专项练习', '部首'],
       formModel: {
         name: '楷书体模板',
         radical: '专项（结构）',
@@ -294,8 +294,8 @@ export default {
     //新增用户表单提交前判断下数据格式是否正确
     handleTabClick(tab) {
       const label = tab.label;
-      if (label === "专项练习（偏旁部首）") {
-        this.templateType = ['专项练习', '偏旁'];
+      if (label === "专项练习（部首）") {
+        this.templateType = ['专项练习', '部首'];
       } else if (label === "专项练习（结构）") {
         this.templateType = ['专项练习', '结构'];
       } else if (label === "综合练习") {
