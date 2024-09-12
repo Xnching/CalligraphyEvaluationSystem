@@ -135,4 +135,25 @@ public class TemplateWordService extends ServiceImpl<TemplateWordMapper, Templat
         List<String> filePaths = templateWords.stream().map(TemplateWord::getFilePath).toList();
         return filePaths;
     }
+
+    /*
+    * 根据一个字以及字体，找到对应的模板字
+    * */
+    public TemplateWord getPictureByWord(char word,Integer fontId){
+        QueryWrapper<TemplateWord> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("name",word);
+        queryWrapper.eq("font_id",fontId);
+        queryWrapper.select("id","content");
+        List<TemplateWord> templateWords = templateWordMapper.selectList(queryWrapper);
+
+        // 选择第一个记录
+        TemplateWord templateWord = null;
+        if (!templateWords.isEmpty()) {
+            templateWord = templateWords.get(0);
+        }
+        if(templateWord == null)
+            throw new ServiceException(Constants.CODE_500,"没有模板字："+word+" !");
+        // 输出结果
+        return templateWord;
+    }
 }

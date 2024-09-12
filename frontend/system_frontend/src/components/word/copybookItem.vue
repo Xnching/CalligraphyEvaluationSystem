@@ -7,77 +7,73 @@ export default {
         name: '',
         difficulty: 0
       },
-      currentPage: 1,
-      pageSize: 5,
-      tableData: [
-        {
-          id: 1,
-          name: '名家字帖1',
-          source: '作家1'
-        },
-        {
-          id: 2,
-          name: '名家字帖2',
-          source: '作家2'
-        },
-        {
-          id: 3,
-          name: '名家字帖3',
-          source: '作家3'
-        },
-        {
-          id: 4,
-          name: '名家字帖4',
-          source: '作家4'
-        },
-        {
-          id: 5,
-          name: '名家字帖5',
-          source: '作家5'
-        },
-        {
-          id: 6,
-          name: '"书法杯"优秀作品1',
-          source: '作家6'
-        },
-        {
-          id: 7,
-          name: '"书法杯"优秀作品2',
-          source: '作家7'
-        },
-        {
-          id: 8,
-          name: '"书法杯"优秀作品3',
-          source: '作家8'
-        },
-        {
-          id: 9,
-          name: '"书法杯"优秀作品4',
-          source: '作家9'
-        },
-        {
-          id: 10,
-          name: '"书法杯"优秀作品5',
-          source: '作家10'
-        }
-      ],
+      pageNum:0,
+      pageSize: 6,
+      total:0,
+      tableData: [],
       copybookItemId: 0,
-      visible: false
+      visible: false,
+      copybookSource:'',
+      copybookId:'',
     }
+  },
+  // mouted(){
+  //   this.load();
+  // },
+  created(){
+    this.load();
   },
   methods: {
     handleDetail (row) {
       console.log(row.id)
       this.copybookItemId = row.id
     },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
-      // 在这里添加处理当前页改变的逻辑
+    handleCurrentChange(val){
+      this.pageNum = val;
+      this.load();
     },
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
-      // 在这里添加处理每页条数改变的逻辑
-    }
+    handleSizeChange(val){
+      this.pageSize=val;
+      this.load();
+    },
+    load(){
+      this.request.get("/copybook/page",{
+        params:{
+          pageNum:this.pageNum,
+          pageSize:this.pageSize,
+        }
+      }).then(res=>{
+        if(res.code=='200'){
+          this.tableData=res.data.records;
+          this.total=res.data.total;
+        }else{
+          this.$message.error('获取全部部首失败，原因：'+res.msg);
+        }
+      })
+    },
+    handleShow(row){
+      this.copybookSource = row.content;
+      this.copybookId = row.id;
+      console.log(this.copybookSource);
+      console.log(this.copybookId);
+    },
+    //提交创建系统模板
+    submitAdd(){
+      const data = {
+        name:this.formModel.name,
+        difficulty:this.formModel.difficulty,
+        copybookId: this.copybookId,
+      };
+      this.request.post("/system-template/copybook-add",data).then(res=>{
+        if(res.code == '200'){
+          this.$message.success('新增系统模板成功！');
+          this.copybookSource = '';
+          this.copybookId = '';
+        } else {
+          this.$message.error('新增系统模板失败，原因：' + res.msg);
+        }
+      })
+    },
 
   }
 }
@@ -96,30 +92,30 @@ export default {
       <div class="left">
         <el-table :data="tableData">
           <el-table-column label="字帖名称" prop="name"></el-table-column>
-          <el-table-column label="字帖来源" prop="source"></el-table-column>
+          <el-table-column label="作者" prop="author"></el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <el-button type="primary" @click="handleDetail(scope.row)"
-                >详情</el-button
-              >
+              <el-button type="primary"  @click="handleShow(scope.row)">展示该字贴</el-button>
             </template>
           </el-table-column>
         </el-table>
-        <div style="display: flex; justify-content: right">
+        <div style="padding:10px">
           <el-pagination
-            v-model:current-page="currentPage"
-            v-model:page-size="pageSize"
-            :page-sizes="[5, 10]"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="tableData.length"
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
-          />
+            :current-page="pageNum"
+            :page-size="pageSize"
+            layout="total, prev, pager, next"
+            :total="total">
+          </el-pagination>
         </div>
       </div>
       <div class="right">
         <el-scrollbar height="70vh">
-          <img src="/images/copybook/1.jpg" style="width: 100%;height:80%;" />
+          <el-image
+            style="width: 80%; height: 80%"
+            :src="copybookSource">
+          </el-image>
         </el-scrollbar>
       </div>
     </div>

@@ -91,7 +91,7 @@ public class ConfigService {
     //系统模板的图片
     private static String systemTemplateFilePath;
     private static String systemTemplateUrl;
-    private static final String SYSTEM_TEMPLATE_BASE_URL = "/upload/images/system-template";
+    private static final String SYSTEM_TEMPLATE_BASE_URL = "/upload/images/system-template/";
     private static final String SYSTEM_TEMPLATE_PATH = "\\resources\\image\\systemTemplate\\";
 
     @PostConstruct
@@ -146,7 +146,7 @@ public class ConfigService {
 
         //系统模板的图片
         systemTemplateFilePath = projectRoot.getParentFile().getParent()+SYSTEM_TEMPLATE_PATH;
-        systemTemplateUrl = baseUrl+SAMPLE_WORD_BASE_URL;
+        systemTemplateUrl = baseUrl+SYSTEM_TEMPLATE_BASE_URL;
     }
     public static String getBaseUrl() {
         return baseUrl;

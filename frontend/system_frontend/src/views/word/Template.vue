@@ -68,7 +68,7 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
           :current-page="pageNum"
-          :page-sizes="[5, 10, 15, 20]"
+          :page-sizes="[8, 10, 15, 18]"
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total">
@@ -130,27 +130,27 @@
         width="60%"
         :close-on-click-modal="false">
         <div class="top">
-          <el-input
+          模板名：<el-input
             v-model="formModel.name"
             style="width: 240px"
             disabled
           ></el-input>
-          <el-input
+          模板类别：<el-input
             v-model="formModel.type"
-            style="width: 240px"
+            style="width: 100px"
             disabled
           ></el-input>
-          <el-input
+          详细类别：<el-input
             v-model="formModel.detailType"
-            style="width: 240px"
+            style="width: 100px"
             disabled
           ></el-input>
-          <el-input
-            v-model="formModel.font"
-            style="width: 240px"
+          字体编号：<el-input
+            v-model="formModel.fontId"
+            style="width: 80px"
             disabled
           ></el-input>
-          <el-rate v-model="formModel.difficulty" size="large" disabled/>
+          难度：<el-rate v-model="formModel.difficulty" size="large" disabled/>
           <div v-for="image in formModel.imageList" :key="image" class="image-item">
             <img :src="image" :alt="image">
           </div>
@@ -199,7 +199,7 @@ export default {
       },
       tableData:[],
       pageNum: 1,
-      pageSize: 20,
+      pageSize: 8,
       total: 0,
       selectedType:'',
       typeOptions: [
@@ -221,14 +221,11 @@ export default {
     handleAdd(){
       this.dialogVisible1=true;
     },
-    submitAdd(){
-
-    },
     //新增按钮跳出弹窗
     //点击编辑按钮跳出弹窗填充数据
     handleEdit(row) {
       // 将当前行数据复制到 editForm 中，避免直接修改表格数据
-      this.editForm = Object.assign({}, row); 
+      this.formModel = Object.assign({}, row); 
       this.dialogVisible2 = true;
     },
     //分页用的功能

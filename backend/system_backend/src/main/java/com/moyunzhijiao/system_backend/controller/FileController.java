@@ -149,4 +149,14 @@ public class FileController {
                 .body(resource);
     }
 
+    @GetMapping("/images/system-template/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveSystemTemplate(@PathVariable String filename){
+        Resource resource = fileService.loadSystemTemplateAsResource(filename);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
+                .body(resource);
+    }
+
 }

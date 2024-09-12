@@ -11,5 +11,8 @@ public class SystemTemplateDTO {
     List<Integer> wordIds;
     Integer wordCount;
     Integer fontId;
+    String composing;
     Integer difficulty;
+    Integer copybookId;
+    List<List<List<Integer>>> idArray;
 }

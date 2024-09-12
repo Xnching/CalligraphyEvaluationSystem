@@ -263,7 +263,7 @@ export default {
     </div>
     <div class="main">
       <div class="left">
-        <div>部首</div>
+        <div>{{ templateType[1] }}</div>
         <div style="border: black solid 2px; width: 32vw">
           <el-scrollbar height="400px">
             <el-table
@@ -284,7 +284,7 @@ export default {
               </el-table-column>
               <el-table-column fixed="right" label="操作">                         
                 <template slot-scope="scope">
-                  <el-button type="primary" size="small" icon="el-icon-info" @click="handleShow(scope.row)">展示该内容相关的模板字</el-button>
+                  <el-button type="primary" size="small" icon="el-icon-info" @click="handleShow(scope.row)">展示该{{ templateType[1] }}相关的模板字</el-button>
                 </template>
               </el-table-column> 
             </el-table>
