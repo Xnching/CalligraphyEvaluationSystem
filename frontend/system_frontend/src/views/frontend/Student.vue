@@ -443,7 +443,8 @@ export default {
       }).then(() => {
         // 调用后端删除接口
         this.request.put('/student/delete', {
-          id: row.id
+          id: row.id,
+          schoolId:this.selectedSchoolId
         }).then(res => {
           if(res.code == '200'){
             this.$message.success('删除学生数据成功！');

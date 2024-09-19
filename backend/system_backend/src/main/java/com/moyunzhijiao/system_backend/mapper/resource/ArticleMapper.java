@@ -7,6 +7,8 @@ import com.moyunzhijiao.system_backend.entiy.resource.Article;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 public interface ArticleMapper extends BaseMapper<Article> {
 
     @Select({
@@ -46,4 +48,5 @@ public interface ArticleMapper extends BaseMapper<Article> {
             "</script>"
     })
     Integer countPage(IPage<ArticleDTO> page, @Param("str") String str, @Param("secondTypeId") Integer secondTypeId, @Param("isRecommended") boolean isRecommended);
+
 }

@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -25,9 +26,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -373,4 +373,24 @@ public class SystemTemplateService extends ServiceImpl<SystemTemplateMapper, Sys
         save(systemTemplate);
         return systemTemplate;
     }
+
+    /*
+    * 获取各分类占比数据
+    * */
+    public Map<String, Integer> getRadioData() {
+        List<SystemTemplate> list = systemTemplateMapper.selectRadio();
+        Map<String,Integer> map = new HashMap<>();
+        long total =0;
+        for(SystemTemplate s:list)
+            total+=s.getCount();
+        for(SystemTemplate systemTemplate:list){
+            if(systemTemplate.getType().equals("专项"))
+                map.put(systemTemplate.getType()+"("+systemTemplate.getDetailType()+")", (int) ((1.0 * systemTemplate.getCount() / total) * 100));
+            else
+                map.put(systemTemplate.getType(),(int) ((1.0 * systemTemplate.getCount() / total) * 100));
+        }
+        return map;
+    }
+
+
 }

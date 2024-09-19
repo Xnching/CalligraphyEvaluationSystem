@@ -15,6 +15,7 @@ public class Region {
     Integer id;
     String name;
     Integer level;
+    String areaCode;
     @TableField(value="parent_id")
     Integer parentId;
     //在数据表中没有children这个字段，这个在做菜单的时候会用到，所以使用exist=false忽略

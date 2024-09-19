@@ -1,6 +1,7 @@
 package com.moyunzhijiao.system_backend.config;
 
 import com.moyunzhijiao.system_backend.config.interceptor.JwtInterceptor;
+import com.moyunzhijiao.system_backend.config.interceptor.MyHandshakeInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -18,8 +19,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
         registry.addInterceptor(jwtInterceptor())
                 .addPathPatterns("")     //拦截所有请求，通过判断token是否合法来决定是否登录
                 .excludePathPatterns("/api/backend/login"
-                        ,"/**/export"
-                        ,"/**/import"
                         ,"/upload/**",
                         "/ws/**"    //此为websocket接口
                 );//排除这些接口，也就是说，这些接口可以放行
@@ -30,4 +29,6 @@ public class InterceptorConfig implements WebMvcConfigurer {
     public JwtInterceptor jwtInterceptor(){
         return new JwtInterceptor();
     }
+    @Bean
+    public MyHandshakeInterceptor handshakeInterceptor(){return new MyHandshakeInterceptor();}
 }

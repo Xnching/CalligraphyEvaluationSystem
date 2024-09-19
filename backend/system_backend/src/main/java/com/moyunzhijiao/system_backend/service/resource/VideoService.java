@@ -71,4 +71,6 @@ public class VideoService extends ServiceImpl<VideoMapper, Video> {
         queryWrapper.select("id","name");
         return list(queryWrapper);
     }
+
+
 }

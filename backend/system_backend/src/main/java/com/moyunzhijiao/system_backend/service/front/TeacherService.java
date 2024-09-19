@@ -67,7 +67,7 @@ public class TeacherService extends ServiceImpl<TeacherMapper, Teacher> {
     }
 
     @Transactional
-    public void addTeacherBatch(Integer id, InputStream inputStream) {
+    public Integer addTeacherBatch(Integer id, InputStream inputStream) {
         List<Teacher> teacherList = new ArrayList<>();
         EasyExcel.read(inputStream, Teacher.class, new AnalysisEventListener<Teacher>() {
             @Override
@@ -83,6 +83,7 @@ public class TeacherService extends ServiceImpl<TeacherMapper, Teacher> {
             }
         }).sheet().doRead();
         saveBatch(teacherList);
+        return teacherList.size();
     }
 
     public void singleAdd(Teacher teacher) {
@@ -158,5 +159,22 @@ public class TeacherService extends ServiceImpl<TeacherMapper, Teacher> {
         List<Permissions> fathers = new ArrayList<>();
         fathers.add(father);
         return fathers;
+    }
+
+
+    /*
+     * 获取本日新增的学生数量
+     * */
+    public Integer getDayTeacher() {
+        Integer number = null;
+        return number;
+    }
+
+    /*
+     * 获取本月新增的学生数量
+     * */
+    public Integer getMonthTeacher() {
+        Integer number = null;
+        return number;
     }
 }

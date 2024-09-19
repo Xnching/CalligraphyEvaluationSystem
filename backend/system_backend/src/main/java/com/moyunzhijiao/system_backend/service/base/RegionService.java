@@ -132,4 +132,11 @@ public class RegionService extends ServiceImpl<RegionMapper, Region> {
         List<Region> regions = regionMapper.selectList(queryWrapper);
         return regions.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
+
+    /*
+    * 获取分析过的在线地区数据
+    * */
+    public List<RegionDTO> getRegionDataOfAnalysis() {
+        return null;
+    }
 }

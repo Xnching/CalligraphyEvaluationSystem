@@ -3,52 +3,52 @@
         <h1>规则：</h1>
         <!--规则管理-->
         <div style="display: flex;">
-            系统初筛分数：
-            <el-input
-                placeholder=""
-                v-model="scoreInput"
-                :disabled="!isEditable"
-                style="width: 15%;margin-right: 40px;">
-                <template slot="suffix">
-                  <span style="font-weight: bold; color: black;">分</span>
-                </template>
-            </el-input>
-            进入终评人数比：
-            <el-input
-                placeholder=""
-                v-model="rationInput"
-                :disabled="!isEditable"
-                style="width: 15%;margin-right: 40px;">
-                <template slot="suffix">
-                  <span style="font-weight: bold; color: black;">%</span>
-                </template>
-            </el-input>
-            优秀作品个数：
-            <el-input
-                placeholder=""
-                v-model="numberInput"
-                :disabled="!isEditable"
-                style="width: 15%;margin-right: 40px;">
-                <template slot="suffix">
-                  <span style="font-weight: bold; color: black;">个</span>
-                </template>
-            </el-input>
-            <el-button 
-              :type="isEditable ? 'success' : 'warning'"
-              @click="ruleEdit">
-              {{ isEditable ? '确定' : '修改' }}
-            </el-button>
+          系统初筛分数：
+          <el-input
+              placeholder=""
+              v-model="scoreInput"
+              :disabled="!isEditable"
+              style="width: 15%;margin-right: 40px;">
+              <template slot="suffix">
+                <span style="font-weight: bold; color: black;">分</span>
+              </template>
+          </el-input>
+          进入终评人数比：
+          <el-input
+              placeholder=""
+              v-model="rationInput"
+              :disabled="!isEditable"
+              style="width: 15%;margin-right: 40px;">
+              <template slot="suffix">
+                <span style="font-weight: bold; color: black;">%</span>
+              </template>
+          </el-input>
+          优秀作品个数：
+          <el-input
+              placeholder=""
+              v-model="numberInput"
+              :disabled="!isEditable"
+              style="width: 15%;margin-right: 40px;">
+              <template slot="suffix">
+                <span style="font-weight: bold; color: black;">个</span>
+              </template>
+          </el-input>
+          <el-button 
+            :type="isEditable ? 'success' : 'warning'"
+            @click="ruleEdit">
+            {{ isEditable ? '确定' : '修改' }}
+          </el-button>
         </div>
 
         <h1 style="margin-right: auto;">进行中的竞赛组别列表：</h1>
         <!--下面是竞赛组别列表-->
         <el-table
-        ref="competitionTable"
-        :data="ingDivisionTableData" 
-        stripe
-        tooltip-effect="dark"
-        style="width: 100%" >
-        <el-table-column
+          ref="competitionTable"
+          :data="ingDivisionTableData" 
+          stripe
+          tooltip-effect="dark"
+          style="width: 100%" >
+          <el-table-column
             prop="id"
             label="组别编号"
             width="65">

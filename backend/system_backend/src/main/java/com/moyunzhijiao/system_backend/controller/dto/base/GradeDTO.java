@@ -10,4 +10,6 @@ public class GradeDTO {
     Integer id;
     String name;
     private List<Grade> children;
+    Integer templateNumber;
+    Integer copybookNumber;
 }

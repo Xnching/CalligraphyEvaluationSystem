@@ -23,4 +23,6 @@ public class SystemTemplate {
     private String createdTime;
     @TableField(exist = false)
     List<String> imageList;
+    @TableField(exist = false)
+    Integer count;
 }

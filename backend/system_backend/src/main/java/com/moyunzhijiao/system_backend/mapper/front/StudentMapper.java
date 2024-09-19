@@ -42,4 +42,12 @@ public interface StudentMapper extends BaseMapper<Student> {
             "   or grade.name LIKE CONCAT('%',#{str},'%') )")
     Integer countPage(@Param("schoolId") Integer schoolId ,@Param("str") String str);
 
+
+    @Select("select count(id) " +
+            "from ${target} where date_format(created_time,'%Y%m%d') = date_format(curdate(),'%Y%m%d')")
+    Integer countSingleAddDataOfDay(String target);
+
+    @Select("select count(id) " +
+            "from ${target} where date_format(created_time,'%Y%m') = date_format(curdate(),'%Y%m')")
+    Integer countSingleAddDataOfMonth(String target);
 }

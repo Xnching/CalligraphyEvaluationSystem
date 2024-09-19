@@ -26,4 +26,8 @@ public class Video {
     String pictureUrl;
     @TableField(value="created_time")
     String createdTime;
+    @TableField(exist = false)
+    String type;
+    @TableField(exist = false)
+    String count;
 }

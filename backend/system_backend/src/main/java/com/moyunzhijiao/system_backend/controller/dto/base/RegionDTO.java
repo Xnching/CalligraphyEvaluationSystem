@@ -10,4 +10,7 @@ public class RegionDTO {
     Integer id;
     String name;
     private List<Region> children;
+    Integer studentNumber;
+    Integer teacherNumber;
+    Integer schoolNumber;
 }

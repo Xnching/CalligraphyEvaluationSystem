@@ -24,4 +24,8 @@ public class Article {
     String importer;
     @TableField(value="created_time")
     String createdTime;
+    @TableField(exist = false)
+    String type;
+    @TableField(exist = false)
+    String count;
 }

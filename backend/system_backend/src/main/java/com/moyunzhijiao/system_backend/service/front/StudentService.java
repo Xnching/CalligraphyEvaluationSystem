@@ -82,7 +82,7 @@ public class StudentService extends ServiceImpl<StudentMapper, Student> {
     }
 
     @Transactional
-    public void addKlassBatch(Integer id, InputStream inputStream) {
+    public Integer addKlassBatch(Integer id, InputStream inputStream) {
         //获取所有年级的姓名
         List<GradeDTO> grades = gradeService.getAllGrades();
         Set<String> gradesName = grades.stream().map(GradeDTO::getName).collect(Collectors.toSet());
@@ -112,5 +112,9 @@ public class StudentService extends ServiceImpl<StudentMapper, Student> {
         }).collect(Collectors.toList());
         // 保存到数据库
         saveBatch(studentList);
+        return studentList.size();
     }
+
+
+
 }

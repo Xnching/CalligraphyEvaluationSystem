@@ -88,7 +88,27 @@ public class SchoolService extends ServiceImpl<SchoolMapper,School> {
     * */
     public void addSchool(SchoolDTO schoolDTO) {
         School school = convertToEntity(schoolDTO);
+        //三级地区id也一起复制过来
+        school.setMaxRegionId(schoolDTO.getRegionId2());
+        school.setNextRegionId(schoolDTO.getRegionId1());
         schoolMapper.insert(school);
+    }
+
+    /*
+    * 修改学校人数
+    * */
+    public void updateStudentCount(Integer schoolId,Integer number){
+        School school = getById(schoolId);
+        school.setStudentCount(school.getStudentCount()+number);
+        updateById(school);
+    }
+    /*
+     * 修改学校人数
+     * */
+    public void updateTeacherCount(Integer schoolId,Integer number){
+        School school = getById(schoolId);
+        school.setTeacherCount(school.getTeacherCount()+number);
+        updateById(school);
     }
 
     public void fullShoolAddress(SchoolDTO schoolDTO){
@@ -106,5 +126,21 @@ public class SchoolService extends ServiceImpl<SchoolMapper,School> {
         queryWrapper.eq("type", type);
         queryWrapper.select("id", "name");  // 只查询 id 和 name 字段
         return list(queryWrapper);
+    }
+
+    /*
+     * 获取本日新增的学校数量
+     * */
+    public Integer getDaySchool() {
+        Integer number = null;
+        return number;
+    }
+
+    /*
+     * 获取本月新增的学校数量
+     * */
+    public Integer getMonthSchool() {
+        Integer number = null;
+        return number;
     }
 }

@@ -19,13 +19,16 @@ public class School {
     String address;
     @TableField(value="leader_phone")
     String leaderPhone;
-    @TableField(value="person_count")
-    Integer personCount;
+    @TableField(value="student_count")
+    Integer studentCount;
+    Integer teacherCount;
     @TableField(value="region_id")
     Integer regionId;
     @TableField(value="created_time")
     String createdTime;
     @TableField(value="delete_flag")
     boolean deleteFlag;
+    Integer maxRegionId;
+    Integer nextRegionId;
 
 }

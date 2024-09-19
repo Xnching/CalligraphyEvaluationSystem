@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class ArticleService extends ServiceImpl<ArticleMapper, Article> {
@@ -67,9 +68,11 @@ public class ArticleService extends ServiceImpl<ArticleMapper, Article> {
         articleContentsService.updateById(articleContents);
         updateById(article);
     }
+
     private Article convertToEntity(ArticleDTO articleDTO){
         Article article = new Article();
         BeanUtil.copyProperties(articleDTO,article);
         return article;
     }
+
 }

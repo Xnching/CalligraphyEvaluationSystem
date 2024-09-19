@@ -324,7 +324,8 @@ export default {
       }).then(() => {
         // 调用后端删除接口
         this.request.put('/teacher/delete', {
-          id: row.id
+          id: row.id,
+          schoolId:this.selectedSchoolId
         }).then(res => {
           if(res.code == '200'){
             this.$message.success('删除教师数据成功！');
