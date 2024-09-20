@@ -3,8 +3,7 @@ package com.moyunzhijiao.system_frontend.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.moyunzhijiao.system_frontend.common.Result;
-import com.moyunzhijiao.system_frontend.controller.dto.HomeworkSubmissionDetailDTO;
-import com.moyunzhijiao.system_frontend.entity.homework.CharacterAnalysis;
+import com.moyunzhijiao.system_frontend.controller.dto.homework.HomeworkSubmissionDetailDTO;
 import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import com.moyunzhijiao.system_frontend.entity.homework.HomeworkSubmission;
 import com.moyunzhijiao.system_frontend.service.FontService;
@@ -15,8 +14,11 @@ import com.moyunzhijiao.system_frontend.service.homework.HomeworkService;
 import com.moyunzhijiao.system_frontend.service.homework.HomeworkSubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 public class HomeworkSubmissionController {
@@ -39,6 +41,15 @@ public class HomeworkSubmissionController {
     @GetMapping("/ciep/stu-homework-detail")
     public Result submissionDetail(@RequestParam Integer id){
         return findSubmission(id);
+    }
+
+    /*
+    * 获取一个作业的批阅情况
+    * */
+    @GetMapping("/ciep/homework-list")
+    public Result findSubmissionListOfHomework(Integer homeworkId){
+        Map<String,?> map = homeworkSubmissionService.getSubmissionListOfHomework(homeworkId);
+        return Result.success(map);
     }
 
     @GetMapping("/cieps/my-homework-detail")
@@ -70,5 +81,18 @@ public class HomeworkSubmissionController {
         //最后赋值里面的详细内容例如分析内容
         homeworkSubmissionDetailDTO.setCharacterAnalysisList(characterAnalysisService.getBySubmission(homeworkSubmissionId));
         return Result.success(homeworkSubmissionDetailDTO);
+    }
+
+    /*
+    * 教师批改作品
+    * */
+    @PostMapping("/ciep/correct-homework")
+    public Result correctHomework(Map<String,?> params){
+        String feedback = (String) params.get("feedback");
+        Integer score = (Integer) params.get("score");
+        Integer submissionId = (Integer) params.get("submissionId");
+
+        homeworkSubmissionService.reviewSubmission(submissionId,score,feedback);
+        return Result.success();
     }
 }

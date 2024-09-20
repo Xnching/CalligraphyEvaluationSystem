@@ -8,8 +8,9 @@ import org.apache.ibatis.annotations.Select;
 
 public interface SystemTemplateMapper extends BaseMapper<SystemTemplate> {
     @Select("select system_template.* , count(teacher_homework.homework_id) as usageFrequency " +
-            "from system_template left join teacher_homework on system_template.id = teacher_homework.template_id and " +
-            " teacher_homework.template_type = '系统' and teacher_homework.teacher_id = #{teacherId} " +
+            "   from system_template " +
+            "   left join teacher_homework on system_template.id = teacher_homework.template_id " +
+            "   and teacher_homework.template_type = '系统' and teacher_homework.teacher_id = #{teacherId} " +
             "group by system_template.id ")
     IPage<SystemTemplate> selectByTeacher(IPage<SystemTemplate> page, @Param("teacherId") Integer teacherId);
 

@@ -1,20 +1,17 @@
 package com.moyunzhijiao.system_frontend.service.note;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.moyunzhijiao.system_frontend.controller.dto.ArticleDTO;
-import com.moyunzhijiao.system_frontend.controller.dto.HomeworkDTO;
+import com.moyunzhijiao.system_frontend.common.Constants;
 import com.moyunzhijiao.system_frontend.controller.dto.NoteDTO;
 import com.moyunzhijiao.system_frontend.entity.note.Note;
 import com.moyunzhijiao.system_frontend.entity.note.NoteContent;
+import com.moyunzhijiao.system_frontend.exception.ServiceException;
 import com.moyunzhijiao.system_frontend.mapper.note.NoteContentMapper;
 import com.moyunzhijiao.system_frontend.mapper.note.NoteMapper;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +26,8 @@ public class NoteService extends ServiceImpl<NoteMapper, Note> {
     NoteMapper noteMapper;
     @Autowired
     NoteContentMapper noteContentMapper;
+    @Autowired
+    NoteContentService noteContentService;
     public void insertSingle(Note note, NoteContent noteContent) {
         noteMapper.insert(note);
         noteContent.setNoteId(note.getId());
@@ -93,5 +92,32 @@ public class NoteService extends ServiceImpl<NoteMapper, Note> {
         mergedPage.setTotal(filteredNotes.size()); // 更新总数
 
         return mergedPage;
+    }
+
+    /*
+    * 基础的消息都用此接收，例如竞赛消息和系统消息为基础消息
+    * @params: type 消息类型
+    * 注：target全为全体，将不做区分
+    * */
+    public IPage<Note> getCommonMsg(String type, IPage<Note> noteIPage) {
+        if((!type.equals("竞赛消息"))&&(!type.equals("系统消息"))){
+            throw new ServiceException(Constants.CODE_401,"消息类型错误！");
+        }
+        QueryWrapper<Note> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("type",type);
+
+        return page(noteIPage,queryWrapper);
+    }
+
+    /*
+    * 获取消息详情
+    * */
+    public NoteDTO getMessageDetail(Integer msgId) {
+        Note note = getById(msgId);
+        NoteDTO noteDTO = new NoteDTO();
+        NoteContent noteContent = noteContentService.getById(msgId);
+        BeanUtil.copyProperties(note,noteDTO);
+        noteDTO.setContent(noteContent.getMessage());
+        return noteDTO;
     }
 }

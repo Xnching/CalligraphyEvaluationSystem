@@ -21,4 +21,6 @@ public class StudentDTO {
     String regionId;
     String email;
     String score;
+    String award;
+    Integer submissionId;
 }

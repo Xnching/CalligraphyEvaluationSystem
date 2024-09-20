@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class KlassService extends ServiceImpl<KlassMapper, Klass> {
@@ -113,5 +114,12 @@ public class KlassService extends ServiceImpl<KlassMapper, Klass> {
     public KlassDTO getKlassById(Integer id){
         KlassDTO klassDTO=klassMapper.getKlassById(id);
         return klassDTO;
+    }
+
+    public List<Integer> getKlassIdByTeacher(Integer teacherId){
+        QueryWrapper<Klass> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("id");
+        queryWrapper.eq("teacher_id",teacherId);
+        return  list(queryWrapper).stream().map(Klass::getId).collect(Collectors.toList());
     }
 }

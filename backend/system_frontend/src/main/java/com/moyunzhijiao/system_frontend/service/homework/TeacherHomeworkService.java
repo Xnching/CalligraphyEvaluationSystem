@@ -1,11 +1,9 @@
 package com.moyunzhijiao.system_frontend.service.homework;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_frontend.common.Constants;
-import com.moyunzhijiao.system_frontend.controller.dto.HomeworkDTO;
-import com.moyunzhijiao.system_frontend.entity.TemplateWord;
+import com.moyunzhijiao.system_frontend.controller.dto.homework.HomeworkDTO;
 import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import com.moyunzhijiao.system_frontend.entity.homework.TeacherHomework;
 import com.moyunzhijiao.system_frontend.exception.ServiceException;

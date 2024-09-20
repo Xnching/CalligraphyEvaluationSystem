@@ -7,9 +7,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_frontend.controller.dto.CompetitionDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.DivisionDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.ParticipantDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.StudentDTO;
 import com.moyunzhijiao.system_frontend.entity.Grade;
 import com.moyunzhijiao.system_frontend.entity.Student;
 import com.moyunzhijiao.system_frontend.entity.competition.Competition;
+import com.moyunzhijiao.system_frontend.entity.competition.CompetitionSubmission;
 import com.moyunzhijiao.system_frontend.entity.competition.Division;
 import com.moyunzhijiao.system_frontend.entity.competition.Participant;
 import com.moyunzhijiao.system_frontend.exception.ServiceException;
@@ -18,6 +20,8 @@ import com.moyunzhijiao.system_frontend.mapper.Competition.DivisionMapper;
 import com.moyunzhijiao.system_frontend.mapper.Competition.ParticipantMapper;
 import com.moyunzhijiao.system_frontend.mapper.GradeMapper;
 import com.moyunzhijiao.system_frontend.mapper.StudentMapper;
+import com.moyunzhijiao.system_frontend.service.KlassService;
+import com.moyunzhijiao.system_frontend.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +44,10 @@ public class CompetitionService extends ServiceImpl<CompetitionMapper, Competiti
 
     @Autowired
     GradeMapper gradeMapper;
+    @Autowired
+    KlassService klassService;
+    @Autowired
+    StudentService studentService;
 
     public IPage<CompetitionDTO> getExistingCompetition(Integer currentPage, Integer pageSize,Integer stuId){
         IPage<CompetitionDTO> page =new Page<>(currentPage,pageSize);
@@ -79,18 +87,23 @@ public class CompetitionService extends ServiceImpl<CompetitionMapper, Competiti
         return competitionDTO;
     }
 
-    public void applyCompetition(ParticipantDTO participantDTO){
+    /*
+    * 报名竞赛，加了个判断是否为班级批量添加
+    * @param participantDTO  里面存储了报名信息
+    *        isKlass         如果是的话就不抛出已报名异常
+    * */
+    public void applyCompetition(ParticipantDTO participantDTO,boolean isKlass){
         QueryWrapper<Participant> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("division_id", participantDTO.getDivision_id())
-                .eq("student_id", participantDTO.getStudent_id())
-                .eq("competition_id", participantDTO.getCompetition_id());
+                .eq("student_id", participantDTO.getStudent_id());
 
         long count = participantMapper.selectCount(queryWrapper);
-        if (count > 0) {
-            throw new ServiceException(600,"您已报名该比赛！"); // 或其他处理方式
-        }
+        if(!isKlass)
+            if (count > 0) {
+                throw new ServiceException(600,"已报名该比赛！"); // 或其他处理方式
+            }
         if (!isParticipantEligible(participantDTO)) {
-            throw new ServiceException(600,"您不符合该比赛的参赛资格！");
+            throw new ServiceException(600,"不符合该比赛的参赛资格！");
         }
 
         // 创建 Participtant 实体类
@@ -141,5 +154,24 @@ public class CompetitionService extends ServiceImpl<CompetitionMapper, Competiti
             return false; // 其他情况，默认不符合资格
         }
     }
+
+    /*
+    * 获取所有竞赛的列表
+    * */
+    public List<Competition> getAllList() {
+        QueryWrapper<Competition> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("id","name","state","registration_start_time" );
+        return list(queryWrapper);
+    }
+
+    /*
+    * 获取该竞赛的学生的作品情况
+    * */
+    public List<StudentDTO> getCompetitionDetailOfTea(Integer teacherId,Integer competitionId) {
+        List<Integer> klassIdList = klassService.getKlassIdByTeacher(teacherId);
+        List<Integer> stuIdList = studentService.getByKlassList(klassIdList);
+        return participantMapper.selectFinalRankOfStudent(stuIdList,competitionId);
+    }
+
 }
 

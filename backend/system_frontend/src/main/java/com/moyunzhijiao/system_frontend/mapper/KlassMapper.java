@@ -11,12 +11,13 @@ import java.util.List;
 
 public interface KlassMapper extends BaseMapper<Klass> {
     @Select("select klass.id as id ,klass.name as name , grade.name as grade ,grade.id as gradeId ,klass.year as year ,klass.student_count as total " +
-            "from klass left join grade on klass.grade_id = grade.id " +
-            "where klass.delete_flag = 0 and teacher_id = #{teacherId} " +
-            "and klass.school_id = #{schoolId} and (" +
-            "grade.name LIKE CONCAT('%',#{grade},'%')" +
-            "and klass.name LIKE CONCAT('%',#{klass},'%')" +
-            "and year LIKE CONCAT('%',#{year},'%'))")
+            "from klass " +
+            "   left join grade on klass.grade_id = grade.id " +
+            "   where klass.delete_flag = 0 and teacher_id = #{teacherId} " +
+            "       and klass.school_id = #{schoolId} " +
+            "       and (grade.name LIKE CONCAT('%',#{grade},'%')" +
+            "       and klass.name LIKE CONCAT('%',#{klass},'%')" +
+            "       and year LIKE CONCAT('%',#{year},'%'))")
     public IPage<KlassDTO> selectKlassByTeacherOwn(IPage<KlassDTO> page, @Param("teacherId") Integer teacherId,@Param("schoolId")Integer schoolId,@Param("grade") String grade , @Param("klass") String klass,@Param("year") String year);
 
     @Select("select count(*) " +

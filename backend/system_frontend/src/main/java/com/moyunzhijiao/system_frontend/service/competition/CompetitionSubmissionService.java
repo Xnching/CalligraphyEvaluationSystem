@@ -39,9 +39,9 @@ public class CompetitionSubmissionService {
         return getDetail(comId,stuId);
     }
 
-    public CompetitionDetailDTO getDetail(Integer comId,Integer stuId){
-        CompetitionDetailDTO competitionDetailDTO=new CompetitionDetailDTO();
-        competitionDetailDTO = competitionSubmissionMapper.selectCompetitionDetail(comId,stuId);
+    public CompetitionDetailDTO getDetail(Integer divId,Integer stuId){
+        CompetitionDetailDTO competitionDetailDTO;
+        competitionDetailDTO = competitionSubmissionMapper.selectCompetitionDetail(divId,stuId);
         QueryWrapper<CsubmissionImage> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("submission_id", competitionDetailDTO.getCompetitionSubmissionId())
                 .select("submission_id", "picture_url");

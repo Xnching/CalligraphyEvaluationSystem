@@ -1,13 +1,11 @@
 package com.moyunzhijiao.system_frontend.controller;
 
-import cn.hutool.core.annotation.Alias;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moyunzhijiao.system_frontend.common.Constants;
 import com.moyunzhijiao.system_frontend.common.Result;
-import com.moyunzhijiao.system_frontend.controller.dto.HomeworkDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.TeacherTemplateDTO;
 import com.moyunzhijiao.system_frontend.entity.Copybook;
 import com.moyunzhijiao.system_frontend.entity.homework.Homework;
@@ -21,8 +19,6 @@ import com.moyunzhijiao.system_frontend.service.template.SystemTemplateService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 public class TemplateController {

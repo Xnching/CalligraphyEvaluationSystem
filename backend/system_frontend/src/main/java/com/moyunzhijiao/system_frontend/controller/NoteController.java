@@ -1,12 +1,15 @@
 package com.moyunzhijiao.system_frontend.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.moyunzhijiao.system_frontend.common.Constants;
 import com.moyunzhijiao.system_frontend.common.Result;
-import com.moyunzhijiao.system_frontend.controller.dto.HomeworkDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.NoteDTO;
+import com.moyunzhijiao.system_frontend.entity.note.Note;
+import com.moyunzhijiao.system_frontend.entity.note.NoteContent;
 import com.moyunzhijiao.system_frontend.service.note.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,9 +22,30 @@ public class NoteController {
     @Autowired
     NoteService noteService;
 
+    /*
+    * 教师获取消息列表
+    * */
     @GetMapping("/ciep/message")
-    public Result findMessageOfTeacher(){
-        return Result.success();
+    public Result findMessageOfTeacher(@RequestParam Integer type,
+                                       @RequestParam Integer currentPage, @RequestParam Integer pageSize ){
+        IPage<Note> noteIPage = new Page<>(currentPage,pageSize);
+        if(type==1){
+            noteIPage = noteService.getCommonMsg("竞赛消息",noteIPage);
+        }else if(type==0){
+            noteIPage = noteService.getCommonMsg("系统消息",noteIPage);
+        }else {
+            return Result.error(Constants.CODE_401,"type内容错误！");
+        }
+        return Result.success(noteIPage);
+    }
+
+    /*
+    * 获取消息详情
+    * */
+    @GetMapping("/ciep/message-detail")
+    public Result findMessageDetail(@RequestParam Integer msgId){
+        NoteDTO noteDTO = noteService.getMessageDetail(msgId);
+        return Result.success(noteDTO);
     }
 
     @GetMapping("/cieps/sys-message")

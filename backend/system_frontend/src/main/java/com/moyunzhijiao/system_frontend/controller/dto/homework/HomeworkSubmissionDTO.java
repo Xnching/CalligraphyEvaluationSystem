@@ -1,4 +1,4 @@
-package com.moyunzhijiao.system_frontend.controller.dto;
+package com.moyunzhijiao.system_frontend.controller.dto.homework;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.moyunzhijiao.system_frontend.controller.dto.HomeworkSubmissionDTO;
-import com.moyunzhijiao.system_frontend.controller.dto.HomeworkSubmissionDetailDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.KlassDetailDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.homework.HomeworkSubmissionDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.KlassDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.StudentDTO;
 import com.moyunzhijiao.system_frontend.entity.Student;
@@ -15,13 +15,13 @@ import com.moyunzhijiao.system_frontend.entity.homework.HomeworkSubmission;
 import com.moyunzhijiao.system_frontend.mapper.KlassMapper;
 import com.moyunzhijiao.system_frontend.mapper.StudentMapper;
 import com.moyunzhijiao.system_frontend.mapper.homework.HomeworkSubmissionMapper;
-import com.moyunzhijiao.system_frontend.service.KlassService;
-import com.moyunzhijiao.system_frontend.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +32,8 @@ public class HomeworkSubmissionService extends ServiceImpl<HomeworkSubmissionMap
     StudentMapper studentMapper;
     @Autowired
     KlassMapper klassMapper;
+    @Autowired
+    HomeworkService homeworkService;
 
     public IPage<HomeworkSubmissionDTO> getUnSubmitedPage(Integer stuId, Integer currentPage, Integer pageSize) {
         IPage<HomeworkSubmissionDTO> homeworkIPage = new Page<>(currentPage,pageSize);
@@ -134,5 +136,28 @@ public class HomeworkSubmissionService extends ServiceImpl<HomeworkSubmissionMap
         return  homeworkSubmissionMapper.selectOne(queryWrapper);
     }
 
+    /*
+    * 获取一个作业的所有,包括作业名称，包括未被批改的学生名、被批改过的学生名
+    * */
+    public Map<String,?> getSubmissionListOfHomework(Integer homeworkId) {
+        Map<String,Object> map = new HashMap<>();
+        Homework homework = homeworkService.getById(homeworkId);
+        map.put("name",homework.getName());
+        List<StudentDTO> uncorrectedList = homeworkSubmissionMapper.selectStudentOfHomework(homeworkId,false);
+        map.put("unCorrected",uncorrectedList);
+        List<StudentDTO> correctedList = homeworkSubmissionMapper.selectStudentOfHomework(homeworkId,true);
+        map.put("corrected",correctedList);
+        return map;
+    }
 
+    /*
+    * 评阅作品
+    * */
+    public void reviewSubmission(Integer submissionId, Integer score, String feedback) {
+        HomeworkSubmission homeworkSubmission = getById(submissionId);
+        homeworkSubmission.setReviewed(2);
+        homeworkSubmission.setTeacherFeedback(feedback);
+        homeworkSubmission.setTeacherScore(score);
+        updateById(homeworkSubmission);
+    }
 }

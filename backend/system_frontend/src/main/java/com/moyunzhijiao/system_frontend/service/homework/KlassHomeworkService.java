@@ -25,8 +25,7 @@ public class KlassHomeworkService extends ServiceImpl<KlassHomeworkMapper, Klass
     * 获取已截止的班级作业
     * */
     public List<Homework> getDeadlineHomeworkByKlass(Integer classId) {
-        List<Homework> list = klassHomeworkMapper.getDeadlineHomework(classId);
-        return list;
+        return klassHomeworkMapper.getDeadlineHomework(classId);
     }
 
     /*
@@ -49,7 +48,7 @@ public class KlassHomeworkService extends ServiceImpl<KlassHomeworkMapper, Klass
         page = klassHomeworkMapper.selectKlassByHomework(page,homeworkId);
         QueryWrapper<KlassHomework> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("homework_id",homeworkId);
-        Integer count = Math.toIntExact(klassHomeworkMapper.selectCount(queryWrapper));
+        long count = klassHomeworkMapper.selectCount(queryWrapper);
         page.setTotal(count);
         return page;
     }

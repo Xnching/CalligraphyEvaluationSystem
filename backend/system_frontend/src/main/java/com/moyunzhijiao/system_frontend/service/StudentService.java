@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,8 @@ public class StudentService extends ServiceImpl<StudentMapper, Student> {
 
     @Autowired
     RegionMapper regionMapper;
+    @Autowired
+    KlassService klassService;
     public StudentDTO login(StudentDTO studentDTO){
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("student_number",studentDTO.getStuno());
@@ -73,15 +76,6 @@ public class StudentService extends ServiceImpl<StudentMapper, Student> {
         return fullRegionName.toString();
     }
 
-    /*
-    * 根据班级获取学生
-    * */
-    public List<Student> getByKlass(Integer klassId, String stuInfo) {
-        QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("klass_id",klassId);
-        queryWrapper.like("name",stuInfo);
-        return list(queryWrapper);
-    }
 
     /*
     * 根据班级id列表获取学生id列表
@@ -137,5 +131,17 @@ public class StudentService extends ServiceImpl<StudentMapper, Student> {
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("student_number",stuNo);
         return  studentMapper.selectOne(queryWrapper).getId();
+    }
+
+    /*
+    * 获取一个教师的所有学生列表，其中名字模糊查询
+    * */
+    public List<StudentDTO> getAllByTeacher(Integer teacherId, String name) {
+        List<Integer> klassIdList = klassService.getKlassIdByTeacher(teacherId);
+        return studentMapper.selectAllByTeacher(klassIdList,name);
+    }
+
+    public List<StudentDTO> getByKlass(Integer classId, String name) {
+        return studentMapper.selectByKlass(classId,name);
     }
 }

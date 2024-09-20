@@ -3,9 +3,12 @@ package com.moyunzhijiao.system_frontend.mapper.Competition;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.moyunzhijiao.system_frontend.controller.dto.CompetitionDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.StudentDTO;
 import com.moyunzhijiao.system_frontend.entity.competition.Competition;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 public interface CompetitionMapper extends BaseMapper<Competition> {
     @Select("SELECT id, name, picture as pictureURL " +
@@ -69,4 +72,6 @@ public interface CompetitionMapper extends BaseMapper<Competition> {
             "FROM competition "+
             "where state='已结束' " )
     public Integer countHistoryCompetition();
+
+
 }

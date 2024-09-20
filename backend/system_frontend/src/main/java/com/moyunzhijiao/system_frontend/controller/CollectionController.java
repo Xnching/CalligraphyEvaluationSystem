@@ -3,12 +3,15 @@ package com.moyunzhijiao.system_frontend.controller;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moyunzhijiao.system_frontend.common.Result;
 import com.moyunzhijiao.system_frontend.controller.dto.ArticleDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.HomeworkCollectionDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.KnowledgeCollectionDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.VideoCollectionDTO;
+import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import com.moyunzhijiao.system_frontend.service.collection.StuCollectionService;
+import com.moyunzhijiao.system_frontend.service.collection.TeaWorksCollectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 public class CollectionController {
     @Autowired
     StuCollectionService stuCollectionService;
+    @Autowired
+    TeaWorksCollectionService teaWorksCollectionService;
 
     @PostMapping("/cieps/knowledge-collection")
     public Result addKnowledgeCollection(@RequestHeader("authorization") String token,
@@ -160,4 +165,17 @@ public class CollectionController {
         return Result.success(page);
     }
 
+    /*
+    * 教师获取关于作品的收藏
+    * */
+    @GetMapping("")
+    public Result findTeaCollectionPage(@RequestHeader("authorization") String token,
+                                        @RequestParam Integer currentPage,
+                                        @RequestParam Integer pageSize){
+        DecodedJWT jwt = JWT.decode(token);
+        Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
+        IPage<Homework> collectionPage = new Page<>(currentPage,pageSize);
+        collectionPage = teaWorksCollectionService.getHomeworkOfTeacher(collectionPage,teacherId);
+        return Result.success(collectionPage);
+    }
 }

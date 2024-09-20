@@ -1,17 +1,18 @@
 package com.moyunzhijiao.system_frontend.controller;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moyunzhijiao.system_frontend.common.Constants;
 import com.moyunzhijiao.system_frontend.common.Result;
-import com.moyunzhijiao.system_frontend.controller.dto.HomeworkDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.homework.HomeworkDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.KlassHomeworkDetailDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.PublishByTemplateDTO;
+import com.moyunzhijiao.system_frontend.entity.Klass;
 import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import com.moyunzhijiao.system_frontend.service.homework.HomeworkService;
+import com.moyunzhijiao.system_frontend.service.homework.KlassHomeworkService;
 import com.moyunzhijiao.system_frontend.service.homework.TeacherHomeworkService;
 import com.moyunzhijiao.system_frontend.service.note.KlassNoteReceiveService;
 import com.moyunzhijiao.system_frontend.service.note.StudentNoteReceiveService;
@@ -19,10 +20,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +34,8 @@ public class HomeworkController {
     KlassNoteReceiveService klassNoteReceiveService;
     @Autowired
     StudentNoteReceiveService studentNoteReceiveService;
+    @Autowired
+    KlassHomeworkService klassHomeworkService;
 
     @Operation(summary = "教师的查询作业列表，四个分页查询")
     @GetMapping("/ciep/homework")
@@ -113,16 +113,18 @@ public class HomeworkController {
         // 从载荷中获取用户 ID
         //从封装的类中取出数据
         Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
-        String templateType = publishByTemplateDTO.getTemplateType();
-        Integer templateId = publishByTemplateDTO.getTemplateId();
-        String name = publishByTemplateDTO.getDescription().getName();
-        String target = publishByTemplateDTO.getDescription().getTarget();
-        String require = publishByTemplateDTO.getDescription().getRequire();
-        String deadline = publishByTemplateDTO.getDescription().getDeadline();
-        List<Integer> list = publishByTemplateDTO.getList();
         //根据模板新增作业
-        homeworkService.addByTemplate(teacherId,templateId,templateType,require,name,target,deadline,list);
+        homeworkService.addByTemplate(teacherId,publishByTemplateDTO);
         return Result.success();
+    }
+
+    /*
+    * 获取一个集体作业下的所有班级
+    * */
+    @GetMapping("/ciep/class-homework")
+    public Result findKlassOfHomework(@RequestParam Integer homeworkId){
+        IPage<Klass> page = new Page<>(1,Integer.MAX_VALUE);
+        return Result.success(klassHomeworkService.getKlassByHomework(page,homeworkId).getRecords());
     }
 
 }

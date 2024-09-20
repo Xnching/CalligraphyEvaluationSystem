@@ -72,9 +72,9 @@ public interface CompetitionSubmissionsMapper extends BaseMapper<CompetitionSubm
     List<CompetitionSubmissions> getSubmissionsToUpdate(@Param("divisionId") Integer divisionId, @Param("limit") Integer limit);
     @Update("<script>" +
             "UPDATE competition_submissions SET teacher_id = #{teacherId} WHERE id IN " +
-            "<foreach item='id' collection='ids' open='(' separator=',' close=')'>" +
-            "#{id}" +
-            "</foreach>" +
+            "   <foreach item='id' collection='ids' open='(' separator=',' close=')'>" +
+            "       #{id}" +
+            "   </foreach>" +
             "</script>")
     void updateSubmissions(@Param("ids") List<Integer> ids, @Param("teacherId") Integer teacherId);
 }

@@ -91,8 +91,16 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
     * 根据模板生成作业，需要给作业赋值模板属性，需要把图片复制过来，需要给模板使用次数加一
     * */
     @Transactional
-    public void addByTemplate(Integer teacherId, Integer templateId, String templateType, String require
-            , String name, String target, String deadline, List<Integer> list) {
+    public void addByTemplate(Integer teacherId, PublishByTemplateDTO publishByTemplateDTO) {
+        //从封装的类中取出数据
+        String templateType = publishByTemplateDTO.getTemplateType();
+        Integer templateId = publishByTemplateDTO.getTemplateId();
+        String name = publishByTemplateDTO.getDescription().getName();
+        String target = publishByTemplateDTO.getDescription().getTarget();
+        String require = publishByTemplateDTO.getDescription().getRequire();
+        String deadline = publishByTemplateDTO.getDescription().getDeadline();
+        List<Integer> list = publishByTemplateDTO.getList();
+
         List<String> images;
         //先根据基础数据把生成作业的基础数据赋值。
         Homework homework = new Homework();

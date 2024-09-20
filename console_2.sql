@@ -859,15 +859,16 @@ create table competition(
     count int not null default 0 comment '参赛人数',
     state varchar(50) default '准备报名中' comment '状态',
     picture varchar(255) comment '宣传图url',
-    delete_flag tinyint(1) not null DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）',
+    delete_flag tinyint(1) not null DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '竞赛';
 
-create table klass_competition(
-    klass_id int UNSIGNED not null comment '班级id',
-    competition_id int UNSIGNED not null comment '竞赛id',
-    primary key (competition_id,klass_id)
-)comment '班级报名竞赛表';
+# create table klass_competition(
+#     klass_id int UNSIGNED not null comment '班级id',
+#     competition_id int UNSIGNED not null comment '竞赛id',
+#     primary key (competition_id,klass_id)
+# )comment '班级报名竞赛表';
+#没有用，删了
 
 create table competition_requirements(
     competition_id int UNSIGNED not null primary key comment '竞赛id',
@@ -1039,7 +1040,7 @@ create table video_Collection(
 create table protocol (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY comment '协议id',
     name VARCHAR(100) NOT NULL comment '协议名',
-    content varchar(255) not null comment '协议文件url',
+    content varchar(2550) not null comment '协议文件url',
     updated_time datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP  comment'更新时间'
 )comment '协议';
 

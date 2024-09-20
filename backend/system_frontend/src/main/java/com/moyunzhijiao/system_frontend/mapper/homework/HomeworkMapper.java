@@ -2,8 +2,7 @@ package com.moyunzhijiao.system_frontend.mapper.homework;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.moyunzhijiao.system_frontend.controller.dto.ArticleDTO;
-import com.moyunzhijiao.system_frontend.controller.dto.HomeworkDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.homework.HomeworkDTO;
 import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

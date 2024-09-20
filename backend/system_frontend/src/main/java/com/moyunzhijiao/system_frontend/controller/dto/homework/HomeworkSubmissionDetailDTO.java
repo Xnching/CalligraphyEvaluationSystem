@@ -1,4 +1,4 @@
-package com.moyunzhijiao.system_frontend.controller.dto;
+package com.moyunzhijiao.system_frontend.controller.dto.homework;
 
 import com.moyunzhijiao.system_frontend.entity.homework.CharacterAnalysis;
 import lombok.Data;

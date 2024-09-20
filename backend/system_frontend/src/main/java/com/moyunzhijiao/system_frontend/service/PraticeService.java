@@ -2,7 +2,7 @@ package com.moyunzhijiao.system_frontend.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.moyunzhijiao.system_frontend.controller.dto.HomeworkDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.homework.HomeworkDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.PracticeDTO;
 import com.moyunzhijiao.system_frontend.mapper.Pratice.PraticeMapper;
 import com.moyunzhijiao.system_frontend.mapper.homework.HomeworkMapper;

@@ -5,15 +5,33 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.moyunzhijiao.system_frontend.common.Result;
 import com.moyunzhijiao.system_frontend.controller.dto.CompetitionDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.CompetitionDetailDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.ParticipantDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.StudentDTO;
+import com.moyunzhijiao.system_frontend.entity.Student;
+import com.moyunzhijiao.system_frontend.entity.competition.Competition;
+import com.moyunzhijiao.system_frontend.entity.competition.CompetitionSubmission;
+import com.moyunzhijiao.system_frontend.service.KlassService;
+import com.moyunzhijiao.system_frontend.service.StudentService;
 import com.moyunzhijiao.system_frontend.service.competition.CompetitionService;
+import com.moyunzhijiao.system_frontend.service.competition.CompetitionSubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 public class CompetitionController {
     @Autowired
     CompetitionService competitionService;
+    @Autowired
+    CompetitionSubmissionService competitionSubmissionService;
+    @Autowired
+    KlassService klassService;
+    @Autowired
+    StudentService studentService;
 
     @GetMapping("/cieps/existing-competition")
     public Result getExistingCompetition (@RequestHeader("authorization") String token,
@@ -49,7 +67,61 @@ public class CompetitionController {
         DecodedJWT jwt = JWT.decode(token);
         Integer student_id = Integer.valueOf(jwt.getAudience().get(0));
         participantDTO.setStudent_id(student_id);
-        competitionService.applyCompetition(participantDTO);
+        competitionService.applyCompetition(participantDTO,false);
         return Result.success();
     }
+
+    /*
+    * 获取所有竞赛的列表
+    * */
+    @GetMapping("/ciep/competition")
+    public Result findAllList(){
+        List<Competition> list = competitionService.getAllList();
+        return Result.success(list);
+    }
+
+    /*
+    * 教师获取关于一个竞赛组别的详情，其中包含各学生提交情况
+    * */
+    @GetMapping("/ciep/competition-detail")
+    public Result findCompetitionDetail(@RequestHeader("authorization") String token,@RequestParam Integer competitionId){
+        DecodedJWT jwt = JWT.decode(token);
+        Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
+        List<StudentDTO> list = competitionService.getCompetitionDetailOfTea(teacherId,competitionId);
+        return Result.success(list);
+    }
+
+    /*
+    * 获取一个竞赛作品的详情
+    * */
+    @GetMapping("/ciep/competition-work")
+    public Result findSubmissionDetail(@RequestParam Integer divisionId,@RequestParam Integer stuId){
+        CompetitionDetailDTO competitionDetailDTO = competitionSubmissionService.getCompetitionDetail(divisionId,stuId);
+        return Result.success(competitionDetailDTO);
+    }
+
+    /*
+    * 教师为一个班级的所有人报名参赛
+    * */
+    @PostMapping("/ciep/apply")
+    public Result applyOfKlass(Map<String,Integer> params){
+        Integer klassId = params.get("classId");
+        Integer divisionId = params.get("divisionId");
+        Integer competitionId = params.get("competitionId");
+        // 创建 ArrayList 并添加 klassId
+        List<Integer> klassIdList = new ArrayList<>();
+        klassIdList.add(klassId);
+        // 获取学生 ID 列表
+        List<Integer> studentIdList = studentService.getByKlassList(klassIdList);
+        ParticipantDTO participantDTO = new ParticipantDTO();
+        studentIdList.forEach(studentId->{
+            participantDTO.setDivision_id(divisionId);
+            participantDTO.setStudent_id(studentId);
+            participantDTO.setCompetition_id(competitionId);
+            competitionService.applyCompetition(participantDTO,true);
+        });
+        return Result.success();
+    }
+
+
 }
