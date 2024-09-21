@@ -6,6 +6,7 @@ import com.moyunzhijiao.system_frontend.entity.template.CustomTemplateImage;
 import com.moyunzhijiao.system_frontend.mapper.template.CustomTemplateImageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,5 +36,17 @@ public class CustomTemplateImageService extends ServiceImpl<CustomTemplateImageM
         QueryWrapper<CustomTemplateImage>queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("custom_template_id",templateId);
         customTemplateImageMapper.delete(queryWrapper);
+    }
+
+    @Transactional
+    public void addBatch(List<String> templateUrls, Integer id) {
+        //批量保存图片
+        List<CustomTemplateImage> images = templateUrls.stream().map(url->{
+            CustomTemplateImage customTemplateImage = new CustomTemplateImage();
+            customTemplateImage.setCustomTemplateId(id);
+            customTemplateImage.setPictureUrl(url);
+            return customTemplateImage;
+        }).toList();
+        saveBatch(images);
     }
 }

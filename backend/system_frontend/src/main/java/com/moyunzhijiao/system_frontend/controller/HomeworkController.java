@@ -52,7 +52,7 @@ public class HomeworkController {
 
     @Operation(summary = "延迟作业")
     @PostMapping("/ciep/postpone")
-    public Result postponeHomework(@RequestBody Map<String, String> request) throws ParseException {
+    public Result postponeHomework(@RequestBody Map<String, String> request) {
         String homeworkId = request.get("homeworkId");
         String newDate = request.get("newDate");
         Homework homework ;
@@ -127,4 +127,33 @@ public class HomeworkController {
         return Result.success(klassHomeworkService.getKlassByHomework(page,homeworkId).getRecords());
     }
 
+    @Operation(summary = "创建专项作业")
+    @PostMapping("/ciep/publish-earmarked")
+    public Result publishEarMarked(@RequestHeader("authorization") String token,@RequestBody HomeworkDTO homeworkDTO){
+        DecodedJWT jwt = JWT.decode(token);
+        // 从载荷中获取用户 ID
+        Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
+        homeworkService.publishEarMarked(homeworkDTO,teacherId);
+        return Result.success();
+    }
+
+    @Operation(summary = "创建字帖作业")
+    @PostMapping("/ciep/publish-copybook")
+    public Result publishCopybook(@RequestHeader("authorization") String token,@RequestBody HomeworkDTO homeworkDTO){
+        DecodedJWT jwt = JWT.decode(token);
+        // 从载荷中获取用户 ID
+        Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
+        homeworkService.publishCoopybook(homeworkDTO,teacherId);
+        return Result.success();
+    }
+
+    @Operation(summary = "创建综合作业")
+    @PostMapping("/ciep/publish-comprehensive")
+    public Result publishComprehensive(@RequestHeader("authorization") String token,@RequestBody HomeworkDTO homeworkDTO){
+        DecodedJWT jwt = JWT.decode(token);
+        // 从载荷中获取用户 ID
+        Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
+        homeworkService.publishComprehensive(homeworkDTO,teacherId);
+        return Result.success();
+    }
 }

@@ -35,4 +35,5 @@ public class CustomTemplate {
     @TableField(exist = false)
     List<String> imgs;
     Integer count;
+    String creatorType;
 }

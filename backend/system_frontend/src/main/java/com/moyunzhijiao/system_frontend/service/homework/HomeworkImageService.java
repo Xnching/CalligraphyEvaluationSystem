@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_frontend.entity.homework.HomeworkImage;
 import com.moyunzhijiao.system_frontend.mapper.homework.HomeworkImageMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,6 +15,7 @@ public class HomeworkImageService extends ServiceImpl<HomeworkImageMapper, Homew
     /*
     * 给一个作业批量添加作业内容url
     * */
+    @Transactional
     public void addBatch(Integer homeworkId, List<String> images) {
         List<HomeworkImage> list = images.stream().map(image ->{
             HomeworkImage homeworkImage = new HomeworkImage();

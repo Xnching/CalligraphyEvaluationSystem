@@ -127,6 +127,7 @@ public class ConfigService {
     public static String getHomeworkFilePath(){
         return homeworkFilePath;
     }
+    public static String getHomeworkUrl(){return homeworkUrl;}
 
 
 }

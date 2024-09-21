@@ -524,6 +524,7 @@ create table custom_template(
     detail_type enum ('部首','结构') NULL,
     font_id int UNSIGNED not null comment '字体id',
     creator_id int UNSIGNED not null comment'创作人id',
+    creator_type enum('学生','教师') not null comment '创作人类型',
     difficulty enum('1','2','3','4','5') not null comment '难度',
     word_count int comment '字数',
     count int default 0 comment '使用次数',

@@ -7,19 +7,6 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 public interface CustomTemplateMapper extends BaseMapper<CustomTemplate> {
-    @Select("SELECT " +
-            "    ct.* " +
-            "FROM  " +
-            "    custom_template ct WHERE ct.creator_id = #{teacherId} ")
-    IPage<CustomTemplate> selectByTeacher(IPage<CustomTemplate> page, @Param("teacherId") Integer teacherId);
-
-    @Select("SELECT " +
-            "    count(*) " +
-            "FROM  " +
-            "    custom_template ct WHERE  " +
-            "    ct.creator_id = #{teacherId} ")
-    Integer countByTeacher(@Param("teacherId") Integer teacherId);
-
 
     //下面是有teacher_template时候的表
 //    @Select("select ct.* , tt.count as usageFrequency " +

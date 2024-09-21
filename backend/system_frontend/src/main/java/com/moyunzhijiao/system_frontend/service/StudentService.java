@@ -33,8 +33,6 @@ public class StudentService extends ServiceImpl<StudentMapper, Student> {
 
     @Autowired
     RegionMapper regionMapper;
-    @Autowired
-    KlassService klassService;
     public StudentDTO login(StudentDTO studentDTO){
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("student_number",studentDTO.getStuno());
@@ -136,8 +134,7 @@ public class StudentService extends ServiceImpl<StudentMapper, Student> {
     /*
     * 获取一个教师的所有学生列表，其中名字模糊查询
     * */
-    public List<StudentDTO> getAllByTeacher(Integer teacherId, String name) {
-        List<Integer> klassIdList = klassService.getKlassIdByTeacher(teacherId);
+    public List<StudentDTO> getAllByTeacher(List<Integer> klassIdList, String name) {
         return studentMapper.selectAllByTeacher(klassIdList,name);
     }
 

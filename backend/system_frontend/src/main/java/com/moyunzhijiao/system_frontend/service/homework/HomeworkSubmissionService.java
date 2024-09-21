@@ -32,8 +32,6 @@ public class HomeworkSubmissionService extends ServiceImpl<HomeworkSubmissionMap
     StudentMapper studentMapper;
     @Autowired
     KlassMapper klassMapper;
-    @Autowired
-    HomeworkService homeworkService;
 
     public IPage<HomeworkSubmissionDTO> getUnSubmitedPage(Integer stuId, Integer currentPage, Integer pageSize) {
         IPage<HomeworkSubmissionDTO> homeworkIPage = new Page<>(currentPage,pageSize);
@@ -87,7 +85,6 @@ public class HomeworkSubmissionService extends ServiceImpl<HomeworkSubmissionMap
             if (studentInfo != null) {
                 Integer klassId = studentInfo.getKlassId();
                 String studentNumber = studentInfo.getStudentNumber(); // 假设studentNumber存储在student表中
-
                 // 根据klassId查询klassName
                 if (klassId != null) {
                     KlassDTO klassDTO = klassMapper.getKlassById(klassId);
@@ -95,7 +92,6 @@ public class HomeworkSubmissionService extends ServiceImpl<HomeworkSubmissionMap
                         student.setKlass(klassDTO.getName());
                     }
                 }
-
                 // 设置studentNumber
                 student.setStuno(studentNumber);
             }
@@ -139,13 +135,12 @@ public class HomeworkSubmissionService extends ServiceImpl<HomeworkSubmissionMap
     /*
     * 获取一个作业的所有,包括作业名称，包括未被批改的学生名、被批改过的学生名
     * */
-    public Map<String,?> getSubmissionListOfHomework(Integer homeworkId) {
+    public Map<String,?> getSubmissionListOfHomework(Homework homework) {
         Map<String,Object> map = new HashMap<>();
-        Homework homework = homeworkService.getById(homeworkId);
         map.put("name",homework.getName());
-        List<StudentDTO> uncorrectedList = homeworkSubmissionMapper.selectStudentOfHomework(homeworkId,false);
+        List<StudentDTO> uncorrectedList = homeworkSubmissionMapper.selectStudentOfHomework(homework.getId(),false);
         map.put("unCorrected",uncorrectedList);
-        List<StudentDTO> correctedList = homeworkSubmissionMapper.selectStudentOfHomework(homeworkId,true);
+        List<StudentDTO> correctedList = homeworkSubmissionMapper.selectStudentOfHomework(homework.getId(),true);
         map.put("corrected",correctedList);
         return map;
     }

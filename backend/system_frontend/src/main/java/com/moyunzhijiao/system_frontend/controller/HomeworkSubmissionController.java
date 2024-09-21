@@ -13,10 +13,7 @@ import com.moyunzhijiao.system_frontend.service.homework.HomeworkImageService;
 import com.moyunzhijiao.system_frontend.service.homework.HomeworkService;
 import com.moyunzhijiao.system_frontend.service.homework.HomeworkSubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -47,8 +44,9 @@ public class HomeworkSubmissionController {
     * 获取一个作业的批阅情况
     * */
     @GetMapping("/ciep/homework-list")
-    public Result findSubmissionListOfHomework(Integer homeworkId){
-        Map<String,?> map = homeworkSubmissionService.getSubmissionListOfHomework(homeworkId);
+    public Result findSubmissionListOfHomework(@RequestParam Integer homeworkId){
+        Homework homework = homeworkService.getById(homeworkId);
+        Map<String,?> map = homeworkSubmissionService.getSubmissionListOfHomework(homework);
         return Result.success(map);
     }
 
@@ -87,7 +85,7 @@ public class HomeworkSubmissionController {
     * 教师批改作品
     * */
     @PostMapping("/ciep/correct-homework")
-    public Result correctHomework(Map<String,?> params){
+    public Result correctHomework(@RequestBody Map<String,?> params){
         String feedback = (String) params.get("feedback");
         Integer score = (Integer) params.get("score");
         Integer submissionId = (Integer) params.get("submissionId");

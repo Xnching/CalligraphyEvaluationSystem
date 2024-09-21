@@ -52,7 +52,8 @@ public class StudentController {
         DecodedJWT jwt = JWT.decode(token);
         // 从载荷中获取用户 ID
         Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
-        List<StudentDTO> allList = studentService.getAllByTeacher(teacherId,name);
+        List<Integer> klassIdList = klassService.getKlassIdByTeacher(teacherId);
+        List<StudentDTO> allList = studentService.getAllByTeacher(klassIdList,name);
         return Result.success(allList);
     }
 

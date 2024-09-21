@@ -27,4 +27,5 @@ public class TemplateWord {
     Integer gradeId;
     @TableField(value="created_time")
     String createdTime;
+    String filePath;
 }

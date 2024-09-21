@@ -1,6 +1,7 @@
 package com.moyunzhijiao.system_frontend.service.homework;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.lang.UUID;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -8,9 +9,12 @@ import com.moyunzhijiao.system_frontend.common.Constants;
 import com.moyunzhijiao.system_frontend.controller.dto.KlassHomeworkDetailDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.PublishByTemplateDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.StudentDTO;
+import com.moyunzhijiao.system_frontend.controller.dto.homework.HomeworkDTO;
+import com.moyunzhijiao.system_frontend.entity.Copybook;
 import com.moyunzhijiao.system_frontend.entity.Klass;
 import com.moyunzhijiao.system_frontend.entity.Student;
 import com.moyunzhijiao.system_frontend.entity.homework.Homework;
+import com.moyunzhijiao.system_frontend.entity.homework.HomeworkImage;
 import com.moyunzhijiao.system_frontend.entity.homework.TeacherHomework;
 import com.moyunzhijiao.system_frontend.entity.template.CustomTemplate;
 import com.moyunzhijiao.system_frontend.entity.template.CustomTemplateImage;
@@ -19,8 +23,7 @@ import com.moyunzhijiao.system_frontend.entity.template.SystemTemplateImage;
 import com.moyunzhijiao.system_frontend.exception.ServiceException;
 import com.moyunzhijiao.system_frontend.mapper.homework.HomeworkMapper;
 import com.moyunzhijiao.system_frontend.mapper.homework.TeacherHomeworkMapper;
-import com.moyunzhijiao.system_frontend.service.FontService;
-import com.moyunzhijiao.system_frontend.service.StudentService;
+import com.moyunzhijiao.system_frontend.service.*;
 import com.moyunzhijiao.system_frontend.service.note.KlassNoteReceiveService;
 import com.moyunzhijiao.system_frontend.service.note.StudentNoteReceiveService;
 import com.moyunzhijiao.system_frontend.service.template.CustomTemplateImageService;
@@ -31,11 +34,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
 
+    @Autowired
+    CopybookService copybookService;
     @Autowired
     TeacherHomeworkMapper teacherHomeworkMapper;
     @Autowired
@@ -64,6 +77,12 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
     StudentNoteReceiveService studentNoteReceiveService;
     @Autowired
     StudentService studentService;
+    @Autowired
+    TemplateWordService templateWordService;
+    @Autowired
+    PictureService pictureService;
+
+
 
     /*
     * 获取作业详情（班级）
@@ -124,13 +143,12 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
         //把模板里的图片 内容复制过来
         homeworkImageService.addBatch(homeworkId,images);
         //把发布作业封装起来
-        publishHomework(teacherId,homework,list,target);
-        //增加教师作业联系
-        teacherHomeworkService.addTeacherHomework(teacherId,homeworkId,teacherId,templateType);
+        publishHomework(teacherId,homework,list,templateId,templateType);
     }
 
     /*
     * 根据自定义模板创建作业并添加,并返回作业id用于处理关系
+    * 类设计错了，导致不好传参使得生成作业出现三个重复的即addHomework，addBySystem，addByCustom
     * */
     public Integer addByCustom(Integer templateId,Homework homework){
         CustomTemplate customTemplate = customTemplateService.getById(templateId);
@@ -141,7 +159,7 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
         homework.setWordCount(customTemplate.getWordCount());
         homework.setFontId(customTemplate.getFontId());
         //插入数据
-        this.save(homework);
+        save(homework);
         //模板使用次数+1并更新
         customTemplate.setCount(customTemplate.getCount()+1);
         customTemplateService.updateById(customTemplate);
@@ -150,6 +168,7 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
 
     /*
      * 根据系统模板创建作业并添加,并返回作业id用于处理关系
+     * 类设计错了，导致不好传参使得生成作业出现三个重复的即addHomework，addBySystem，addByCustom
      * */
     public Integer addBySystem(Integer templateId,Homework homework){
         SystemTemplate systemTemplate = systemTemplateService.getById(templateId);
@@ -160,17 +179,84 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
         homework.setWordCount(systemTemplate.getWordCount());
         homework.setFontId(systemTemplate.getFontId());
         //插入数据
-        this.save(homework);
+        save(homework);
         return homework.getId();
     }
 
     /*
-    * 不论是否根据模板生成的，最后都用此来处理发布作业，需要为所有学生新建作业
-    * 需要给所有的学生发消息，需要给教师和作业之间的关系表增加联系
+    * 创建字帖作业
     * */
     @Transactional
-    public void publishHomework(Integer teacherId,Homework homework,List<Integer> list,String target){
+    public void publishCoopybook(HomeworkDTO homeworkDTO,Integer teacherId){
+        //获得字帖
+        Copybook copybook = copybookService.getById(homeworkDTO.getCopybookId());
+        //保存作业
+        Homework homework = addHomework(homeworkDTO,"字帖");
+        //保存图片
+        List<String> images = new ArrayList<>();
+        images.add(copybook.getContent());
+        homeworkImageService.addBatch(homework.getId(),images);
+        //发布作业
+        publishHomework(teacherId,homework,homeworkDTO.getList(),null,null);
+    }
+
+    /*
+    * 创建专项作业
+    * */
+    @Transactional
+    public void publishEarMarked(HomeworkDTO homeworkDTO,Integer teacherId) {
+        //先把作业基本信息保存
+        Homework homework = addHomework(homeworkDTO,"专项");
+        //获取图片并开始拼接创建
+        List<String> imagePaths = templateWordService.selectFilePathBatch(homeworkDTO.getWordId());
+        List<String> homeworkUrls = pictureService.gatherImagesOfSpecial(imagePaths);
+        //接着保存图片
+        homeworkImageService.addBatch(homework.getId(),homeworkUrls);
+        //接下来发布作业
+        publishHomework(teacherId,homework,homeworkDTO.getList(),null,null);
+    }
+
+    /*
+    * 创建综合作业
+    * */
+    @Transactional
+    public void publishComprehensive(HomeworkDTO homeworkDTO,Integer teacherId){
+        //先把作业基本信息保存
+        Homework homework = addHomework(homeworkDTO,"综合");
+        //接着生成作业图片
+        List<String> urlList = pictureService.gatherImagesOfComprehensive(homeworkDTO.getIdArray(),homeworkDTO.getComposing());
+        //批量保存图片
+        homeworkImageService.addBatch(homework.getId(),urlList);
+    }
+
+
+
+
+
+    /*
+    * 统一的生成作业
+    * 类设计错了，导致不好传参使得生成作业出现三个重复的即addHomework，addBySystem，addByCustom
+    * */
+    public Homework addHomework(HomeworkDTO homeworkDTO,String firstType){
+        Homework homework = new Homework();
+        BeanUtil.copyProperties(homeworkDTO.getDescription(),homework);
+        homework.setType(firstType);
+        //只有专项有第二个类型
+        if(firstType.equals("专项"))
+            homework.setDetailType(homeworkDTO.getDescription().getType());
+        homework.setWordCount(homeworkDTO.getWordId().size());
+        save(homework);
+        return homework;
+    }
+
+    /*
+     * 不论是否根据模板生成的，最后都用此来处理发布作业，需要为所有学生新建作业
+     * 需要给所有的学生发消息，需要给教师和作业之间的关系表增加联系
+     * */
+    @Transactional
+    public void publishHomework(Integer teacherId,Homework homework,List<Integer> list,Integer templateId,String templateType){
         Integer homeworkId = homework.getId();
+        String target = homework.getTarget();
         //给相应的学生发送消息
         if (target.equals("个人")){
             studentNoteReceiveService.addHomework(teacherId,list,homework);
@@ -182,8 +268,7 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
             //批量创建作业作品，让学生们准备去完成
             homeworkSubmissionService.addByHomework(homeworkId,studentList);
         }
+        //增加教师作业联系
+        teacherHomeworkService.addTeacherHomework(teacherId,homeworkId,templateId,templateType);
     }
-
-
-
 }
