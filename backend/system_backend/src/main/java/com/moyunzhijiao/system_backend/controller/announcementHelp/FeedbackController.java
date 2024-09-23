@@ -12,12 +12,14 @@ import com.moyunzhijiao.system_backend.service.announcementHelp.FeedbackContentS
 import com.moyunzhijiao.system_backend.service.announcementHelp.FeedbackService;
 import com.moyunzhijiao.system_backend.service.back.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/backend/feedback")
+@PreAuthorize("hasAuthority('建议与反馈管理')")
 public class FeedbackController {
     @Autowired
     FeedbackService feedbackService;

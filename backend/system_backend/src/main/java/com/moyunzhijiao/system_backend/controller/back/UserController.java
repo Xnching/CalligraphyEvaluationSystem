@@ -9,6 +9,7 @@ import com.moyunzhijiao.system_backend.controller.dto.back.UserDTO;
 import com.moyunzhijiao.system_backend.service.back.UserGroupService;
 import com.moyunzhijiao.system_backend.service.back.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -41,6 +42,7 @@ public class UserController {
     /*
     * 系统用户页面表的分页查询
     * */
+    @PreAuthorize("hasAuthority('系统用户管理')")
     @GetMapping("/user/page")
     public Result findPage(@RequestParam Integer pageNum,@RequestParam Integer pageSize,
                            @RequestParam(defaultValue = "")String str){
@@ -52,6 +54,7 @@ public class UserController {
     /*
     * 获取所有用户组名称和id
     * */
+    @PreAuthorize("hasAuthority('系统用户管理')")
     @GetMapping("/user/groups")
     public Result getGroups(){
         return Result.success(userGroupService.getIdAndName());
@@ -60,6 +63,7 @@ public class UserController {
     /*
     * 编辑弹窗中的更新用户数据
     * */
+    @PreAuthorize("hasAuthority('系统用户管理')")
     @PutMapping("/user/update")
     public Result updateUser(@RequestBody UserDTO userDTO){
         userService.updateUser(userDTO);
@@ -69,6 +73,7 @@ public class UserController {
     /*
     * 删除一行用户数据
     * */
+    @PreAuthorize("hasAuthority('系统用户管理')")
     @PutMapping("/user/delete")
     public Result deleteUser(@RequestBody Map<String, String> params){
         String id = params.get("id");
@@ -79,6 +84,7 @@ public class UserController {
     /*
     * 新增一个用户
     * */
+    @PreAuthorize("hasAuthority('系统用户管理')")
     @PostMapping("/user/add")
     public Result addUser(@RequestBody UserDTO userDTO){
         userService.addUser(userDTO);

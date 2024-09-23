@@ -1,4 +1,4 @@
-package com.moyunzhijiao.system_backend.config.interceptor;
+package com.moyunzhijiao.system_backend.component.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

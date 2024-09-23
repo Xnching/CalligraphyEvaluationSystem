@@ -1,4 +1,4 @@
-package com.moyunzhijiao.system_backend.config.scheduler;
+package com.moyunzhijiao.system_backend.component.scheduler;
 
 import com.moyunzhijiao.system_backend.mapper.competition.CompetitionMapper;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -15,6 +15,7 @@ import com.moyunzhijiao.system_backend.service.competition.FinalRankService;
 import com.moyunzhijiao.system_backend.service.competition.FinalReviewService;
 import com.moyunzhijiao.system_backend.service.competition.ReviewersService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/backend/review-work")
+@PreAuthorize("hasAuthority('评委评分')")
 public class ReviewWorkController {
     @Autowired
     ReviewersService reviewersService;

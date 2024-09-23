@@ -6,12 +6,14 @@ import com.moyunzhijiao.system_backend.common.Result;
 import com.moyunzhijiao.system_backend.controller.dto.back.UserGroupDTO;
 import com.moyunzhijiao.system_backend.service.back.UserGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/backend/user-group")
+@PreAuthorize("hasAuthority('用户组管理')")
 public class UserGroupController {
 
     @Autowired

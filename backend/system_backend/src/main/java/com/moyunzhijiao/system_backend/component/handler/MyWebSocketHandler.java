@@ -1,4 +1,4 @@
-package com.moyunzhijiao.system_backend.config.handler;
+package com.moyunzhijiao.system_backend.component.handler;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -13,17 +13,17 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     private static final CopyOnWriteArrayList<WebSocketSession> studentSessions = new CopyOnWriteArrayList<>();
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+    public void afterConnectionEstablished(WebSocketSession session){
         studentSessions.add(session);
         System.out.println("目前有"+studentSessions.size()+"人正在连线中。。。");
     }
 
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+    protected void handleTextMessage(WebSocketSession session, TextMessage message){
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status){
         studentSessions.remove(session);
     }
 

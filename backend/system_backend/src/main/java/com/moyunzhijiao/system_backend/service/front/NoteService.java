@@ -1,7 +1,7 @@
 package com.moyunzhijiao.system_backend.service.front;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.moyunzhijiao.system_backend.config.handler.MyWebSocketHandler;
+import com.moyunzhijiao.system_backend.component.handler.MyWebSocketHandler;
 import com.moyunzhijiao.system_backend.entiy.competition.Competition;
 import com.moyunzhijiao.system_backend.entiy.front.Note;
 import com.moyunzhijiao.system_backend.entiy.front.NoteContent;

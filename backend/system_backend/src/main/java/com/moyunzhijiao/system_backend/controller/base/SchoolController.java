@@ -7,6 +7,7 @@ import com.moyunzhijiao.system_backend.controller.dto.base.SchoolDTO;
 import com.moyunzhijiao.system_backend.entiy.base.School;
 import com.moyunzhijiao.system_backend.service.base.SchoolService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/backend/school")
+@PreAuthorize("hasAuthority('学校管理')")
 public class SchoolController {
 
     @Autowired

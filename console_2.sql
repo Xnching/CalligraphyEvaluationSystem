@@ -28,6 +28,7 @@ create table user_group (
     name varchar(50) not null comment'用户组名',
     state varchar(10) not null comment'状态',
     user_count int not null default 0 comment'该组内系统用户人数',
+    school_id int UNSIGNED default 0 comment'如果是校系统用户就用此记录学校id',
     description varchar(255) comment '描述',
     delete_flag TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除（0 未删除、1 删除）',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
@@ -463,6 +464,7 @@ create table homework_submission(
     homework_id int UNSIGNED not null comment '作业id',
     student_id int UNSIGNED not null comment '学生id',
     state tinyint(1) not null default 0 comment '学生是否完成作业',
+    finished_time timestamp comment '作业提交时间',
     reviewed tinyint(1) not null default 0 comment '作业是否被教师批改，0为未批改，1为中间态，2为已批改',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '作业作品';
@@ -1073,6 +1075,7 @@ create table character_analysis(
     submission_id int UNSIGNED not null comment '作品id',
     score tinyint comment '系统得分',
     evaluation varchar(100) comment '系统评价',
+    student_id INT UNSIGNED comment '学生id',
     picture varchar(255) comment '该字图片url',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '作品的单字分析';
@@ -1082,6 +1085,7 @@ create table stroke_analysis(
     character_analysis_id int UNSIGNED not null comment '单字分析id',
     score tinyint comment '系统得分',
     picture varchar(255) comment '该笔画图片url',
+    student_id INT UNSIGNED comment '学生id',
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间'
 )comment '笔画分析';
 

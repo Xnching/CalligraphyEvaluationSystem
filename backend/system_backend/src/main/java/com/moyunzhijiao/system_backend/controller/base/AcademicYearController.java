@@ -6,10 +6,12 @@ import com.moyunzhijiao.system_backend.entiy.base.AcademicYear;
 import com.moyunzhijiao.system_backend.service.base.AcademicYearService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/backend/academic-year")
+@PreAuthorize("hasAuthority('学年管理')")
 public class AcademicYearController {
     @Autowired
     AcademicYearService academicYearService;

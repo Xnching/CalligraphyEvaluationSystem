@@ -10,12 +10,14 @@ import com.moyunzhijiao.system_backend.entiy.back.User;
 import com.moyunzhijiao.system_backend.service.announcementHelp.QuestionService;
 import com.moyunzhijiao.system_backend.service.back.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/backend/question")
+@PreAuthorize("hasAuthority('常见问题与答案设置')")
 public class QuestionController {
     @Autowired
     QuestionService questionService;

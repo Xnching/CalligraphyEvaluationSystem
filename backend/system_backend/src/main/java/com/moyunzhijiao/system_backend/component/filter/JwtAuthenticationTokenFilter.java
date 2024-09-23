@@ -1,6 +1,5 @@
-package com.moyunzhijiao.system_backend.config.interceptor;
+package com.moyunzhijiao.system_backend.component.filter;
 
-import cn.hutool.core.util.StrUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -10,45 +9,51 @@ import com.moyunzhijiao.system_backend.common.Constants;
 import com.moyunzhijiao.system_backend.entiy.back.User;
 import com.moyunzhijiao.system_backend.entiy.front.Teacher;
 import com.moyunzhijiao.system_backend.exception.ServiceException;
+import com.moyunzhijiao.system_backend.service.UserDetailsServiceImpl;
 import com.moyunzhijiao.system_backend.service.back.UserService;
 import com.moyunzhijiao.system_backend.service.front.TeacherService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-/*
-* 拦截器，拦截token
-* */
+import java.io.IOException;
+
 @Component
-public class JwtInterceptor implements HandlerInterceptor {
+public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
+    private final TeacherService teacherService;
+    private final UserService userService;
+    private final UserDetailsServiceImpl userDetailsServiceImp;
     @Autowired
-    private UserService userService;
-    @Autowired
-    TeacherService teacherService;
-
+    public JwtAuthenticationTokenFilter(TeacherService teacherService,UserService userService,UserDetailsServiceImpl userDetailsServiceImp){
+        this.teacherService = teacherService;
+        this.userService = userService;
+        this.userDetailsServiceImp = userDetailsServiceImp;
+    }
     @Override
-    public boolean preHandle(HttpServletRequest request , HttpServletResponse response,Object handler) throws Exception{
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        //获取token
         String token = request.getHeader("token");
-        if(!(handler instanceof HandlerMethod)){
-            return true;
-        }
-        //执行认证
-        if(StrUtil.isBlank(token)){
+        if (!StringUtils.hasText(token)) {
+            //没token，抛异常
             throw new ServiceException(Constants.CODE_401,"无token验证失败");
         }
         //获取token中的userId
         String userId;
         String userType;
+        UsernamePasswordAuthenticationToken authenticationToken;
         try {
             userId = JWT.decode(token).getAudience().get(0);
             userType = JWT.decode(token).getClaim("userType").asString();
         } catch (JWTDecodeException e) {
             e.printStackTrace();
-            String errMsg = "token验证失败，请重新登录录";
-            throw new ServiceException(Constants.CODE_401,errMsg);
+            throw new ServiceException(Constants.CODE_401,"token验证失败，请重新登录");
         }
         if(userType.equals("系统用户")){
             //根据token中的userId查询数据库
@@ -64,6 +69,7 @@ public class JwtInterceptor implements HandlerInterceptor {
                 e.printStackTrace();
                 throw new ServiceException(Constants.CODE_401,"token验证失败，请重新登录");
             }
+            authenticationToken = new UsernamePasswordAuthenticationToken(user,null,userDetailsServiceImp.getPermission(userType, user.getUserGroupId()));
         }else if(userType.equals("教师")){
             Teacher teacher = teacherService.getById(userId);
             if(teacher == null){
@@ -77,9 +83,14 @@ public class JwtInterceptor implements HandlerInterceptor {
                 e.printStackTrace();
                 throw new ServiceException(Constants.CODE_401,"token验证失败，请重新登录");
             }
+            authenticationToken = new UsernamePasswordAuthenticationToken(teacher,null,userDetailsServiceImp.getPermission(userType,null));
         }else {
             throw new ServiceException(Constants.CODE_401,"您的用户身份非法！");
         }
-        return true;
+        //存入SecurityContextHolder
+        //TODO 获取权限信息封装到Authentication中
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        //放行
+        filterChain.doFilter(request, response);
     }
 }

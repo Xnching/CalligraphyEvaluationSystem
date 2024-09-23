@@ -5,6 +5,7 @@ import com.moyunzhijiao.system_backend.controller.dto.base.RegionDTO;
 import com.moyunzhijiao.system_backend.entiy.base.Region;
 import com.moyunzhijiao.system_backend.service.base.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/backend/region")
+@PreAuthorize("hasAuthority('地区管理')")
 public class RegionController {
 
     @Autowired

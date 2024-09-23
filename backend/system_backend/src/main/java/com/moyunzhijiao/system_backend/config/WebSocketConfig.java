@@ -1,7 +1,7 @@
 package com.moyunzhijiao.system_backend.config;
 
-import com.moyunzhijiao.system_backend.config.handler.MyWebSocketHandler;
-import com.moyunzhijiao.system_backend.config.interceptor.MyHandshakeInterceptor;
+import com.moyunzhijiao.system_backend.component.handler.MyWebSocketHandler;
+import com.moyunzhijiao.system_backend.component.interceptor.MyHandshakeInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;

@@ -3,8 +3,10 @@ package com.moyunzhijiao.system_backend.service.back;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.moyunzhijiao.system_backend.controller.dto.back.PermissionsDTO;
 import com.moyunzhijiao.system_backend.entiy.back.Permissions;
 import com.moyunzhijiao.system_backend.mapper.back.PermissionsMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +15,8 @@ import java.util.stream.Collectors;
 @Service
 public class PermissionsService extends ServiceImpl<PermissionsMapper, Permissions> {
 
+    @Autowired
+    UserGroupPermissionsService userGroupPermissionsService;
     /*
     * 用于查出菜单
     * */
@@ -39,6 +43,20 @@ public class PermissionsService extends ServiceImpl<PermissionsMapper, Permissio
             child.setChildren(grandChildren);
         }
         return children;
+    }
+
+    /*
+    * 根据用户组id获取权限
+    * */
+    public List<String> getPermissions(Integer userGroupId){
+        return userGroupPermissionsService.getDTOByUserGroupId(userGroupId).stream().map(PermissionsDTO::getName).collect(Collectors.toList());
+    }
+
+    /*
+    * 获取评阅教师的权限
+    * */
+    public String getReviewTeacherPermission(){
+        return "评委评分";
     }
 
 
