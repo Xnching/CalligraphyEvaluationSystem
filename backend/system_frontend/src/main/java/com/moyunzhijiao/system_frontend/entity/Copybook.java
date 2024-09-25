@@ -15,11 +15,13 @@ public class Copybook {
     String author;
     @TableField("font_id")
     Integer fontId;
+    @TableField(exist = false)
     String font;
     String importer;
     String content;
     @TableField("grade_id")
     Integer gradeId;
+    @TableField(exist = false)
     String grade;
     @TableField("created_time")
     String createdTime;

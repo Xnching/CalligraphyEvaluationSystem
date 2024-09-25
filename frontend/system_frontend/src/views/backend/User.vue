@@ -17,12 +17,7 @@
         :data="tableData"
         stripe
         tooltip-effect="dark"
-        style="width: 100%"
-        @selection-change="handleSelectionChange">
-        <el-table-column
-          type="selection"
-          width="55">
-        </el-table-column>
+        style="width: 100%">
         <el-table-column
           prop="id"
           label="用户ID"
@@ -36,11 +31,6 @@
         <el-table-column
           prop="loginId"
           label="登录名"
-          width="120">
-        </el-table-column>
-        <el-table-column
-          prop="password"
-          label="密码"
           width="120">
         </el-table-column>
         <el-table-column
@@ -230,10 +220,6 @@ export default {
       } else {
         this.$refs.multipleTable.clearSelection();
       }
-    },
-    //
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
     },
     //实现搜索栏多属性搜索的
     Search_table() {

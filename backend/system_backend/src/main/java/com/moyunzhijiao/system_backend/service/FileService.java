@@ -9,10 +9,12 @@ import java.nio.file.Paths;
 
 @Service
 public class FileService {
-    public Resource loadTemplateWordAsResource(String filename) {
-        String imageFilePath = ConfigService.getTemplateWordFilePath() + filename;
+    /*
+    * 统一的返回文件方法
+    * */
+    private Resource loadResource(String filePath) {
         try {
-            Resource resource = new UrlResource(Paths.get(imageFilePath).toUri().toURL());
+            Resource resource = new UrlResource(Paths.get(filePath).toUri().toURL());
             if (resource.exists() || resource.isReadable()) {
                 return resource;
             } else {
@@ -21,129 +23,73 @@ public class FileService {
         } catch (MalformedURLException e) {
             throw new RuntimeException("错误: " + e.getMessage());
         }
+    }
+
+    public Resource loadTemplateWordAsResource(String filename) {
+        return loadResource(ConfigService.getTemplateWordFilePath() + filename);
     }
 
     public Resource loadSampleWordAsResource(String filename) {
-        String imageFilePath = ConfigService.getSampleWordFilePath() + filename;
-        try {
-            Resource resource = new UrlResource(Paths.get(imageFilePath).toUri().toURL());
-            if (resource.exists() || resource.isReadable()) {
-                return resource;
-            } else {
-                throw new RuntimeException("找不到文件!");
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("错误: " + e.getMessage());
-        }
+        return loadResource(ConfigService.getSampleWordFilePath() + filename);
     }
 
     public Resource loadCopybookAsResource(String filename) {
-        String imageFilePath = ConfigService.getCopybookFilePath() + filename;
-        try {
-            Resource resource = new UrlResource(Paths.get(imageFilePath).toUri().toURL());
-            if (resource.exists() || resource.isReadable()) {
-                return resource;
-            } else {
-                throw new RuntimeException("找不到文件!");
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("错误: " + e.getMessage());
-        }
+        return loadResource(ConfigService.getCopybookFilePath() + filename);
+    }
+
+    public Resource loadCollectionAsResource(String filename) {
+        return loadResource(ConfigService.getCollectionFilePath() + filename);
     }
 
     /*
      * 加载字的生成的视频
      * */
     public Resource loadVideoAsResource(String filename) {
-        String videoFilePath = ConfigService.getVideoFilePath() + filename;
-        try {
-            Resource resource = new UrlResource(Paths.get(videoFilePath).toUri().toURL());
-            if (resource.exists() || resource.isReadable()) {
-                return resource;
-            } else {
-                throw new RuntimeException("找不到文件!");
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("错误: " + e.getMessage());
-        }
+        return loadResource(ConfigService.getVideoFilePath() + filename);
     }
 
-    /*
-     * 字的分析的图片
-     * */
+    public Resource loadCustomTemplateAsResource(String filename) {
+        return loadResource(ConfigService.getCustomTemplateFilePath() + filename);
+    }
+
     public Resource loadCharacterAsResource(String filename) {
-        String imageFilePath = ConfigService.getCharacterFilePath() + filename;
-        try {
-            Resource resource = new UrlResource(Paths.get(imageFilePath).toUri().toURL());
-            if (resource.exists() || resource.isReadable()) {
-                return resource;
-            } else {
-                throw new RuntimeException("找不到文件!");
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("错误: " + e.getMessage());
-        }
+        return loadResource(ConfigService.getCharacterFilePath() + filename);
     }
 
-    /*
-     * 笔画分析的图片
-     * */
     public Resource loadStrokeAsResource(String filename) {
-        String imageFilePath = ConfigService.getStrokeFilePath() + filename;
-        try {
-            Resource resource = new UrlResource(Paths.get(imageFilePath).toUri().toURL());
-            if (resource.exists() || resource.isReadable()) {
-                return resource;
-            } else {
-                throw new RuntimeException("找不到文件!");
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("错误: " + e.getMessage());
-        }
+        return loadResource(ConfigService.getStrokeFilePath() + filename);
     }
 
     /*
-     * 作业图片
+     * 竞赛的图片
      * */
+    public Resource loadCompetitionAsResource(String filename) {
+        return loadResource(ConfigService.getCompetitionFilePath() + filename);
+    }
+
+    /*
+     * 公告的图片
+     * */
+    public Resource loadAnnouncementAsResource(String filename) {
+        return loadResource(ConfigService.getAnnouncementFilePath() + filename);
+    }
+
+    /*
+     * 视频封面的图片
+     * */
+    public Resource loadVideoImageAsResource(String filename) {
+        return loadResource(ConfigService.getVideoImageFilePath() + filename);
+    }
+
     public Resource loadHomeworkAsResource(String filename) {
-        String imageFilePath = ConfigService.getHomeworkFilePath() + filename;
-        try {
-            Resource resource = new UrlResource(Paths.get(imageFilePath).toUri().toURL());
-            if (resource.exists() || resource.isReadable()) {
-                return resource;
-            } else {
-                throw new RuntimeException("找不到文件!");
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("错误: " + e.getMessage());
-        }
+        return loadResource(ConfigService.getHomeworkFilePath() + filename);
     }
 
     public Resource loadEditorImageAsResource(String filename) {
-        String imageFilePath = ConfigService.getEditorImageFilePath() + filename;
-        try {
-            Resource resource = new UrlResource(Paths.get(imageFilePath).toUri().toURL());
-            if (resource.exists() || resource.isReadable()) {
-                return resource;
-            } else {
-                throw new RuntimeException("找不到文件!");
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("错误: " + e.getMessage());
-        }
+        return loadResource(ConfigService.getEditorImageFilePath() + filename);
     }
 
     public Resource loadSystemTemplateAsResource(String filename) {
-        String imageFilePath = ConfigService.getSystemTemplateFilePath() + filename;
-        try {
-            Resource resource = new UrlResource(Paths.get(imageFilePath).toUri().toURL());
-            if (resource.exists() || resource.isReadable()) {
-                return resource;
-            } else {
-                throw new RuntimeException("找不到文件!");
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("错误: " + e.getMessage());
-        }
+        return loadResource(ConfigService.getSystemTemplateFilePath() + filename);
     }
 }

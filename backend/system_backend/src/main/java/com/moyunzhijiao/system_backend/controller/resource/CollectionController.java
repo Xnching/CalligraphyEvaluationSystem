@@ -11,6 +11,7 @@ import com.moyunzhijiao.system_backend.controller.dto.resource.CollectionDTO;
 import com.moyunzhijiao.system_backend.service.resource.CollectionService;
 import com.moyunzhijiao.system_backend.service.back.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/backend/collection")
+@PreAuthorize("hasAuthority('视频合集管理')")
 public class CollectionController {
     @Autowired
     CollectionService collectionService;

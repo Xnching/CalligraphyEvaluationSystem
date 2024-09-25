@@ -16,6 +16,7 @@ import com.moyunzhijiao.system_backend.service.ConfigService;
 import com.moyunzhijiao.system_backend.service.competition.*;
 import com.moyunzhijiao.system_backend.service.front.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +28,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/backend/competition")
+@PreAuthorize("hasAuthority('竞赛列表')")
 public class CompetitionController {
 
     @Autowired

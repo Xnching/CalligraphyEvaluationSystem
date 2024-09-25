@@ -34,6 +34,5 @@ public class CustomTemplate {
     Integer usageFrequency;     //使用次数
     @TableField(exist = false)
     List<String> imgs;
-    Integer count;
     String creatorType;
 }

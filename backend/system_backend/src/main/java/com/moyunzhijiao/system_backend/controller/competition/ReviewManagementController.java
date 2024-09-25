@@ -11,6 +11,7 @@ import com.moyunzhijiao.system_backend.service.competition.*;
 import com.moyunzhijiao.system_backend.service.front.NoteService;
 import com.moyunzhijiao.system_backend.service.front.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/backend/review-management")
+@PreAuthorize("hasAuthority('评阅管理')")
 public class ReviewManagementController {
     @Autowired
     CompetitionRulesService competitionRulesService;

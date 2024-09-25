@@ -94,6 +94,18 @@ public class ConfigService {
     private static final String SYSTEM_TEMPLATE_BASE_URL = "/upload/images/system-template/";
     private static final String SYSTEM_TEMPLATE_PATH = "\\resources\\image\\systemTemplate\\";
 
+    //合集的图片
+    private static String collectionFilePath;
+    private static String collectionUrl;
+    private static final String COLLECTION_BASE_URL = "/upload/images/collection-picture/";
+    private static final String COLLECTION_PATH = "\\resources\\image\\collection-picture\\";
+
+    //自定义模板的图片
+    private static String customTemplateFilePath;
+    private static String customTemplateUrl;
+    private static final String CUSTOM_TEMPLATE_BASE_URL = "/upload/images/custom-template/";
+    private static final String CUSTOM_TEMPLATE_PATH = "\\resources\\image\\customTemplate\\";
+
     @PostConstruct
     public void init() {
         baseUrl = serverProtocol + "://" + serverIp + ":" + serverPort;
@@ -147,6 +159,14 @@ public class ConfigService {
         //系统模板的图片
         systemTemplateFilePath = projectRoot.getParentFile().getParent()+SYSTEM_TEMPLATE_PATH;
         systemTemplateUrl = baseUrl+SYSTEM_TEMPLATE_BASE_URL;
+
+        //合集的图片
+        collectionFilePath = projectRoot.getParentFile().getParent()+COLLECTION_PATH;
+        collectionUrl = baseUrl+COLLECTION_BASE_URL;
+
+        //作业图片的
+        customTemplateFilePath = projectRoot.getParentFile().getParent()+CUSTOM_TEMPLATE_PATH;
+        customTemplateUrl = baseUrl+CUSTOM_TEMPLATE_BASE_URL;
     }
     public static String getBaseUrl() {
         return baseUrl;
@@ -210,6 +230,8 @@ public class ConfigService {
     public static String getCompetitionUrl(){
         return competitionUrl;
     }
+    public static String getCollectionFilePath(){return collectionFilePath;}
+    public static String getCollectionUrl(){return collectionUrl;}
     public static String getEditorImageFilePath(){
         return editorImageFilePath;
     }
@@ -222,4 +244,9 @@ public class ConfigService {
     public static String getSystemTemplateUrl(){
         return systemTemplateUrl;
     }
+
+    public static String getCustomTemplateFilePath(){
+        return customTemplateFilePath;
+    }
+    public static String getCustomTemplateUrl(){return customTemplateUrl;}
 }

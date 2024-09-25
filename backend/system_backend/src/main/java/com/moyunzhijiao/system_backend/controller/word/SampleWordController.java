@@ -10,6 +10,7 @@ import com.moyunzhijiao.system_backend.entiy.word.SampleWord;
 import com.moyunzhijiao.system_backend.service.ConfigService;
 import com.moyunzhijiao.system_backend.service.word.SampleWordService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -40,6 +41,7 @@ public class SampleWordController {
         return Result.success(page);
     }
 
+    @PreAuthorize("hasAuthority('样本字管理')")
     @PutMapping("/delete")
     public Result deleteWord(@RequestBody Map<String, String> params){
         String id = params.get("id");
@@ -47,12 +49,14 @@ public class SampleWordController {
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('样本字管理')")
     @PutMapping("/update")
     public Result updateWord(@RequestBody SampleWord sampleWord){
         sampleWordService.updateById(sampleWord);
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('样本字管理')")
     @PostMapping("/single-add")
     public Result singleAddWord(@RequestPart("sampleWord") String sampleWordStr,@RequestPart("file") MultipartFile file){
         if (!file.isEmpty()) {
@@ -76,7 +80,7 @@ public class SampleWordController {
         }
     }
 
-
+    @PreAuthorize("hasAuthority('样本字管理')")
     @PostMapping("/batch-add")
     public Result batchAddWord(@RequestPart("images") MultipartFile[] images, @RequestPart("excelFile") MultipartFile excelFile,@RequestPart("importer") String importer){
         if (excelFile.isEmpty()) {

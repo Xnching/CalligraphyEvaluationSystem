@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 @Data
@@ -23,8 +24,6 @@ public class Homework {
     @TableField("word_count")
     Integer wordCount;
     @TableField(exist = false)
-    String source;      //来源
-    @TableField(exist = false)
     BigDecimal score;
     String requirements;
     String target;
@@ -32,4 +31,6 @@ public class Homework {
     Integer difficulty;
     @TableField("created_time")
     String createdTime;
+    @TableField(exist = false)
+    List<String> urls;
 }

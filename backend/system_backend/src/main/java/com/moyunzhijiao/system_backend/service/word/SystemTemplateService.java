@@ -156,6 +156,7 @@ public class SystemTemplateService extends ServiceImpl<SystemTemplateMapper, Sys
     public void addCopybookTemplate(SystemTemplateDTO systemTemplateDTO, Integer userId) {
         //获得字帖
         Copybook copybook = copybookService.getById(systemTemplateDTO.getCopybookId());
+        systemTemplateDTO.setFontId(copybook.getFontId());
         //先生成模板
         SystemTemplate systemTemplate = insertTemplate(systemTemplateDTO,userId,"字帖");
         //接着保存图片

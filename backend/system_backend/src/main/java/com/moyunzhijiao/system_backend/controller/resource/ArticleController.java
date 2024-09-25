@@ -12,6 +12,7 @@ import com.moyunzhijiao.system_backend.entiy.resource.Article;
 import com.moyunzhijiao.system_backend.service.resource.ArticleService;
 import com.moyunzhijiao.system_backend.service.back.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +27,7 @@ public class ArticleController {
     @Autowired
     UserService userService;
 
+    @PreAuthorize("hasAuthority('添加书法知识')")
     @PostMapping("/add")
     public Result addArticle(@RequestPart("image") MultipartFile image,@RequestHeader("token") String token,
                              @RequestPart("content") String htmlContent, @RequestPart("article") String articleStr){
@@ -41,6 +43,8 @@ public class ArticleController {
         articleService.addArticle(image,htmlContent,article);
         return Result.success();
     }
+
+    @PreAuthorize("hasAuthority('资源管理')")
     @GetMapping("/page")
     public Result findPage(@RequestParam Integer pageNum, @RequestParam Integer pageSize,
                            @RequestParam(defaultValue = "")String str,@RequestParam(required = false)Integer secondTypeId,
@@ -50,6 +54,7 @@ public class ArticleController {
         return Result.success(page);
     }
 
+    @PreAuthorize("hasAuthority('资源管理')")
     @PutMapping("/delete")
     public Result deleteArticle(@RequestBody Map<String, String> params){
         String id = params.get("id");
@@ -57,6 +62,7 @@ public class ArticleController {
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('资源管理')")
     @PutMapping("/update")
     public Result updateArticle(@RequestHeader("token") String token,@RequestBody ArticleDTO articleDTO){
         // 解码 token

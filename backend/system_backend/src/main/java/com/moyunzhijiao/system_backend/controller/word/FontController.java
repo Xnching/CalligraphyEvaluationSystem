@@ -6,6 +6,7 @@ import com.moyunzhijiao.system_backend.common.Result;
 import com.moyunzhijiao.system_backend.entiy.word.Font;
 import com.moyunzhijiao.system_backend.service.word.FontService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,7 @@ public class FontController {
         return Result.success(page);
     }
 
+    @PreAuthorize("hasAuthority('分类管理')")
     @PostMapping("/add")
     public Result addFont(@RequestBody Map<String, String> params){
         String name = params.get("name");
@@ -37,6 +39,7 @@ public class FontController {
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('分类管理')")
     @PutMapping("/delete")
     public Result deleteFont(@RequestBody Map<String, String> params){
         String id = params.get("id");

@@ -6,12 +6,14 @@ import com.moyunzhijiao.system_backend.common.Result;
 import com.moyunzhijiao.system_backend.controller.dto.outstanding.OutstandingCompetitionDTO;
 import com.moyunzhijiao.system_backend.service.outstanding.OutstandingCompetitionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/backend/outstanding-competition")
+@PreAuthorize("hasAuthority('优秀竞赛作品')")
 public class OutstandingCompetitionController {
 
     @Autowired

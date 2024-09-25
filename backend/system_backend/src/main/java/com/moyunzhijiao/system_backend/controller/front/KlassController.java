@@ -7,6 +7,7 @@ import com.moyunzhijiao.system_backend.controller.dto.front.KlassDTO;
 import com.moyunzhijiao.system_backend.entiy.front.Klass;
 import com.moyunzhijiao.system_backend.service.front.KlassService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +23,7 @@ public class KlassController {
     KlassService klassService;
 
 
+    @PreAuthorize("hasAuthority('班级管理')")
     @GetMapping("/page")
     public Result findPage(@RequestParam Integer pageNum, @RequestParam Integer pageSize,
                            @RequestParam(defaultValue = "")String str,
@@ -32,6 +34,7 @@ public class KlassController {
     }
 
 
+    @PreAuthorize("hasAuthority('班级管理')")
     @PutMapping("/delete")
     public Result deleteKlass(@RequestBody Map<String, String> params){
         String id = params.get("id");
@@ -39,6 +42,7 @@ public class KlassController {
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('班级管理')")
     @PostMapping("/batch-add")
     public Result batchAddKlass(@RequestPart("id")  Integer id,
                                 @RequestPart("file") MultipartFile file) throws IOException {
@@ -47,6 +51,7 @@ public class KlassController {
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('班级管理')")
     @PostMapping("/single-add")
     public Result singleAddKlass(@RequestBody KlassDTO klassDTO){
         klassService.addKlassSingle(klassDTO);

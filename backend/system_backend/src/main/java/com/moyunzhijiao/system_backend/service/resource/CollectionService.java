@@ -11,6 +11,7 @@ import com.moyunzhijiao.system_backend.controller.dto.resource.CollectionDTO;
 import com.moyunzhijiao.system_backend.entiy.resource.Collection;
 import com.moyunzhijiao.system_backend.exception.ServiceException;
 import com.moyunzhijiao.system_backend.mapper.resource.CollectionMapper;
+import com.moyunzhijiao.system_backend.service.ConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,15 +59,14 @@ public class CollectionService extends ServiceImpl<CollectionMapper, Collection>
 
     @Transactional
     public void addCollection(MultipartFile image, CollectionDTO collectionDTO) {
-        File projectRoot = new File(System.getProperty("user.dir"));
-        String imageFileName = UUID.randomUUID() + "-" +image.getOriginalFilename();
-        String imageFilePath = projectRoot.getParentFile().getParent()+ "/resources/image/collectionPicture/" + imageFileName;
-        String tempImageFilePath = "http://localhost:8084/upload/images/collection-picture/" + imageFileName;
-        File imageDest = new File(imageFilePath);
+        String fileName = UUID.randomUUID() + ".jpg";
+        String path = ConfigService.getCollectionFilePath() + fileName;
+        String url = ConfigService.getCollectionUrl() + fileName;
+        File imageDest = new File(path);
         try {
             image.transferTo(imageDest);
             if(collectionDTO!=null){
-                collectionDTO.setPictureUrl(tempImageFilePath);
+                collectionDTO.setPictureUrl(url);
                 Collection collection = convertToEntity(collectionDTO);
                 collectionMapper.insert(collection);
                 videoCollectionService.addBatch(collection.getId(),collectionDTO.getList());

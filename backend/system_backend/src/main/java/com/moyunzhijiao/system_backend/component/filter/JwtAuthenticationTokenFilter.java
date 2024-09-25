@@ -27,17 +27,23 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
-    private final TeacherService teacherService;
-    private final UserService userService;
-    private final UserDetailsServiceImpl userDetailsServiceImp;
     @Autowired
-    public JwtAuthenticationTokenFilter(TeacherService teacherService,UserService userService,UserDetailsServiceImpl userDetailsServiceImp){
-        this.teacherService = teacherService;
-        this.userService = userService;
-        this.userDetailsServiceImp = userDetailsServiceImp;
-    }
+    TeacherService teacherService;
+    @Autowired
+    UserService userService;
+    @Autowired
+    UserDetailsServiceImpl userDetailsServiceImp;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // 获取当前请求的URI
+        String requestURI = request.getRequestURI();
+        // 如果请求URI不需要认证，直接放行
+        if (requestURI.startsWith("/upload/") || requestURI.equals("/doc.html") || requestURI.startsWith("/api/backend/login") || requestURI.startsWith("/ws/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         //获取token
         String token = request.getHeader("token");
         if (!StringUtils.hasText(token)) {
@@ -69,7 +75,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 e.printStackTrace();
                 throw new ServiceException(Constants.CODE_401,"token验证失败，请重新登录");
             }
-            authenticationToken = new UsernamePasswordAuthenticationToken(user,null,userDetailsServiceImp.getPermission(userType, user.getUserGroupId()));
+            authenticationToken = new UsernamePasswordAuthenticationToken(user,user.getPassword(),userDetailsServiceImp.getPermission(userType, user.getUserGroupId()));
         }else if(userType.equals("教师")){
             Teacher teacher = teacherService.getById(userId);
             if(teacher == null){
@@ -83,7 +89,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 e.printStackTrace();
                 throw new ServiceException(Constants.CODE_401,"token验证失败，请重新登录");
             }
-            authenticationToken = new UsernamePasswordAuthenticationToken(teacher,null,userDetailsServiceImp.getPermission(userType,null));
+            authenticationToken = new UsernamePasswordAuthenticationToken(teacher,teacher.getPassword(),userDetailsServiceImp.getPermission(userType,null));
         }else {
             throw new ServiceException(Constants.CODE_401,"您的用户身份非法！");
         }

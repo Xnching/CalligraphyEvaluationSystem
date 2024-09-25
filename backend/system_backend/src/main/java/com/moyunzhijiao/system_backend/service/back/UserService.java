@@ -102,13 +102,6 @@ public class UserService extends ServiceImpl<UserMapper,User> {
 //        }
 
 
-    public User getByLoginId(String loginId){
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("login_id",loginId);
-        return userMapper.selectOne(queryWrapper);
-    }
-
-
     /*
      * 获取当前用户的菜单列表,此处不用表连接查询而是在后端筛选不推荐使用
      * 要尽可能地减少数据库查询次数和优化数据处理，

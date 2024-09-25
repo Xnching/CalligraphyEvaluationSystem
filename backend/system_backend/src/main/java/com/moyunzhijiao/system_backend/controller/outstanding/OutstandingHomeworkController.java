@@ -8,12 +8,14 @@ import com.moyunzhijiao.system_backend.controller.dto.outstanding.OutstandingHom
 import com.moyunzhijiao.system_backend.service.homework.HomeworkSubmissionService;
 import com.moyunzhijiao.system_backend.service.outstanding.OutstandingHomeworkService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/backend/outstanding-homework")
+@PreAuthorize("hasAuthority('优秀作业作品')")
 public class OutstandingHomeworkController {
     @Autowired
     OutstandingHomeworkService outstandingHomeworkService;

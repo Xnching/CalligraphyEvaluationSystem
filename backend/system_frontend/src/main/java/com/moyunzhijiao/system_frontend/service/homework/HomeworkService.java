@@ -161,7 +161,7 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
         //插入数据
         save(homework);
         //模板使用次数+1并更新
-        customTemplate.setCount(customTemplate.getCount()+1);
+        customTemplate.setUsageFrequency(customTemplate.getUsageFrequency()+1);
         customTemplateService.updateById(customTemplate);
         return homework.getId();
     }
@@ -209,7 +209,7 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
         Homework homework = addHomework(homeworkDTO,"专项");
         //获取图片并开始拼接创建
         List<String> imagePaths = templateWordService.selectFilePathBatch(homeworkDTO.getWordId());
-        List<String> homeworkUrls = pictureService.gatherImagesOfSpecial(imagePaths);
+        List<String> homeworkUrls = pictureService.gatherImagesOfSpecial(imagePaths,"作业");
         //接着保存图片
         homeworkImageService.addBatch(homework.getId(),homeworkUrls);
         //接下来发布作业
@@ -224,7 +224,7 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
         //先把作业基本信息保存
         Homework homework = addHomework(homeworkDTO,"综合");
         //接着生成作业图片
-        List<String> urlList = pictureService.gatherImagesOfComprehensive(homeworkDTO.getIdArray(),homeworkDTO.getComposing());
+        List<String> urlList = pictureService.gatherImagesOfComprehensive(homeworkDTO.getIdArray(),homeworkDTO.getComposing(),"作业");
         //批量保存图片
         homeworkImageService.addBatch(homework.getId(),urlList);
     }

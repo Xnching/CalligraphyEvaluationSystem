@@ -10,6 +10,7 @@ import com.moyunzhijiao.system_backend.entiy.front.Teacher;
 import com.moyunzhijiao.system_backend.service.base.SchoolService;
 import com.moyunzhijiao.system_backend.service.front.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,6 +26,7 @@ public class TeacherController {
     @Autowired
     SchoolService schoolService;
 
+    @PreAuthorize("hasAuthority('教师管理')")
     @GetMapping("/page")
     public Result findTeachers(@RequestParam Integer pageNum, @RequestParam Integer pageSize,
                                @RequestParam(defaultValue = "")String str,
@@ -34,6 +36,7 @@ public class TeacherController {
         return Result.success(page);
     }
 
+    @PreAuthorize("hasAuthority('教师管理')")
     @PutMapping("/update")
     public Result updateTeacher(@RequestBody Teacher teacher){
         if(StrUtil.isEmpty(teacher.getPassword())){
@@ -43,6 +46,7 @@ public class TeacherController {
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('教师管理')")
     @PutMapping("/delete")
     public Result deleteTeacher(@RequestBody Map<String, String> params){
         String id = params.get("id");
@@ -51,6 +55,8 @@ public class TeacherController {
         schoolService.updateTeacherCount(schoolId,-1);
         return  Result.success();
     }
+
+    @PreAuthorize("hasAuthority('教师管理')")
     @PostMapping("/single-add")
     public Result singleAddTeacher(@RequestBody Teacher teacher){
         teacherService.singleAdd(teacher);
@@ -58,6 +64,7 @@ public class TeacherController {
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('教师管理')")
     @PostMapping("/batch-add")
     public Result batchAddTeacher(@RequestPart("id")  Integer id,
                                   @RequestPart("file") MultipartFile file) throws IOException{

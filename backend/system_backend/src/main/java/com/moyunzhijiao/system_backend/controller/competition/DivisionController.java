@@ -9,6 +9,7 @@ import com.moyunzhijiao.system_backend.entiy.competition.DivisionRequirements;
 import com.moyunzhijiao.system_backend.service.competition.DivisionRequirementsService;
 import com.moyunzhijiao.system_backend.service.competition.DivisionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,12 +22,15 @@ public class DivisionController {
     DivisionService divisionService;
     @Autowired
     DivisionRequirementsService divisionRequirementsService;
+    @PreAuthorize("hasAuthority('评委评分')")
     @PutMapping("/delete")
     public Result deleteDivision(@RequestBody Map<String,String> r){
         String id = r.get("id");
         divisionService.removeById(id);
         return Result.success();
     }
+
+    @PreAuthorize("hasAuthority('评委评分')")
     @GetMapping("/information")
     public Result getInformation(@RequestParam Integer divisionId){
         Division division = divisionService.getById(divisionId);

@@ -12,6 +12,7 @@ import com.moyunzhijiao.system_backend.entiy.word.SystemTemplate;
 import com.moyunzhijiao.system_backend.entiy.word.TemplateWord;
 import com.moyunzhijiao.system_backend.service.word.SystemTemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class TemplateController {
         return Result.success(page);
     }
 
+    @PreAuthorize("hasAuthority('模板管理')")
     @PostMapping("/special-add")
     public Result addSpicialTemplate(@RequestHeader("token") String token,@RequestBody SystemTemplateDTO systemTemplateDTO){
         //解码token
@@ -44,6 +46,7 @@ public class TemplateController {
     /*
     * 获取综合系统模板的在线预览
     * */
+    @PreAuthorize("hasAuthority('模板管理')")
     @GetMapping("/get-picture")
     public Result getPicture(@RequestParam String textContent,@RequestParam(required = false) Integer fontId,@RequestParam(required = false) String composing){
         if(fontId==null){
@@ -57,6 +60,7 @@ public class TemplateController {
         return Result.success(list);
     }
 
+    @PreAuthorize("hasAuthority('模板管理')")
     @PostMapping("/copybook-add")
     public Result addCopybookTemplate(@RequestHeader("token") String token,@RequestBody SystemTemplateDTO systemTemplateDTO){
         //解码token
@@ -67,6 +71,7 @@ public class TemplateController {
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('模板管理')")
     @PostMapping("/comprehensive-add")
     public Result addComprehensiveTemplate(@RequestHeader("token") String token,@RequestBody SystemTemplateDTO systemTemplateDTO){
         //解码token

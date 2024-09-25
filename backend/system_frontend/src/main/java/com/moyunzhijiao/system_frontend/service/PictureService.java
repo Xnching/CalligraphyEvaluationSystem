@@ -33,7 +33,7 @@ public class PictureService {
     /*
      * 综合作业的拼接图片
      * */
-    public List<String> gatherImagesOfComprehensive(List<List<List<Integer>>> idArray, String composing) {
+    public List<String> gatherImagesOfComprehensive(List<List<List<Integer>>> idArray, String composing,String type) {
         //存储大图片url的列表
         List<String> urlList = new ArrayList<>();
         //遍历每一张大图片的二维id矩阵
@@ -74,7 +74,7 @@ public class PictureService {
             }
             g2d.dispose();
             // 保存拼接后的图片
-            String url = saveFile(mergedImage);
+            String url = saveFile(mergedImage,type);
             //加到列表中
             urlList.add(url);
         });
@@ -180,7 +180,7 @@ public class PictureService {
     /*
      * 专项练习的拼接图片
      * */
-    public List<String> gatherImagesOfSpecial(List<String> imagePaths){
+    public List<String> gatherImagesOfSpecial(List<String> imagePaths,String type){
         int smallImageNumber = imagesPerColumn*imagesPerRow;    //每张大图片里的小图片数量
         // 读取所有图片并缩放到统一大小
         List<BufferedImage> images = getImages(imagePaths);
@@ -213,7 +213,7 @@ public class PictureService {
             }
             g2d.dispose();
             // 保存拼接后的图片
-            String url = saveFile(mergedImage);
+            String url = saveFile(mergedImage,type);
             //加到列表中
             urlList.add(url);
         }
@@ -223,10 +223,17 @@ public class PictureService {
     /*
      * 统一的把生成的图片保存到本地
      * */
-    private String saveFile(BufferedImage mergedImage) {
+    private String saveFile(BufferedImage mergedImage,String type) {
         String fileName = UUID.randomUUID() + ".jpg";
-        String path = ConfigService.getHomeworkFilePath() + fileName;
-        String url = ConfigService.getHomeworkUrl() + fileName;
+        String path;
+        String url;
+        if(type.equals("作业")){
+            path = ConfigService.getHomeworkFilePath() + fileName;
+            url = ConfigService.getHomeworkUrl() + fileName;
+        }else {
+            path = ConfigService.getCustomTemplateFilePath()+fileName;
+            url = ConfigService.getCustomTemplateUrl()+fileName;
+        }
         try {
             ImageIO.write(mergedImage, "jpg", new File(path));
         } catch (IOException e) {

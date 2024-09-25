@@ -16,8 +16,7 @@ public class ConfigService {
     @Value("${server.ip}")
     private String serverIp;            //服务器ip地址
 
-    @Value("${server.port}")
-    private String serverPort;          //端口
+    private String serverPort = "8084";          //端口
 
     private static String baseUrl;
 
@@ -50,19 +49,25 @@ public class ConfigService {
     private static String characterFilePath;
     private static String characterUrl;
     private static final String CHARACTER_BASE_URL = "/upload/images/character";
-    private static final String CHARACTER_PATH = "/resources/images/character/";
+    private static final String CHARACTER_PATH = "/resources/image/character/";
 
     //笔画分析的
     private static String strokeFilePath;
     private static String strokeUrl;
     private static final String STROKE_BASE_URL = "/upload/images/stroke";
-    private static final String STROKE_PATH = "/resources/images/stroke/";
+    private static final String STROKE_PATH = "/resources/image/stroke/";
 
     //作业图片的
     private static String homeworkFilePath;
     private static String homeworkUrl;
     private static final String HOMEWORK_BASE_URL = "/upload/images/homework";
-    private static final String HOMEWORK_PATH = "/resources/images/homework/";
+    private static final String HOMEWORK_PATH = "/resources/image/homework/";
+
+    //自定义模板的图片
+    private static String customTemplateFilePath;
+    private static String customTemplateUrl;
+    private static final String CUSTOM_TEMPLATE_BASE_URL = "/upload/images/custom-template/";
+    private static final String CUSTOM_TEMPLATE_PATH = "\\resources\\image\\customTemplate\\";
 
     @PostConstruct
     public void init() {
@@ -96,6 +101,10 @@ public class ConfigService {
         //作业图片的
         homeworkFilePath = projectRoot.getParentFile().getParent()+HOMEWORK_PATH;
         homeworkUrl = baseUrl+HOMEWORK_BASE_URL;
+
+        //作业图片的
+        customTemplateFilePath = projectRoot.getParentFile().getParent()+CUSTOM_TEMPLATE_PATH;
+        customTemplateUrl = baseUrl+CUSTOM_TEMPLATE_BASE_URL;
     }
     public static String getBaseUrl() {
         return baseUrl;
@@ -129,5 +138,9 @@ public class ConfigService {
     }
     public static String getHomeworkUrl(){return homeworkUrl;}
 
+    public static String getCustomTemplateFilePath(){
+        return customTemplateFilePath;
+    }
+    public static String getCustomTemplateUrl(){return customTemplateUrl;}
 
 }

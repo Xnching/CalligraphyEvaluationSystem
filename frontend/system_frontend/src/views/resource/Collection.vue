@@ -286,7 +286,7 @@ export default {
       secondTypes: [],
       //下面三个是穿梭框的
       simpleData: [],
-      selectedRecommended:null,
+      selectedRecommended:'',
       addVideoDialogVisible: false,
 
       //下面三个是自定义标签所需要的
@@ -545,7 +545,7 @@ export default {
           pageNum:this.pageNum,
           pageSize:this.pageSize,
           str:this.inputVal,
-					isRecommended:this.selectedRecommended === true // 确保传递布尔值
+					isRecommended:this.selectedRecommended 
         }
       }).then(res=>{
         if(res.code=='200'){

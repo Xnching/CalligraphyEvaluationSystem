@@ -13,12 +13,14 @@ import com.moyunzhijiao.system_backend.service.homework.HomeworkSubmissionServic
 import com.moyunzhijiao.system_backend.service.outstanding.OutstandingHomeworkService;
 import com.moyunzhijiao.system_backend.service.outstanding.UnreviewedOutstandingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/backend/review-outstanding")
+@PreAuthorize("hasAuthority('作业评审')")
 public class ReviewController {
     @Autowired
     UnreviewedOutstandingService unreviewedOutstandingService;

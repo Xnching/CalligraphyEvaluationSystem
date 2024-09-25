@@ -11,6 +11,8 @@ import com.moyunzhijiao.system_frontend.mapper.homework.TeacherHomeworkMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TeacherHomeworkService extends ServiceImpl<TeacherHomeworkMapper, TeacherHomework> {
 
@@ -18,6 +20,8 @@ public class TeacherHomeworkService extends ServiceImpl<TeacherHomeworkMapper, T
     TeacherHomeworkMapper teacherHomeworkMapper;
     @Autowired
     HomeworkSubmissionService homeworkSubmissionService;
+    @Autowired
+    HomeworkImageService homeworkImageService;
 
     /*
     * 教师的所有作业列表
@@ -68,6 +72,10 @@ public class TeacherHomeworkService extends ServiceImpl<TeacherHomeworkMapper, T
         Integer total = teacherHomeworkMapper.countAllHomeworkPageOfTeacher(teacherId);
         total=total == null ? 0:total;
         page.setTotal(total);
+        page.getRecords().forEach(homework -> {
+            List<String> imageUrls = homeworkImageService.getUrlBatch(homework.getId());
+            homework.setUrls(imageUrls);
+        });
         return page;
     }
 

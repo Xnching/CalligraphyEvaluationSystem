@@ -51,111 +51,93 @@ public class FileController {
     @GetMapping("/get/editor-image/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serveEditorImage(@PathVariable String filename){
-        Resource resource = fileService.loadEditorImageAsResource(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
-                .body(resource);
+        return serveResource(fileService.loadEditorImageAsResource(filename), MediaType.IMAGE_JPEG);
     }
 
     @GetMapping("/images/collection-picture/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serveCollectionPicture(@PathVariable String filename) {
-        File projectRoot = new File(System.getProperty("user.dir"));
-        String imageFilePath = projectRoot.getParentFile().getParent()+ "/resources/image/collectionPicture/" + filename;
-        Resource resource = null;
-        try {
-            resource = new UrlResource(Paths.get(imageFilePath).toUri().toURL());
-            if (resource.exists() || resource.isReadable()) {
-                return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                        .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
-                        .body(resource);
-            } else {
-                throw new RuntimeException("找不到文件!");
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("错误: " + e.getMessage());
-        }
+        return serveResource(fileService.loadCollectionAsResource(filename), MediaType.IMAGE_JPEG);
     }
 
     @GetMapping("/images/templateWord/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveTemplateWord(@PathVariable String filename){
-        Resource resource = fileService.loadTemplateWordAsResource(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
-                .body(resource);
+    public ResponseEntity<Resource> serveTemplateWord(@PathVariable String filename) {
+        return serveResource(fileService.loadTemplateWordAsResource(filename), MediaType.IMAGE_JPEG);
     }
 
     @GetMapping("/images/sampleWord/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveSampleWord(@PathVariable String filename){
-        Resource resource = fileService.loadSampleWordAsResource(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
-                .body(resource);
+    public ResponseEntity<Resource> serveSampleWord(@PathVariable String filename) {
+        return serveResource(fileService.loadSampleWordAsResource(filename), MediaType.IMAGE_JPEG);
     }
 
     @GetMapping("/images/copybook/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveCopybook(@PathVariable String filename){
-        Resource resource = fileService.loadCopybookAsResource(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
-                .body(resource);
+    public ResponseEntity<Resource> serveCopybook(@PathVariable String filename) {
+        return serveResource(fileService.loadCopybookAsResource(filename), MediaType.IMAGE_JPEG);
     }
 
     @GetMapping("/videos/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveWriteWord(@PathVariable String filename){
-        Resource resource = fileService.loadVideoAsResource(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                .contentType(MediaType.parseMediaType("video/mp4")) // 设置Content-Type为视频类型
-                .body(resource);
+    public ResponseEntity<Resource> serveWriteWord(@PathVariable String filename) {
+        return serveResource(fileService.loadVideoAsResource(filename), MediaType.parseMediaType("video/mp4"));
+    }
+
+    @GetMapping("/images/video/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveVideoImage(@PathVariable String filename) {
+        return serveResource(fileService.loadVideoImageAsResource(filename), MediaType.IMAGE_JPEG);
     }
 
     @GetMapping("/images/character/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveCharacter(@PathVariable String filename){
-        Resource resource = fileService.loadCharacterAsResource(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
-                .body(resource);
+    public ResponseEntity<Resource> serveCharacter(@PathVariable String filename) {
+        return serveResource(fileService.loadCharacterAsResource(filename), MediaType.IMAGE_JPEG);
+    }
+
+    @GetMapping("/images/custom-template/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveCustomTemplate(@PathVariable String filename) {
+        return serveResource(fileService.loadCustomTemplateAsResource(filename), MediaType.IMAGE_JPEG);
     }
 
     @GetMapping("/images/stroke/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveStroke(@PathVariable String filename){
-        Resource resource = fileService.loadStrokeAsResource(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
-                .body(resource);
+    public ResponseEntity<Resource> serveStroke(@PathVariable String filename) {
+        return serveResource(fileService.loadStrokeAsResource(filename), MediaType.IMAGE_JPEG);
+    }
+
+    @GetMapping("/images/announcement/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveAnnouncement(@PathVariable String filename) {
+        return serveResource(fileService.loadAnnouncementAsResource(filename), MediaType.IMAGE_JPEG);
+    }
+
+    @GetMapping("/images/competition/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveCompetition(@PathVariable String filename) {
+        return serveResource(fileService.loadCompetitionAsResource(filename), MediaType.IMAGE_JPEG);
     }
 
     @GetMapping("/images/homework/{filename:.+}")
     @ResponseBody
-    public ResponseEntity<Resource> serveHomework(@PathVariable String filename){
-        Resource resource = fileService.loadHomeworkAsResource(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
-                .body(resource);
+    public ResponseEntity<Resource> serveHomework(@PathVariable String filename) {
+        return serveResource(fileService.loadHomeworkAsResource(filename), MediaType.IMAGE_JPEG);
     }
-
     @GetMapping("/images/system-template/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serveSystemTemplate(@PathVariable String filename){
-        Resource resource = fileService.loadSystemTemplateAsResource(filename);
+        return serveResource(fileService.loadSystemTemplateAsResource(filename), MediaType.IMAGE_JPEG);
+    }
+
+    /*
+    * 统一的处理方法
+    * */
+    private ResponseEntity<Resource> serveResource(Resource resource, MediaType mediaType) {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                .contentType(MediaType.IMAGE_JPEG) // 设置Content-Type为图片类型
+                .contentType(mediaType)
                 .body(resource);
     }
 

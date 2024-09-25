@@ -30,4 +30,8 @@ public interface UserMapper extends BaseMapper<User> {
             "   OR user_group.name LIKE CONCAT('%',#{str},'%'))")
     int countUserWithGroupName(@Param("str") String str);
 
+    @Select("select * " +
+            "   from user " +
+            "where login_id = #{loginId}")
+    User getByLoginId(String loginId);
 }

@@ -7,6 +7,7 @@ import com.moyunzhijiao.system_backend.entiy.word.Radical;
 import com.moyunzhijiao.system_backend.entiy.word.Structure;
 import com.moyunzhijiao.system_backend.service.word.StructureService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

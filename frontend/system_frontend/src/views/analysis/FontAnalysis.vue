@@ -36,62 +36,69 @@
       </el-container> 
     </div>
 
+  <div style="display: flex;">
+    <div style="margin-right: 100px;">
+      <h1>依据年级统计：</h1>
+      <el-table
+        ref="competitionTable"
+        :data="gradeTableData" 
+        stripe
+        tooltip-effect="dark"
+        style="width: 100%" >
+        <el-table-column
+          prop="id"
+          label="年级编号"
+          width="105">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="年级名"
+          width="155">
+        </el-table-column>
+        <el-table-column
+          prop="copybookNumber"
+          label="相关字帖数量"
+          width="105">
+        </el-table-column>
 
-  <h1>依据年级统计：</h1>
-  <el-table
-    ref="competitionTable"
-    :data="gradeTableData" 
-    stripe
-    tooltip-effect="dark"
-    style="width: 80%" >
-    <el-table-column
-      prop="id"
-      label="年级编号"
-      width="105">
-    </el-table-column>
-    <el-table-column
-      prop="name"
-      label="年级名"
-      width="205">
-    </el-table-column>
-    <el-table-column
-      prop="copybookNumber"
-      label="相关字帖数量"
-      width="205">
-    </el-table-column>
+      </el-table>
+    </div>
+    
 
-  </el-table>
+    <div>
+      <h1>依据字体统计：</h1>
+      <el-table
+        ref="competitionTable"
+        :data="fontTableData" 
+        stripe
+        tooltip-effect="dark"
+        style="width: 100%" >
+        <el-table-column
+          prop="id"
+          label="字体编号"
+          width="105">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="字体名"
+          width="205">
+        </el-table-column>
+        <el-table-column
+          prop="templateNumber"
+          label="相关模板数量"
+          width="105">
+        </el-table-column>
+        <el-table-column
+          prop="copybookNumber"
+          label="相关字帖数量"
+          width="105">
+        </el-table-column>
 
-
-  <h1>依据字体统计：</h1>
-  <el-table
-    ref="competitionTable"
-    :data="fontTableData" 
-    stripe
-    tooltip-effect="dark"
-    style="width: 80%" >
-    <el-table-column
-      prop="id"
-      label="字体编号"
-      width="105">
-    </el-table-column>
-    <el-table-column
-      prop="name"
-      label="字体名"
-      width="205">
-    </el-table-column>
-    <el-table-column
-      prop="templateNumber"
-      label="相关模板数量"
-      width="205">
-    </el-table-column>
-    <el-table-column
-      prop="copybookNumber"
-      label="相关字帖数量"
-      width="205">
-    </el-table-column>
-
-  </el-table>
+      </el-table>
+    </div>
+    
+  </div>
+  
   
   
 </div>

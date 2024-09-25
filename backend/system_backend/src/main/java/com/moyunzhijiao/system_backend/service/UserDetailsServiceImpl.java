@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.moyunzhijiao.system_backend.entiy.CustomUser;
 import com.moyunzhijiao.system_backend.entiy.back.Permissions;
 import com.moyunzhijiao.system_backend.entiy.back.User;
+import com.moyunzhijiao.system_backend.mapper.back.UserMapper;
 import com.moyunzhijiao.system_backend.service.back.PermissionsService;
 import com.moyunzhijiao.system_backend.service.back.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,23 +17,26 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /*
 * spring security用到的方法
 * */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
+    private final UserMapper userMapper;
+
+    private final PermissionsService permissionsService;
     @Autowired
-    UserService userService;
-    @Autowired
-    PermissionsService permissionsService;
+    public UserDetailsServiceImpl(UserMapper userMapper,PermissionsService permissionsService){
+        this.userMapper = userMapper;
+        this.permissionsService = permissionsService;
+    }
     /*
      * 加载用户数据的方法，例如相关信息和权限
      * */
     @Override
     public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
-        User user = userService.getByLoginId(loginId);
+        User user = userMapper.getByLoginId(loginId);
         if(ObjectUtil.isNull(user)){
             throw new UsernameNotFoundException("用户名不存在！");
         }

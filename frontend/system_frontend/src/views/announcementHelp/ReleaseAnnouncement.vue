@@ -35,7 +35,7 @@
       </el-form-item>
       <el-form-item label="公告封面">
         <el-upload
-          v-if="form.type === '竞赛公告'"
+          v-if="form.type === '第三方竞赛公告'"
           class="upload-demo"
           drag
           ref="singleImage"
@@ -48,7 +48,7 @@
           :on-error="handleExcelImportError"
           :auto-upload="false">
           <i class="el-icon-upload"></i>
-          <div class="el-upload__text">将需要录入的字、部首的图片拖到此处，或<em>点击上传</em></div>
+          <div class="el-upload__text">将需要上传第三方竞赛的封面拖到此处，或<em>点击上传</em></div>
         </el-upload>
       </el-form-item>
       <el-form-item label="公告内容：">

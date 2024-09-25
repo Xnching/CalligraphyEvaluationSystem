@@ -11,6 +11,7 @@ import com.moyunzhijiao.system_frontend.controller.dto.KlassHomeworkDetailDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.PublishByTemplateDTO;
 import com.moyunzhijiao.system_frontend.entity.Klass;
 import com.moyunzhijiao.system_frontend.entity.homework.Homework;
+import com.moyunzhijiao.system_frontend.service.homework.HomeworkImageService;
 import com.moyunzhijiao.system_frontend.service.homework.HomeworkService;
 import com.moyunzhijiao.system_frontend.service.homework.KlassHomeworkService;
 import com.moyunzhijiao.system_frontend.service.homework.TeacherHomeworkService;
@@ -36,6 +37,8 @@ public class HomeworkController {
     StudentNoteReceiveService studentNoteReceiveService;
     @Autowired
     KlassHomeworkService klassHomeworkService;
+    @Autowired
+    HomeworkImageService homeworkImageService;
 
     @Operation(summary = "教师的查询作业列表，四个分页查询")
     @GetMapping("/ciep/homework")
@@ -105,6 +108,7 @@ public class HomeworkController {
         klassHomeworkDetailDTO = homeworkService.getHomeworkDetail(homeworkId,currentPage,pageSize);
         return Result.success(klassHomeworkDetailDTO);
     }
+
 
     @Operation(summary = "教师根据模板发布作业")
     @PostMapping("/ciep/publish-homework")

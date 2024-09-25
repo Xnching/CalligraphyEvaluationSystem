@@ -7,6 +7,7 @@ import com.moyunzhijiao.system_backend.controller.dto.front.StudentDTO;
 import com.moyunzhijiao.system_backend.service.base.SchoolService;
 import com.moyunzhijiao.system_backend.service.front.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,6 +40,7 @@ public class StudentController {
     }
 
 
+    @PreAuthorize("hasAuthority('学生管理')")
     @GetMapping("/page")
     public Result findStudents(@RequestParam Integer pageNum, @RequestParam Integer pageSize,
                                @RequestParam(defaultValue = "")String str,
@@ -49,12 +51,14 @@ public class StudentController {
     }
 
 
+    @PreAuthorize("hasAuthority('学生管理')")
     @PutMapping("/update")
     public Result updateStudent(@RequestBody StudentDTO studentDTO){
         studentService.updateByDTO(studentDTO);
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('学生管理')")
     @PutMapping("/delete")
     public Result deleteStudent(@RequestBody Map<String, String> params){
         String id = params.get("id");
@@ -64,12 +68,15 @@ public class StudentController {
         return Result.success();
     }
 
+    @PreAuthorize("hasAuthority('学生管理')")
     @PostMapping("/single-add")
     public Result singleAddStudent(@RequestBody StudentDTO studentDTO){
         studentService.singleAdd(studentDTO);
         schoolService.updateStudentCount(studentDTO.getSchoolId(),1);
         return Result.success();
     }
+
+    @PreAuthorize("hasAuthority('学生管理')")
     @PostMapping("/batch-add")
     public Result batchAddStudent(@RequestPart("id")  Integer id,
                                 @RequestPart("file") MultipartFile file) throws IOException {

@@ -10,6 +10,7 @@ import com.moyunzhijiao.system_frontend.common.Constants;
 import com.moyunzhijiao.system_frontend.controller.dto.TemplateDTO;
 import com.moyunzhijiao.system_frontend.entity.Copybook;
 import com.moyunzhijiao.system_frontend.entity.TemplateWord;
+import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import com.moyunzhijiao.system_frontend.entity.template.CustomTemplate;
 import com.moyunzhijiao.system_frontend.entity.template.CustomTemplateImage;
 import com.moyunzhijiao.system_frontend.exception.ServiceException;
@@ -18,6 +19,7 @@ import com.moyunzhijiao.system_frontend.service.CopybookService;
 import com.moyunzhijiao.system_frontend.service.FontService;
 import com.moyunzhijiao.system_frontend.service.PictureService;
 import com.moyunzhijiao.system_frontend.service.TemplateWordService;
+import com.moyunzhijiao.system_frontend.service.homework.HomeworkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,23 +90,26 @@ public class CustomTemplateService extends ServiceImpl<CustomTemplateMapper, Cus
     /*
     * 创建专项模板
     * */
+    @Transactional
     public void addSpecialTemplate(TemplateDTO templateDTO, Integer userId, String userType) {
         //先生成模板
         CustomTemplate customTemplate = insertTemplate(templateDTO,userId,userType,"专项");
         //接着生成图片
         List<String> imagePaths = templateWordService.selectFilePathBatch(templateDTO.getWordIds());
         //保存图片
-        List<String> templateUrls = pictureService.gatherImagesOfSpecial(imagePaths);
+        List<String> templateUrls = pictureService.gatherImagesOfSpecial(imagePaths,"模板");
         customTemplateImageService.addBatch(templateUrls,customTemplate.getId());
     }
 
     /*
     * 字帖模板
     * */
+    @Transactional
     public void addCopybookTemplate(TemplateDTO templateDTO, Integer userId, String userType) {
         //获得字帖
         Copybook copybook = copybookService.getById(templateDTO.getCopybookId());
         //先生成模板
+        templateDTO.setFontId(copybook.getFontId());
         CustomTemplate customTemplate = insertTemplate(templateDTO,userId,userType,"字帖");
         //接着保存图片
         CustomTemplateImage customTemplateImage = new CustomTemplateImage();
@@ -116,13 +121,14 @@ public class CustomTemplateService extends ServiceImpl<CustomTemplateMapper, Cus
     /*
     * 综合模板
     * */
+    @Transactional
     public void addComprehensiveTemplate(TemplateDTO templateDTO, Integer userId, String userType) {
         //先生成模板
         Integer number = countIntegers(templateDTO.getIdArray());
         templateDTO.setWordCount(number);
         CustomTemplate customTemplate = insertTemplate(templateDTO,userId,userType,"综合");
         //接着生成图片
-        List<String> urlList = pictureService.gatherImagesOfComprehensive(templateDTO.getIdArray(),templateDTO.getComposing());
+        List<String> urlList = pictureService.gatherImagesOfComprehensive(templateDTO.getIdArray(),templateDTO.getComposing(),"模板");
         //批量保存图片
         customTemplateImageService.addBatch(urlList,customTemplate.getId());
     }
@@ -144,6 +150,7 @@ public class CustomTemplateService extends ServiceImpl<CustomTemplateMapper, Cus
     /*
      * 统一的先生成系统模板
      * */
+    @Transactional
     public CustomTemplate insertTemplate(TemplateDTO templateDTO, Integer userId,String userType,String type){
         if(StrUtil.isEmpty(templateDTO.getName())){
             throw new ServiceException(Constants.CODE_401,"未填写模板名称");
@@ -156,8 +163,32 @@ public class CustomTemplateService extends ServiceImpl<CustomTemplateMapper, Cus
         customTemplate.setType(type);
         customTemplate.setCreatorId(userId);
         customTemplate.setCreatorType(userType);
+        customTemplate.setDetailType(templateDTO.getSonType());
         BeanUtil.copyProperties(templateDTO, customTemplate);
         save(customTemplate);
         return customTemplate;
+    }
+
+    /*
+    * 教师将一个作业创建为模板
+    * */
+    public void addHomeworkAsTemplate(Integer teacherId, String name,Homework homework,List<String> urls) {
+        //先保存模板
+        CustomTemplate customTemplate = new CustomTemplate();
+        BeanUtil.copyProperties(homework,customTemplate);
+        customTemplate.setCreatorId(teacherId);
+        customTemplate.setCreatorType("教师");
+        customTemplate.setName(name);
+        customTemplate.setId(null);
+        customTemplate.setCreatedTime(null);
+        save(customTemplate);
+        //再保存图片
+        List<CustomTemplateImage> customTemplateImageList = urls.stream().map(url->{
+            CustomTemplateImage customTemplateImage = new CustomTemplateImage();
+            customTemplateImage.setCustomTemplateId(customTemplate.getId());
+            customTemplateImage.setPictureUrl(url);
+            return customTemplateImage;
+        }).toList();
+        customTemplateImageService.saveBatch(customTemplateImageList);
     }
 }

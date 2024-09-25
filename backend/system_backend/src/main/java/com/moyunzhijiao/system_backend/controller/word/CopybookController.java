@@ -10,6 +10,7 @@ import com.moyunzhijiao.system_backend.entiy.word.Copybook;
 import com.moyunzhijiao.system_backend.service.ConfigService;
 import com.moyunzhijiao.system_backend.service.word.CopybookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/backend/copybook")
+@PreAuthorize("hasAuthority('字帖管理')")
 public class CopybookController {
 
     @Autowired
