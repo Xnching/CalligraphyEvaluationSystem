@@ -8,6 +8,7 @@ import com.moyunzhijiao.system_frontend.entity.TemplateWord;
 import com.moyunzhijiao.system_frontend.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -33,9 +34,9 @@ public class PictureService {
     /*
      * 综合作业的拼接图片
      * */
-    public List<String> gatherImagesOfComprehensive(List<List<List<Integer>>> idArray, String composing,String type) {
+    public List<BufferedImage> gatherImagesOfComprehensive(List<List<List<Integer>>> idArray, String composing) {
         //存储大图片url的列表
-        List<String> urlList = new ArrayList<>();
+        List<BufferedImage> bigImageList = new ArrayList<>();
         //遍历每一张大图片的二维id矩阵
         idArray.forEach( smallImageIds->{        //为List<List<Integer>>
             //一张大图片的二维图片矩阵
@@ -73,12 +74,10 @@ public class PictureService {
                 }
             }
             g2d.dispose();
-            // 保存拼接后的图片
-            String url = saveFile(mergedImage,type);
             //加到列表中
-            urlList.add(url);
+            bigImageList.add(mergedImage);
         });
-        return urlList;
+        return bigImageList;
     }
 
     /*
@@ -223,7 +222,7 @@ public class PictureService {
     /*
      * 统一的把生成的图片保存到本地
      * */
-    private String saveFile(BufferedImage mergedImage,String type) {
+    public String saveFile(BufferedImage mergedImage,String type) {
         String fileName = UUID.randomUUID() + ".jpg";
         String path;
         String url;
@@ -242,4 +241,5 @@ public class PictureService {
         }
         return url;
     }
+
 }

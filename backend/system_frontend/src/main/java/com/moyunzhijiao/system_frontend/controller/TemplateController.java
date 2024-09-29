@@ -1,6 +1,7 @@
 package com.moyunzhijiao.system_frontend.controller;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -14,6 +15,7 @@ import com.moyunzhijiao.system_frontend.entity.TemplateWord;
 import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import com.moyunzhijiao.system_frontend.entity.template.CustomTemplate;
 import com.moyunzhijiao.system_frontend.entity.template.SystemTemplate;
+import com.moyunzhijiao.system_frontend.exception.ServiceException;
 import com.moyunzhijiao.system_frontend.service.CopybookService;
 import com.moyunzhijiao.system_frontend.service.PictureService;
 import com.moyunzhijiao.system_frontend.service.collection.TeaWorksCollectionService;
@@ -24,10 +26,23 @@ import com.moyunzhijiao.system_frontend.service.template.CustomTemplateService;
 import com.moyunzhijiao.system_frontend.service.template.SystemTemplateService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 public class TemplateController {
@@ -150,17 +165,45 @@ public class TemplateController {
     }
 
     @Operation(summary = "获取综合系统模板的在线预览")
-    @GetMapping("/ciep/preview")
-    public Result getPicture(@RequestParam String textContent,@RequestParam(required = false) Integer fontId,@RequestParam(required = false) String composing){
+    @PostMapping("/ciep/preview")
+    public Result getPicture(@RequestBody Map<String,Object> params){
+        String composing = (String) params.get("composing");
+        String textContent = (String) params.get("textContent");
+        Integer fontId = (Integer) params.get("fontId");
         if(fontId==null){
-            return Result.error(Constants.CODE_400,"未选择字体！");
+            throw new ServiceException(Constants.CODE_400,"未选择字体！");
         }
         if(StrUtil.isEmpty(composing)){
-            return Result.error(Constants.CODE_400,"未选择版式！");
+            throw new ServiceException(Constants.CODE_400,"未选择版式！");
         }
-        //获取用于给前端展示的三维数组模板字
+        //获取用于给前端展示的三维数组模板字的id
         List<List<List<TemplateWord>>> list = pictureService.getPictureOfComprehensive(textContent,fontId,composing);
-        return Result.success(list);
+        List<List<List<Integer>>> idList = list.stream()
+                .map(innerList -> innerList.stream()
+                        .map(innerInnerList -> innerInnerList.stream()
+                                .map(TemplateWord::getId)
+                                .collect(Collectors.toList()))
+                        .collect(Collectors.toList()))
+                .toList();
+        Integer wordCount = customTemplateService.countIntegers(idList);
+        //根据id拼图片
+        List<BufferedImage> imageList = pictureService.gatherImagesOfComprehensive(idList,composing);
+        //把图片准备好发给前端
+        List<String> resources = imageList.stream()
+                .map(image -> {
+                    ByteArrayOutputStream os = new ByteArrayOutputStream();
+                    try {
+                        ImageIO.write(image, "jpeg", os);
+                        return "data:image/png;base64,"+Base64.getEncoder().encodeToString(os.toByteArray());
+                    } catch (IOException e) {
+                        throw new RuntimeException("发送失败！", e);
+                    }
+                })
+                .collect(Collectors.toList());
+        Map<String,Object> result = new HashMap<>();
+        result.put("resource",resources);
+        result.put("wordCount",wordCount);
+        return Result.success(result);
     }
 
     @Operation(summary = "创建一个字帖模板")
@@ -177,13 +220,27 @@ public class TemplateController {
 
     @Operation(summary = "创建一个综合模板")
     @PostMapping("/ciep/comprehensive")
-    public Result addComprehensiveTemplate(@RequestHeader("authorization") String token,@RequestBody TemplateDTO templateDTO){
+    public Result addComprehensiveTemplate(@RequestHeader("authorization") String token, @RequestBody TemplateDTO templateDTO){
         //解码token
         DecodedJWT jwt = JWT.decode(token);
         // 从载荷中获取用户 ID
         Integer userId = Integer.valueOf(jwt.getAudience().get(0));
         String userType = JWT.decode(token).getClaim("userType").asString();
-        customTemplateService.addComprehensiveTemplate(templateDTO,userId,userType);
+        List<BufferedImage> imageList = templateDTO.getContentList().stream().map(content->{
+            String temp = content.replaceFirst("^data:image/[^;]+;base64,", "");;
+            BufferedImage image;
+            byte[] imageBytes = Base64.getDecoder().decode(temp);
+            ByteArrayInputStream bis = new ByteArrayInputStream(imageBytes);
+            try {
+                image = ImageIO.read(bis);
+            } catch (IOException e) {
+                throw new ServiceException(Constants.CODE_500,"系统错误");
+            }
+            return image;
+        }).toList();
+        System.out.println("让我看下"+templateDTO);
+        //保存图片
+        customTemplateService.addComprehensiveTemplate(imageList,templateDTO,userId,userType);
         return Result.success();
     }
 }

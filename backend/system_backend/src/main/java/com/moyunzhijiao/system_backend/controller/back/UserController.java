@@ -7,7 +7,7 @@ import com.moyunzhijiao.system_backend.common.Constants;
 import com.moyunzhijiao.system_backend.common.Result;
 import com.moyunzhijiao.system_backend.controller.dto.back.UserDTO;
 import com.moyunzhijiao.system_backend.service.back.UserGroupService;
-import com.moyunzhijiao.system_backend.service.back.UserService;
+import com.moyunzhijiao.system_backend.service.back.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ import java.util.Map;
 @RequestMapping("/api/backend")
 public class UserController {
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
     @Autowired
     private UserGroupService userGroupService;
@@ -35,7 +35,7 @@ public class UserController {
         if(StrUtil.isBlank(login_id) || StrUtil.isBlank(password)){
             return Result.error(Constants.CODE_400,"参数错误");
         }
-        UserDTO dto = userService.login(userDTO);
+        UserDTO dto = userServiceImpl.login(userDTO);
         return Result.success(dto);
     }
 
@@ -47,7 +47,7 @@ public class UserController {
     public Result findPage(@RequestParam Integer pageNum,@RequestParam Integer pageSize,
                            @RequestParam(defaultValue = "")String str){
         IPage<UserDTO> page=new Page<>(pageNum,pageSize);
-        page = userService.selectPageWithGroupName(page,str);
+        page = userServiceImpl.selectPageWithGroupName(page,str);
         return Result.success(page);
     }
 
@@ -66,7 +66,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('系统用户管理')")
     @PutMapping("/user/update")
     public Result updateUser(@RequestBody UserDTO userDTO){
-        userService.updateUser(userDTO);
+        userServiceImpl.updateUser(userDTO);
         return Result.success();
     }
 
@@ -77,7 +77,7 @@ public class UserController {
     @PutMapping("/user/delete")
     public Result deleteUser(@RequestBody Map<String, String> params){
         String id = params.get("id");
-        userService.deleteUser(id);
+        userServiceImpl.deleteUser(id);
         return Result.success();
     }
 
@@ -87,7 +87,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('系统用户管理')")
     @PostMapping("/user/add")
     public Result addUser(@RequestBody UserDTO userDTO){
-        userService.addUser(userDTO);
+        userServiceImpl.addUser(userDTO);
         return Result.success();
     }
 }

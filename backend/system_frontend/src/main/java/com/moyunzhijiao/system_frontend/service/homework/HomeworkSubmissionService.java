@@ -58,8 +58,7 @@ public class HomeworkSubmissionService extends ServiceImpl<HomeworkSubmissionMap
         queryWrapper.eq("homework_id",homeworkId);
         queryWrapper.eq("state",0);
         Long countLong = homeworkSubmissionMapper.selectCount(queryWrapper);
-        Integer count = countLong.intValue();
-        return count;
+        return countLong.intValue();
     }
     /*
     * 根据作业id批量查找学生id
@@ -135,12 +134,12 @@ public class HomeworkSubmissionService extends ServiceImpl<HomeworkSubmissionMap
     /*
     * 获取一个作业的所有,包括作业名称，包括未被批改的学生名、被批改过的学生名
     * */
-    public Map<String,?> getSubmissionListOfHomework(Homework homework) {
+    public Map<String,?> getSubmissionListOfHomework(Homework homework,Integer klass) {
         Map<String,Object> map = new HashMap<>();
         map.put("name",homework.getName());
-        List<StudentDTO> uncorrectedList = homeworkSubmissionMapper.selectStudentOfHomework(homework.getId(),false);
+        List<StudentDTO> uncorrectedList = homeworkSubmissionMapper.selectStudentOfHomework(homework.getId(),klass,false);
         map.put("unCorrected",uncorrectedList);
-        List<StudentDTO> correctedList = homeworkSubmissionMapper.selectStudentOfHomework(homework.getId(),true);
+        List<StudentDTO> correctedList = homeworkSubmissionMapper.selectStudentOfHomework(homework.getId(),klass,true);
         map.put("corrected",correctedList);
         return map;
     }
@@ -154,5 +153,12 @@ public class HomeworkSubmissionService extends ServiceImpl<HomeworkSubmissionMap
         homeworkSubmission.setTeacherFeedback(feedback);
         homeworkSubmission.setTeacherScore(score);
         updateById(homeworkSubmission);
+    }
+
+    @Transactional
+    public void deleteByHomework(Integer homeworkId) {
+        QueryWrapper<HomeworkSubmission> queryWrapper =new QueryWrapper<>();
+        queryWrapper.eq("homework_id",homeworkId);
+        homeworkSubmissionMapper.delete(queryWrapper);
     }
 }

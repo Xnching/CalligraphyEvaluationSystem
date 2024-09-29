@@ -11,7 +11,7 @@ import com.moyunzhijiao.system_backend.entiy.announcementHelp.AnnouncementConten
 import com.moyunzhijiao.system_backend.entiy.back.User;
 import com.moyunzhijiao.system_backend.service.announcementHelp.AnnouncementContentService;
 import com.moyunzhijiao.system_backend.service.announcementHelp.AnnouncementService;
-import com.moyunzhijiao.system_backend.service.back.UserService;
+import com.moyunzhijiao.system_backend.service.back.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +30,7 @@ public class AnnouncementController {
     @Autowired
     AnnouncementContentService announcementContentService;
     @Autowired
-    UserService userService;
+    UserServiceImpl userServiceImpl;
     @PreAuthorize("hasAuthority('发布公告')")
     @PostMapping("/release")
     public Result releaseAnnouncement(@RequestHeader("token") String token,@RequestPart("file") MultipartFile file,@RequestPart("form") String announcementstr) {
@@ -38,7 +38,7 @@ public class AnnouncementController {
         DecodedJWT jwt = JWT.decode(token);
         // 从载荷中获取用户 ID
         Integer userId = Integer.valueOf(jwt.getAudience().get(0));
-        User user = userService.getById(userId);
+        User user = userServiceImpl.getById(userId);
         announcement.setPublisher(user.getName());
         if (announcement.getReleaseType().equals("立即发布")) {
             // 获取当前时间并格式化为 MySQL DATETIME 格式

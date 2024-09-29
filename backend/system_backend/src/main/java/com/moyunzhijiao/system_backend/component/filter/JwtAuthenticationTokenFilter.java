@@ -10,7 +10,7 @@ import com.moyunzhijiao.system_backend.entiy.back.User;
 import com.moyunzhijiao.system_backend.entiy.front.Teacher;
 import com.moyunzhijiao.system_backend.exception.ServiceException;
 import com.moyunzhijiao.system_backend.service.UserDetailsServiceImpl;
-import com.moyunzhijiao.system_backend.service.back.UserService;
+import com.moyunzhijiao.system_backend.service.back.UserServiceImpl;
 import com.moyunzhijiao.system_backend.service.front.TeacherService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,7 +30,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     TeacherService teacherService;
     @Autowired
-    UserService userService;
+    UserServiceImpl userServiceImpl;
     @Autowired
     UserDetailsServiceImpl userDetailsServiceImp;
 
@@ -63,7 +63,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         }
         if(userType.equals("系统用户")){
             //根据token中的userId查询数据库
-            User user = userService.getById(userId);
+            User user = userServiceImpl.getById(userId);
             if(user == null){
                 throw new ServiceException(Constants.CODE_401,"用户不存在，请重新登录");
             }

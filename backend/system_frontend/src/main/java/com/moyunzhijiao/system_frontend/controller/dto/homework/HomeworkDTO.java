@@ -11,19 +11,20 @@ public class HomeworkDTO {
     String deadline;
     Integer unSubmit;
     String target;
+    private List<Integer> list;
     //下面是用来创建专项作业所要用到的
     private List<Integer> wordId;
     private Description description;
-    private List<Integer> list;
     //字帖作业需要的
     Integer copybookId;
     //综合作业需要的
-    List<List<List<Integer>>> idArray;
+    List<String> contentList;
+    Integer wordCount;
     String composing;
     @Data
     public static class Description {
         private String name;
-        private String requirements;
+        private String require;
         private String type;
         private String fontId;
         private String difficulty;

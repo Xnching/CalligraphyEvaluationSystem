@@ -1,11 +1,16 @@
 package com.moyunzhijiao.system_frontend.service;
 
+import com.moyunzhijiao.system_frontend.common.Constants;
+import com.moyunzhijiao.system_frontend.exception.ServiceException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class FileService {
@@ -124,6 +129,26 @@ public class FileService {
             }
         } catch (MalformedURLException e) {
             throw new RuntimeException("错误: " + e.getMessage());
+        }
+    }
+
+    public static String extractFileName(String url) {
+        String regex = ".*/([^/?]+).*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(url);
+        if (matcher.matches()) {
+            return matcher.group(1);
+        } else {
+            return null;
+        }
+    }
+    public static boolean deleteFile(String filePath) {
+        File file = new File(filePath);
+        if (file.exists()) {
+            return file.delete();
+        } else {
+            //throw new ServiceException(Constants.CODE_500,"文件不存在！");
+            return false;
         }
     }
 }

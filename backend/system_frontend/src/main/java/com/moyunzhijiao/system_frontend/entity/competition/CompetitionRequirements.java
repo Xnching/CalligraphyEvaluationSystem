@@ -11,5 +11,4 @@ public class CompetitionRequirements {
     @TableId(value = "competition_id",type = IdType.INPUT)
     Integer competitionId;
     String requirements;
-    String picture;
 }

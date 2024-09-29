@@ -7,6 +7,7 @@ import com.moyunzhijiao.system_frontend.common.Constants;
 import com.moyunzhijiao.system_frontend.common.Result;
 import com.moyunzhijiao.system_frontend.controller.dto.TeacherDTO;
 import com.moyunzhijiao.system_frontend.entity.Teacher;
+import com.moyunzhijiao.system_frontend.entity.VerifyCode;
 import com.moyunzhijiao.system_frontend.service.TeacherService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,9 +17,18 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @Tag(name = "教师接口")
@@ -26,7 +36,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class TeacherController {
     @Autowired
     TeacherService teacherService;
-
+    /* 获取验证码图片*/
+    @RequestMapping("/login/getVerifyCode")
+    public Result getVerificationCode() {
+        Map<String,Object> param = teacherService.createVode();
+        return Result.success(param);
+    }
 
     @Operation(summary = "登录，返回的类里有token字段")
     @PostMapping("/login")

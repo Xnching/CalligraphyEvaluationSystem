@@ -170,6 +170,8 @@ public class CompetitionService extends ServiceImpl<CompetitionMapper, Competiti
     public List<StudentDTO> getCompetitionDetailOfTea(Integer teacherId,Integer competitionId) {
         List<Integer> klassIdList = klassService.getKlassIdByTeacher(teacherId);
         List<Integer> stuIdList = studentService.getByKlassList(klassIdList);
+        if(stuIdList.isEmpty())
+            return null;
         return participantMapper.selectFinalRankOfStudent(stuIdList,competitionId);
     }
 

@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.moyunzhijiao.system_backend.common.Constants;
 import com.moyunzhijiao.system_backend.common.Result;
 import com.moyunzhijiao.system_backend.entiy.resource.Video;
-import com.moyunzhijiao.system_backend.service.back.UserService;
+import com.moyunzhijiao.system_backend.service.back.UserServiceImpl;
 import com.moyunzhijiao.system_backend.service.resource.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,7 +25,7 @@ public class VideoController {
     @Autowired
     VideoService videoService;
     @Autowired
-    UserService userService;
+    UserServiceImpl userServiceImpl;
     @PreAuthorize("hasAuthority('添加书法知识')")
     @PostMapping("/add")
     public Result addVideo(@RequestPart("image") MultipartFile image,@RequestHeader("token") String token,
@@ -41,7 +41,7 @@ public class VideoController {
         // 从载荷中获取用户 ID
         String userId = jwt.getAudience().get(0);
         Video video = JSONUtil.toBean(videoStr, Video.class);
-        video.setImporter(userService.getNameById(userId));
+        video.setImporter(userServiceImpl.getNameById(userId));
         videoService.addVideo(image,videoFile,video);
         return Result.success();
     }
@@ -71,7 +71,7 @@ public class VideoController {
         DecodedJWT jwt = JWT.decode(token);
         // 从载荷中获取用户 ID
         String userId = jwt.getAudience().get(0);
-        video.setImporter(userService.getNameById(userId));
+        video.setImporter(userServiceImpl.getNameById(userId));
         videoService.updateById(video);
         return Result.success();
     }

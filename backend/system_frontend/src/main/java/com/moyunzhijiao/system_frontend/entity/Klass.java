@@ -18,6 +18,7 @@ public class Klass {
     Integer teacherId;
     @TableField("grade_id")
     Integer gradeId;
+    String grade;
     @TableField("school_id")
     Integer schoolId;
     String year;

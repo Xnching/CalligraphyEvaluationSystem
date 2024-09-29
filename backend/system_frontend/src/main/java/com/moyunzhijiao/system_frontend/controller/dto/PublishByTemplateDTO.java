@@ -11,7 +11,7 @@ import java.util.List;
 public class PublishByTemplateDTO {
     Integer templateId;
     String templateType;
-    List<Integer>list;
+    List<Integer> list;
     Description description;
     @Data
     public static class Description{

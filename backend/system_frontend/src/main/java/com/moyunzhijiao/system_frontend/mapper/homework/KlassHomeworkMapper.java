@@ -19,11 +19,11 @@ public interface KlassHomeworkMapper extends BaseMapper<KlassHomework> {
             "   GROUP BY h.id")
     public List<Homework> getDeadlineHomework(@Param("klassId") Integer klassId);
 
-    @Select("select klass.name,klass.id ,avg(homework_submission.teacher_score) as score " +
-            "from klass_homework " +
-            "left join klass on klass.id = klass_homework.klass_id " +
-            "left join homework_submission on homework_submission.homework_id = klass_homework.homework_id " +
+    @Select("select klass.name,klass.id ,avg(homework_submission.teacher_score) as score ,klass.year,klass.grade_id as gradeId " +
+            "   from klass_homework " +
+            "       left join klass on klass.id = klass_homework.klass_id " +
+            "       left join homework_submission on homework_submission.homework_id = klass_homework.homework_id " +
             "where klass_homework.homework_id = #{homeworkId} " +
-            "group by klass.name, klass.id")
+            "   group by klass.name, klass.id")
     IPage<Klass> selectKlassByHomework(IPage<Klass> page, @Param("homeworkId") Integer homeworkId);
 }

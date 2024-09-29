@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class StudentDTO {
+    Integer id;
     String name;
     Integer stuId;
     String stuno;
@@ -17,8 +18,10 @@ public class StudentDTO {
     String token;
     String phone;
     String idNumber;
+    String studentNumber;
     String region;
     String regionId;
+    String level;
     String email;
     String score;
     String award;

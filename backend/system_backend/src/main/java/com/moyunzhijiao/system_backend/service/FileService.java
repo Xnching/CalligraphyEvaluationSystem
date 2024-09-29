@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class FileService {
@@ -22,6 +24,17 @@ public class FileService {
             }
         } catch (MalformedURLException e) {
             throw new RuntimeException("错误: " + e.getMessage());
+        }
+    }
+
+    public static String extractFileName(String url) {
+        String regex = ".*/([^/?]+).*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(url);
+        if (matcher.matches()) {
+            return matcher.group(1);
+        } else {
+            return null;
         }
     }
 

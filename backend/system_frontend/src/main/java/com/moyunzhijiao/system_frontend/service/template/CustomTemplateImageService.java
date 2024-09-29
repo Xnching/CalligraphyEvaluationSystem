@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_frontend.entity.template.CustomTemplateImage;
 import com.moyunzhijiao.system_frontend.mapper.template.CustomTemplateImageMapper;
+import com.moyunzhijiao.system_frontend.service.ConfigService;
+import com.moyunzhijiao.system_frontend.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,10 +34,17 @@ public class CustomTemplateImageService extends ServiceImpl<CustomTemplateImageM
         return list(queryWrapper);
     }
 
+    @Transactional
     public void deleteByTemplate(Integer templateId) {
         QueryWrapper<CustomTemplateImage>queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("custom_template_id",templateId);
+        List<String> urlList = getImages(templateId);
         customTemplateImageMapper.delete(queryWrapper);
+        urlList.forEach(url->{
+            String name = FileService.extractFileName(url);
+            String path = ConfigService.getCustomTemplateFilePath()+name;
+            FileService.deleteFile(path);
+        });
     }
 
     @Transactional

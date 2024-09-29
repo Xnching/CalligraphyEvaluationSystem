@@ -10,7 +10,7 @@ import com.moyunzhijiao.system_backend.entiy.announcementHelp.FeedbackContent;
 import com.moyunzhijiao.system_backend.entiy.back.User;
 import com.moyunzhijiao.system_backend.service.announcementHelp.FeedbackContentService;
 import com.moyunzhijiao.system_backend.service.announcementHelp.FeedbackService;
-import com.moyunzhijiao.system_backend.service.back.UserService;
+import com.moyunzhijiao.system_backend.service.back.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +26,7 @@ public class FeedbackController {
     @Autowired
     FeedbackContentService feedbackContentService;
     @Autowired
-    UserService userService;
+    UserServiceImpl userServiceImpl;
     @GetMapping("/page")
     public Result findPage(@RequestParam Integer pageNum, @RequestParam Integer pageSize){
         IPage<Feedback> page = new Page<>(pageNum,pageSize);
@@ -44,7 +44,7 @@ public class FeedbackController {
         DecodedJWT jwt = JWT.decode(token);
         // 从载荷中获取用户 ID
         Integer userId = Integer.valueOf(jwt.getAudience().get(0));
-        User user = userService.getById(userId);
+        User user = userServiceImpl.getById(userId);
         String reply = params.get("reply");
         String id = params.get("id");
         FeedbackContent feedbackContent = feedbackContentService.getById(id);
@@ -61,7 +61,7 @@ public class FeedbackController {
         DecodedJWT jwt = JWT.decode(token);
         // 从载荷中获取用户 ID
         Integer userId = Integer.valueOf(jwt.getAudience().get(0));
-        User user = userService.getById(userId);
+        User user = userServiceImpl.getById(userId);
         String id = params.get("id");
         Feedback feedback = feedbackService.getById(id);
         feedback.setState("无效");

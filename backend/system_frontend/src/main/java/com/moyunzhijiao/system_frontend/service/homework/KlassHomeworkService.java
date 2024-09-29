@@ -9,6 +9,7 @@ import com.moyunzhijiao.system_frontend.entity.homework.KlassHomework;
 import com.moyunzhijiao.system_frontend.mapper.homework.KlassHomeworkMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,5 +52,24 @@ public class KlassHomeworkService extends ServiceImpl<KlassHomeworkMapper, Klass
         long count = klassHomeworkMapper.selectCount(queryWrapper);
         page.setTotal(count);
         return page;
+    }
+
+    @Transactional
+    public void addBatch(Integer homeworkId, List<Integer> list) {
+        List<KlassHomework> klassHomeworkList = new ArrayList<>();
+        list.stream().forEach(klassId->{
+            KlassHomework klassHomework = new KlassHomework();
+            klassHomework.setHomeworkId(homeworkId);
+            klassHomework.setKlassId(klassId);
+            klassHomeworkList.add(klassHomework);
+        });
+        saveBatch(klassHomeworkList);
+    }
+
+    @Transactional
+    public void deleteByHomework(Integer homeworkId) {
+        QueryWrapper<KlassHomework> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("homework_id",homeworkId);
+        klassHomeworkMapper.delete(queryWrapper);
     }
 }

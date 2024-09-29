@@ -2,7 +2,10 @@ package com.moyunzhijiao.system_frontend.controller;
 
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.moyunzhijiao.system_frontend.common.Result;
+import com.moyunzhijiao.system_frontend.controller.dto.homework.CorrectHomeworkDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.homework.HomeworkSubmissionDetailDTO;
 import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import com.moyunzhijiao.system_frontend.entity.homework.HomeworkSubmission;
@@ -15,6 +18,7 @@ import com.moyunzhijiao.system_frontend.service.homework.HomeworkSubmissionServi
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -44,9 +48,9 @@ public class HomeworkSubmissionController {
     * 获取一个作业的批阅情况
     * */
     @GetMapping("/ciep/homework-list")
-    public Result findSubmissionListOfHomework(@RequestParam Integer homeworkId){
+    public Result findSubmissionListOfHomework(@RequestParam Integer homeworkId,@RequestParam(required = false) Integer klass) {
         Homework homework = homeworkService.getById(homeworkId);
-        Map<String,?> map = homeworkSubmissionService.getSubmissionListOfHomework(homework);
+        Map<String,?> map = homeworkSubmissionService.getSubmissionListOfHomework(homework,klass);
         return Result.success(map);
     }
 
@@ -85,12 +89,16 @@ public class HomeworkSubmissionController {
     * 教师批改作品
     * */
     @PostMapping("/ciep/correct-homework")
-    public Result correctHomework(@RequestBody Map<String,?> params){
-        String feedback = (String) params.get("feedback");
-        Integer score = (Integer) params.get("score");
-        Integer submissionId = (Integer) params.get("submissionId");
-
-        homeworkSubmissionService.reviewSubmission(submissionId,score,feedback);
+    public Result correctHomework(@RequestBody CorrectHomeworkDTO correctHomeworkDTO){
+        correctHomeworkDTO.getList().forEach(param->{
+            String feedback = param.getFeedback();
+            Integer score = param.getScore();
+            Integer submissionId = param.getSubmissionId();
+            if(StrUtil.isEmpty(feedback)|| ObjectUtil.isNull(score)||ObjectUtil.isNull(submissionId)){
+                return;
+            }
+            homeworkSubmissionService.reviewSubmission(submissionId,score,feedback);
+        });
         return Result.success();
     }
 }

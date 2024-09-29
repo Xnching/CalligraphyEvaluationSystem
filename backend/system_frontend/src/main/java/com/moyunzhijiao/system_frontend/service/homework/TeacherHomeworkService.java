@@ -1,5 +1,6 @@
 package com.moyunzhijiao.system_frontend.service.homework;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_frontend.common.Constants;
@@ -28,37 +29,47 @@ public class TeacherHomeworkService extends ServiceImpl<TeacherHomeworkMapper, T
     * */
     public IPage<HomeworkDTO> getHomeworkPageOfTeacher(IPage<HomeworkDTO> page, Integer type, Integer teacherId, String name) {
         Integer total;
-
         switch (type){
-
             case 1://未截止集体
-                page = teacherHomeworkMapper.selectNotDeadOfKlass(page,teacherId,name);
-                total = teacherHomeworkMapper.countNotDeadOfKlass(page,teacherId,name);
+                page = teacherHomeworkMapper.selectHomeworkPageOfKlass(page,teacherId,"集体",">",name);
+                total = teacherHomeworkMapper.countHomeworkPageOfKlass(teacherId,"集体",">",name);
                 total=total == null ? 0:total;
                 page.setTotal(total);
                 break;
             case 2://未截止个人
-                page = teacherHomeworkMapper.selectNotDeadOfStudent(page,teacherId,name);
-                total = teacherHomeworkMapper.countNotDeadOfStudent(page,teacherId,name);
+                page = teacherHomeworkMapper.selectHomeworkPageOfKlass(page,teacherId,"个人",">",name);
+                total = teacherHomeworkMapper.countHomeworkPageOfKlass(teacherId,"个人",">",name);
                 total=total == null ? 0:total;
                 page.setTotal(total);
                 break;
             case 3://已截止集体
-                page = teacherHomeworkMapper.selectDeadOfKlass(page,teacherId,name);
-                total = teacherHomeworkMapper.countDeadOfKlass(page,teacherId,name);
+                page = teacherHomeworkMapper.selectHomeworkPageOfKlass(page,teacherId,"集体","<",name);
+                total = teacherHomeworkMapper.countHomeworkPageOfKlass(teacherId,"集体","<",name);
                 total=total == null ? 0:total;
                 page.setTotal(total);
                 break;
             case 4://已截止个人
-                page =teacherHomeworkMapper.selectDeadOfStudent(page,teacherId,name);
-                total = teacherHomeworkMapper.countDeadOfStudent(page,teacherId,name);
+                page =teacherHomeworkMapper.selectHomeworkPageOfKlass(page,teacherId,"个人","<",name);
+                total = teacherHomeworkMapper.countHomeworkPageOfKlass(teacherId,"个人","<",name);
+                total=total == null ? 0:total;
+                page.setTotal(total);
+                break;
+            case 5://未截止
+                page =teacherHomeworkMapper.selectHomeworkPageOfKlass(page,teacherId,null,">",name);
+                total = teacherHomeworkMapper.countHomeworkPageOfKlass(teacherId,null,">",name);
+                total=total == null ? 0:total;
+                page.setTotal(total);
+                break;
+            case 6://已截止
+                page =teacherHomeworkMapper.selectHomeworkPageOfKlass(page,teacherId,null,"<",name);
+                total = teacherHomeworkMapper.countHomeworkPageOfKlass(teacherId,null,"<",name);
                 total=total == null ? 0:total;
                 page.setTotal(total);
                 break;
             default:
                 throw new ServiceException(Constants.CODE_401,"type内容错误!");
         }
-        // 遍历每个HomeworkDTO对象，并设置unSubmit属性
+        //遍历每个HomeworkDTO对象,并设置unSubmit属性
         for (HomeworkDTO homeworkDTO : page.getRecords()) {
             //根据作业id查找所有没完成作业的
             Integer unSubmitCount =  homeworkSubmissionService.getNumberOfNotSubmit(homeworkDTO.getId());
@@ -90,5 +101,11 @@ public class TeacherHomeworkService extends ServiceImpl<TeacherHomeworkMapper, T
         teacherHomework.setTemplateType(templateType);
         teacherHomework.setTeacherId(teacherId);
         save(teacherHomework);
+    }
+
+    public void deleteByHomework(Integer homeworkId) {
+        QueryWrapper<TeacherHomework> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("homework_id",homeworkId);
+        teacherHomeworkMapper.delete(queryWrapper);
     }
 }

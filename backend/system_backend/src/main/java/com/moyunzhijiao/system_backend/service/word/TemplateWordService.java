@@ -13,6 +13,8 @@ import com.moyunzhijiao.system_backend.controller.dto.word.TemplateWordDTO;
 import com.moyunzhijiao.system_backend.entiy.word.TemplateWord;
 import com.moyunzhijiao.system_backend.exception.ServiceException;
 import com.moyunzhijiao.system_backend.mapper.word.TemplateWordMapper;
+import com.moyunzhijiao.system_backend.service.ConfigService;
+import com.moyunzhijiao.system_backend.service.FileService;
 import com.moyunzhijiao.system_backend.service.base.GradeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -127,13 +129,15 @@ public class TemplateWordService extends ServiceImpl<TemplateWordMapper, Templat
     public List<String> selectFilePathBatch(List<Integer> wordIds) {
         List<TemplateWord> templateWords = new ArrayList<>();
         for (Integer id : wordIds) {
-            TemplateWord word = getById(id); // 假设 getById 是获取单个实例的方法
+            TemplateWord word = getById(id);
             if (word != null) {
                 templateWords.add(word);
             }
         }
-        List<String> filePaths = templateWords.stream().map(TemplateWord::getFilePath).toList();
-        return filePaths;
+        return templateWords.stream().map(templateWord -> {
+            String name = FileService.extractFileName(templateWord.getContent());
+            return ConfigService.getTemplateWordFilePath()+name;
+        }).toList();
     }
 
     /*

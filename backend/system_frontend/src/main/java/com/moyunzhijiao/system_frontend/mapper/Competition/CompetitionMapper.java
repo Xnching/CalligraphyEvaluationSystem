@@ -12,11 +12,11 @@ import java.util.List;
 
 public interface CompetitionMapper extends BaseMapper<Competition> {
     @Select("SELECT id, name, picture as pictureURL " +
-            "FROM competition ")
+            "   FROM competition ")
     public IPage<CompetitionDTO> getSelfCompetition(IPage<CompetitionDTO> page);
 
     @Select("SELECT COUNT(*) " +
-            "FROM competition " )
+            "   FROM competition " )
     public Integer countSelfCompetition();
 
     @Select("SELECT " +

@@ -2,6 +2,7 @@ package com.moyunzhijiao.system_frontend.service.homework;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -25,7 +26,9 @@ import com.moyunzhijiao.system_frontend.mapper.homework.HomeworkMapper;
 import com.moyunzhijiao.system_frontend.mapper.homework.TeacherHomeworkMapper;
 import com.moyunzhijiao.system_frontend.service.*;
 import com.moyunzhijiao.system_frontend.service.note.KlassNoteReceiveService;
+import com.moyunzhijiao.system_frontend.service.note.NoteService;
 import com.moyunzhijiao.system_frontend.service.note.StudentNoteReceiveService;
+import com.moyunzhijiao.system_frontend.service.outstanding.OutstandingHomeworkService;
 import com.moyunzhijiao.system_frontend.service.template.CustomTemplateImageService;
 import com.moyunzhijiao.system_frontend.service.template.CustomTemplateService;
 import com.moyunzhijiao.system_frontend.service.template.SystemTemplateImageService;
@@ -81,6 +84,10 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
     TemplateWordService templateWordService;
     @Autowired
     PictureService pictureService;
+    @Autowired
+    NoteService noteService;
+    @Autowired
+    OutstandingHomeworkService outstandingHomeworkService;
 
 
 
@@ -119,7 +126,6 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
         String require = publishByTemplateDTO.getDescription().getRequire();
         String deadline = publishByTemplateDTO.getDescription().getDeadline();
         List<Integer> list = publishByTemplateDTO.getList();
-
         List<String> images;
         //先根据基础数据把生成作业的基础数据赋值。
         Homework homework = new Homework();
@@ -220,13 +226,16 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
     * 创建综合作业
     * */
     @Transactional
-    public void publishComprehensive(HomeworkDTO homeworkDTO,Integer teacherId){
+    public void publishComprehensive(HomeworkDTO homeworkDTO,List<BufferedImage> imageList,Integer teacherId){
         //先把作业基本信息保存
         Homework homework = addHomework(homeworkDTO,"综合");
-        //接着生成作业图片
-        List<String> urlList = pictureService.gatherImagesOfComprehensive(homeworkDTO.getIdArray(),homeworkDTO.getComposing(),"作业");
+        List<String> urlList = imageList.stream()
+                .map(image -> pictureService.saveFile(image, "作业"))
+                .collect(Collectors.toList());
         //批量保存图片
         homeworkImageService.addBatch(homework.getId(),urlList);
+        //接下来发布作业
+        publishHomework(teacherId,homework,homeworkDTO.getList(),null,null);
     }
 
 
@@ -241,10 +250,18 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
         Homework homework = new Homework();
         BeanUtil.copyProperties(homeworkDTO.getDescription(),homework);
         homework.setType(firstType);
+        homework.setRequirements(homeworkDTO.getDescription().getRequire());
         //只有专项有第二个类型
         if(firstType.equals("专项"))
             homework.setDetailType(homeworkDTO.getDescription().getType());
-        homework.setWordCount(homeworkDTO.getWordId().size());
+        if(firstType.equals("综合"))
+            homework.setWordCount(homeworkDTO.getWordCount());
+        else{
+            if(ObjectUtil.isNull(homeworkDTO.getWordId())){
+                homework.setWordCount(0);
+            }else
+                homework.setWordCount(homeworkDTO.getWordId().size());
+        }
         save(homework);
         return homework;
     }
@@ -264,11 +281,30 @@ public class HomeworkService extends ServiceImpl<HomeworkMapper, Homework> {
             homeworkSubmissionService.addByHomework(homeworkId,list);
         } else if (target.equals("集体")) {
             List<Integer> studentList = studentService.getByKlassList(list);
+            System.out.println("下面为消息");
             klassNoteReceiveService.addHomework(teacherId,list,homework);
             //批量创建作业作品，让学生们准备去完成
+            System.out.println("下面为作业作品");
             homeworkSubmissionService.addByHomework(homeworkId,studentList);
+            System.out.println("下面为作业");
+            klassHomeworkService.addBatch(homeworkId,list);
         }
         //增加教师作业联系
         teacherHomeworkService.addTeacherHomework(teacherId,homeworkId,templateId,templateType);
+    }
+
+    /*
+    * 删除作业
+    * */
+    @Transactional
+    public void deleteHomework(Integer homeworkId) {
+        homeworkMapper.deleteById(homeworkId);
+        homeworkImageService.deleteByHomework(homeworkId);
+        klassHomeworkService.deleteByHomework(homeworkId);
+        Integer noteId = noteService.deleteByHomework(homeworkId);
+        klassNoteReceiveService.deleteByHomework(noteId);
+        studentNoteReceiveService.deleteByHomework(noteId);
+        teacherHomeworkService.deleteByHomework(homeworkId);
+        homeworkSubmissionService.deleteByHomework(homeworkId);
     }
 }

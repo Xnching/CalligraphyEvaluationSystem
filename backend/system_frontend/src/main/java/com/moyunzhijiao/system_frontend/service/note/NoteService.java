@@ -14,6 +14,7 @@ import com.moyunzhijiao.system_frontend.mapper.note.NoteContentMapper;
 import com.moyunzhijiao.system_frontend.mapper.note.NoteMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -119,5 +120,16 @@ public class NoteService extends ServiceImpl<NoteMapper, Note> {
         BeanUtil.copyProperties(note,noteDTO);
         noteDTO.setContent(noteContent.getMessage());
         return noteDTO;
+    }
+
+    @Transactional
+    public Integer deleteByHomework(Integer homeworkId) {
+        QueryWrapper<Note> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("type","布置作业");
+        queryWrapper.eq("association_id",homeworkId);
+        Note note = noteMapper.selectOne(queryWrapper);
+        removeById(note);
+        noteContentService.deleteByNote(note.getId());
+        return note.getId();
     }
 }

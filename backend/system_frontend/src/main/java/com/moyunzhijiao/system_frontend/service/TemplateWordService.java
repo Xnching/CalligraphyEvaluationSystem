@@ -61,7 +61,10 @@ public class TemplateWordService extends ServiceImpl<TemplateWordMapper, Templat
                 templateWords.add(word);
             }
         }
-        return templateWords.stream().map(TemplateWord::getFilePath).toList();
+        return templateWords.stream().map(templateWord -> {
+            String name = FileService.extractFileName(templateWord.getContent());
+            return ConfigService.getTemplateWordFilePath()+name;
+        }).toList();
     }
 
     /*

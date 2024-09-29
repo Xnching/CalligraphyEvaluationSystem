@@ -22,6 +22,7 @@ public class KlassDetailDTO {
         String gender;
         @TableId(value = "id",type = IdType.AUTO)
         Integer stuId;
+        String stuno;
     }
 
 }

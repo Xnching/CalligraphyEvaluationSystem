@@ -23,8 +23,11 @@ import com.moyunzhijiao.system_frontend.service.homework.HomeworkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomTemplateService extends ServiceImpl<CustomTemplateMapper, CustomTemplate> {
@@ -114,7 +117,7 @@ public class CustomTemplateService extends ServiceImpl<CustomTemplateMapper, Cus
         //接着保存图片
         CustomTemplateImage customTemplateImage = new CustomTemplateImage();
         customTemplateImage.setCustomTemplateId(customTemplate.getId());
-        customTemplateImage.setPictureUrl(copybook.getContent());;
+        customTemplateImage.setPictureUrl(copybook.getContent());
         customTemplateImageService.save(customTemplateImage);
     }
 
@@ -122,20 +125,20 @@ public class CustomTemplateService extends ServiceImpl<CustomTemplateMapper, Cus
     * 综合模板
     * */
     @Transactional
-    public void addComprehensiveTemplate(TemplateDTO templateDTO, Integer userId, String userType) {
+    public void addComprehensiveTemplate(List<BufferedImage> imageList, TemplateDTO templateDTO, Integer userId, String userType) {
         //先生成模板
-        Integer number = countIntegers(templateDTO.getIdArray());
-        templateDTO.setWordCount(number);
         CustomTemplate customTemplate = insertTemplate(templateDTO,userId,userType,"综合");
         //接着生成图片
-        List<String> urlList = pictureService.gatherImagesOfComprehensive(templateDTO.getIdArray(),templateDTO.getComposing(),"模板");
+        List<String> urlList = imageList.stream()
+                .map(image -> pictureService.saveFile(image, "模板"))
+                .collect(Collectors.toList());
         //批量保存图片
         customTemplateImageService.addBatch(urlList,customTemplate.getId());
     }
     /*
      * 使用递归来找到有多少个字，统计得到字叔
      * */
-    public static int countIntegers(List<?> list) {
+    public int countIntegers(List<?> list) {
         int count = 0;
         for (Object element : list) {
             if (element instanceof List) {
@@ -152,6 +155,7 @@ public class CustomTemplateService extends ServiceImpl<CustomTemplateMapper, Cus
      * */
     @Transactional
     public CustomTemplate insertTemplate(TemplateDTO templateDTO, Integer userId,String userType,String type){
+        System.out.println("让我看下"+templateDTO);
         if(StrUtil.isEmpty(templateDTO.getName())){
             throw new ServiceException(Constants.CODE_401,"未填写模板名称");
         }
@@ -165,6 +169,7 @@ public class CustomTemplateService extends ServiceImpl<CustomTemplateMapper, Cus
         customTemplate.setCreatorType(userType);
         customTemplate.setDetailType(templateDTO.getSonType());
         BeanUtil.copyProperties(templateDTO, customTemplate);
+        System.out.println("让我看下"+customTemplate);
         save(customTemplate);
         return customTemplate;
     }

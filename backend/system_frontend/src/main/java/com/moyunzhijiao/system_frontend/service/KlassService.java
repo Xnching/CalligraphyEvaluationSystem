@@ -86,7 +86,7 @@ public class KlassService extends ServiceImpl<KlassMapper, Klass> {
     public KlassDetailDTO getKlassDetaiList(Integer classId, Integer currentPage, Integer pageSize) {
         //设置查询条件
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("id", "name", "gender");
+        queryWrapper.select("id", "name", "gender","student_number");
         queryWrapper.eq("klass_id", classId);
 
         IPage<Student> studentPage = new Page<>(currentPage, pageSize);
@@ -98,6 +98,7 @@ public class KlassService extends ServiceImpl<KlassMapper, Klass> {
             stu.setStuId(student.getId());
             stu.setName(student.getName());
             stu.setGender(student.getGender());
+            stu.setStuno(student.getStudentNumber());
             return stu;
         });
 

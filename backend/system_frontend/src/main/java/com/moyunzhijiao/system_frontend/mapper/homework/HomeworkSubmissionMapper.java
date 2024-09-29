@@ -48,17 +48,20 @@ public interface HomeworkSubmissionMapper extends BaseMapper<HomeworkSubmission>
      * @param: state 为作业是否完成的状态
      * */
     @Select({"<script>",
-            "select s.id,s.name,hs.id as submissionId " +
-            "   from homework_submission hs " +
-            "       join student s on hs.student_id = s.id " +
-            "where hs.homework_id = #{homeworkId} " +
-            "<if test = 'reviewed'>" +
-            "   and hs.reviewed = 2 " +
-            "</if>" +
-            "<if test = '!reviewed'>" +
-            "   and hs.reviewed != 2 " +
+            "select s.id,s.name,hs.id as submissionId " ,
+            "   from homework_submission hs " ,
+            "       join student s on hs.student_id = s.id " ,
+            "where hs.homework_id = #{homeworkId} " ,
+            "<if test = 'reviewed'>" ,
+            "   and hs.reviewed != 0 " ,
+            "</if>" ,
+            "<if test = '!reviewed'>" ,
+            "   and hs.reviewed != 2 " ,
+            "</if>",
+            "<if test='klassId != null'>" ,
+            "   and s.klass_id = #{klassId} " ,
             "</if>",
             "</script>"})
-    List<StudentDTO> selectStudentOfHomework(@Param("homeworkId") Integer homeworkId, @Param("reviewed") Boolean reviewed);
+    List<StudentDTO> selectStudentOfHomework(@Param("homeworkId") Integer homeworkId, @Param("klassId") Integer klass,@Param("reviewed") Boolean reviewed);
 
 }

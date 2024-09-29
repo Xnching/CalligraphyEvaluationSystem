@@ -29,14 +29,14 @@ public class ConfigService {
     //模板字的API接口
     private static String templateWordFilePath;
     private static String templateWordUrl;
-    private static final String TEMPLATE_WORD_BASE_URL = "/upload/images/templateWord";
+    private static final String TEMPLATE_WORD_BASE_URL = "/upload/images/templateWord/";
     private static final String TEMPLATE_WORD_PATH = "/resources/image/templateWord/";
 
 
     //字帖的
     private static String copybookFilePath;
     private static String copybookUrl;
-    private static final String COPYBOOK_BASE_URL = "/upload/images/copybook";
+    private static final String COPYBOOK_BASE_URL = "/upload/images/copybook/";
     private static final String COPYBOOK_PATH = "/resources/image/copybook/";
 
     //视频的
@@ -48,19 +48,19 @@ public class ConfigService {
     //字的分析的
     private static String characterFilePath;
     private static String characterUrl;
-    private static final String CHARACTER_BASE_URL = "/upload/images/character";
+    private static final String CHARACTER_BASE_URL = "/upload/images/character/";
     private static final String CHARACTER_PATH = "/resources/image/character/";
 
     //笔画分析的
     private static String strokeFilePath;
     private static String strokeUrl;
-    private static final String STROKE_BASE_URL = "/upload/images/stroke";
+    private static final String STROKE_BASE_URL = "/upload/images/stroke/";
     private static final String STROKE_PATH = "/resources/image/stroke/";
 
     //作业图片的
     private static String homeworkFilePath;
     private static String homeworkUrl;
-    private static final String HOMEWORK_BASE_URL = "/upload/images/homework";
+    private static final String HOMEWORK_BASE_URL = "/upload/images/homework/";
     private static final String HOMEWORK_PATH = "/resources/image/homework/";
 
     //自定义模板的图片

@@ -1,5 +1,6 @@
 package com.moyunzhijiao.system_frontend.service.note;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import com.moyunzhijiao.system_frontend.entity.note.Note;
@@ -105,5 +106,12 @@ public class StudentNoteReceiveService extends ServiceImpl<StudentNoteReceiveMap
             return studentNoteReceive;
         }).toList();
         saveBatch(studentNoteReceiveList);
+    }
+
+    @Transactional
+    public void deleteByHomework(Integer noteId) {
+        QueryWrapper<StudentNoteReceive> queryWrapper =new QueryWrapper<>();
+        queryWrapper.eq("note_id",noteId);
+        studentNoteReceiveMapper.delete(queryWrapper);
     }
 }

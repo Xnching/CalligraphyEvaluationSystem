@@ -15,6 +15,7 @@ public class TemplateDTO {
     List<Integer> wordIds;
     String composing;
     String content;
+    List<String> contentList;
     Integer copybookId;
     Integer wordCount;
     List<List<List<Integer>>> idArray;

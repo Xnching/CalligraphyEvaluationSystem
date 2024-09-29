@@ -23,4 +23,7 @@ public class TeacherDTO {
     @Schema(description = "此为所在地区的id")
     Integer regionId;
     String token;
+    //验证验证码用的
+    String code;
+    String uuid;
 }

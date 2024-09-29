@@ -10,7 +10,9 @@ import com.moyunzhijiao.system_frontend.controller.dto.ParticipantDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.StudentDTO;
 import com.moyunzhijiao.system_frontend.entity.Student;
 import com.moyunzhijiao.system_frontend.entity.competition.Competition;
+import com.moyunzhijiao.system_frontend.entity.competition.CompetitionRequirements;
 import com.moyunzhijiao.system_frontend.entity.competition.CompetitionSubmission;
+import com.moyunzhijiao.system_frontend.mapper.Competition.CompetitionRequirementsMapper;
 import com.moyunzhijiao.system_frontend.service.KlassService;
 import com.moyunzhijiao.system_frontend.service.StudentService;
 import com.moyunzhijiao.system_frontend.service.competition.CompetitionService;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +35,8 @@ public class CompetitionController {
     KlassService klassService;
     @Autowired
     StudentService studentService;
+    @Autowired
+    CompetitionRequirementsMapper competitionRequirementsMapper;
 
     @GetMapping("/cieps/existing-competition")
     public Result getExistingCompetition (@RequestHeader("authorization") String token,
@@ -88,7 +93,11 @@ public class CompetitionController {
         DecodedJWT jwt = JWT.decode(token);
         Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
         List<StudentDTO> list = competitionService.getCompetitionDetailOfTea(teacherId,competitionId);
-        return Result.success(list);
+        Map<String,Object> param = new HashMap<>();
+        param.put("stuList",list);
+        CompetitionRequirements competitionRequirements = competitionRequirementsMapper.selectById(competitionId);
+        param.put("info",competitionRequirements.getRequirements());
+        return Result.success(param);
     }
 
     /*

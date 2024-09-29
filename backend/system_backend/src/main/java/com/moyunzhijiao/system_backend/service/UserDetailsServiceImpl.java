@@ -2,7 +2,6 @@ package com.moyunzhijiao.system_backend.service;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.moyunzhijiao.system_backend.entiy.CustomUser;
-import com.moyunzhijiao.system_backend.entiy.back.Permissions;
 import com.moyunzhijiao.system_backend.entiy.back.User;
 import com.moyunzhijiao.system_backend.mapper.back.UserMapper;
 import com.moyunzhijiao.system_backend.service.back.PermissionsService;
@@ -15,7 +14,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /*

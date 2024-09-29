@@ -14,12 +14,13 @@ public interface StudentMapper extends BaseMapper<Student> {
     /*
      * 根据班级获取学生
      * */
-    @Select("select s.id,s.name,s.gender,k.name as klass,k.year as year,g.name as grade " +
+    @Select("select s.id,s.name,s.gender,s.student_number as stuno,k.name as klass,k.year as year,g.name as grade " +
             "   from student s " +
             "       left join klass k on s.klass_id = k.id " +
             "       left join grade g on g.id = s.grade_id " +
             "where s.klass_id = #{klassId} " +
-            "   and s.name like CONCAT('%',#{stuInfo},'%') ")
+            "   and s.name like CONCAT('%',#{stuInfo},'%')" +
+            "   and s.student_number like CONCAT('%',#{stuInfo},'%') ")
     List<StudentDTO> selectByKlass(Integer klassId, String stuInfo);
 
     /*

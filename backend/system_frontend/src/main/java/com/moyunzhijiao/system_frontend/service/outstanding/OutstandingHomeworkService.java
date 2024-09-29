@@ -1,5 +1,6 @@
 package com.moyunzhijiao.system_frontend.service.outstanding;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -24,4 +25,5 @@ public class OutstandingHomeworkService extends ServiceImpl<OutstandingHomeworkM
         page.setTotal(total);
         return page;
     }
+
 }

@@ -10,7 +10,7 @@ import com.moyunzhijiao.system_backend.common.Result;
 import com.moyunzhijiao.system_backend.controller.dto.resource.ArticleDTO;
 import com.moyunzhijiao.system_backend.entiy.resource.Article;
 import com.moyunzhijiao.system_backend.service.resource.ArticleService;
-import com.moyunzhijiao.system_backend.service.back.UserService;
+import com.moyunzhijiao.system_backend.service.back.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +25,7 @@ public class ArticleController {
     @Autowired
     ArticleService articleService;
     @Autowired
-    UserService userService;
+    UserServiceImpl userServiceImpl;
 
     @PreAuthorize("hasAuthority('添加书法知识')")
     @PostMapping("/add")
@@ -39,7 +39,7 @@ public class ArticleController {
         // 从载荷中获取用户 ID
         String userId = jwt.getAudience().get(0);
         Article article = JSONUtil.toBean(articleStr, Article.class);
-        article.setImporter(userService.getNameById(userId));
+        article.setImporter(userServiceImpl.getNameById(userId));
         articleService.addArticle(image,htmlContent,article);
         return Result.success();
     }
@@ -69,7 +69,7 @@ public class ArticleController {
         DecodedJWT jwt = JWT.decode(token);
         // 从载荷中获取用户 ID
         String userId = jwt.getAudience().get(0);
-        articleDTO.setImporter(userService.getNameById(userId));
+        articleDTO.setImporter(userServiceImpl.getNameById(userId));
         articleService.updateArticle(articleDTO);
         return Result.success();
     }
