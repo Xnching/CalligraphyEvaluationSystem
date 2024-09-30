@@ -21,6 +21,8 @@ public class StudentDTO {
     String studentNumber;
     String region;
     String regionId;
+    String uuid;
+    String code;
     String level;
     String email;
     String score;

@@ -1,5 +1,6 @@
 package com.moyunzhijiao.system_backend.mapper.resource;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.moyunzhijiao.system_backend.controller.dto.resource.ArticleDTO;
@@ -16,19 +17,14 @@ public interface ArticleMapper extends BaseMapper<Article> {
             "SELECT article.*, article_contents.content ",
             "   FROM article ",
             "   LEFT JOIN article_contents ON article.id = article_contents.id ",
-            "WHERE 1=1 ",
-            "<if test='isRecommended'> ",
-            "   AND article.is_recommended = #{isRecommended} ",
-            "</if>",
+            "WHERE 1=1 " ,
+            "   ${ew.customSqlSegment}",
             "<if test='str != null and str != \"\"'> ",
             "   AND (article.name LIKE CONCAT('%', #{str}, '%') OR article.tag LIKE CONCAT('%', #{str}, '%')) ",
             "</if>",
-            "<if test='secondTypeId != null'> ",
-            "   AND article.second_type_id = #{secondTypeId} ",
-            "</if>",
             "</script>"
     })
-    IPage<ArticleDTO> selectPage(IPage<ArticleDTO> page, @Param("str") String str, @Param("secondTypeId") Integer secondTypeId, @Param("isRecommended") boolean isRecommended);
+    IPage<ArticleDTO> selectPage(IPage<ArticleDTO> page, @Param("str") String str, @Param("ew") LambdaQueryWrapper<Article> queryWrapper);
 
     @Select({
             "<script>",
@@ -36,17 +32,12 @@ public interface ArticleMapper extends BaseMapper<Article> {
             "   FROM article ",
             "   LEFT JOIN article_contents ON article.id = article_contents.id ",
             "WHERE 1=1 ",
-            "<if test='isRecommended'> ",
-            "   AND article.is_recommended = #{isRecommended} ",
-            "</if>",
+            "   ${ew.customSqlSegment}",
             "<if test='str != null and str != \"\"'> ",
             "   AND (article.name LIKE CONCAT('%', #{str}, '%') OR article.tag LIKE CONCAT('%', #{str}, '%')) ",
             "</if>",
-            "<if test='secondTypeId != null'> ",
-            "   AND article.second_type_id = #{secondTypeId} ",
-            "</if>",
             "</script>"
     })
-    Integer countPage(IPage<ArticleDTO> page, @Param("str") String str, @Param("secondTypeId") Integer secondTypeId, @Param("isRecommended") boolean isRecommended);
+    Integer countPage(IPage<ArticleDTO> page, @Param("str") String str, @Param("ew") LambdaQueryWrapper<Article> queryWrapper);
 
 }

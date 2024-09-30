@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ParticipantMapper extends BaseMapper<Participant> {
     @Select({"<script>",
-            "select s.id, s.name, k.name as klass,s.gender as gender ,g.name as grade , s.student_number as stuno ,",
+            "select s.id, s.name, k.name as klass,s.gender as gender ,g.name as grade , s.student_number as stuno ,p.submission_id as submissionId, ",
             "   case ",
             "       when fr.submission_id is null then '未得奖' ",
             "       else fr.level ",

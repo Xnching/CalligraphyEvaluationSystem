@@ -76,7 +76,7 @@ public class CompetitionController {
     * */
     @PostMapping("/add")
     @Transactional
-    public Result addCompetition(@RequestPart("competition") String competitionStr,@RequestPart("file") MultipartFile file){
+    public Result addCompetition(@RequestPart("competition") String competitionStr,@RequestPart(value = "file",required = false)MultipartFile file){
         //先保存文件
         if(!file.isEmpty()){
             String fileName = UUID.randomUUID() + "-" +file.getOriginalFilename();

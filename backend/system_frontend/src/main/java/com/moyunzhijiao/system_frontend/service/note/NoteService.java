@@ -1,6 +1,7 @@
 package com.moyunzhijiao.system_frontend.service.note;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -117,8 +118,11 @@ public class NoteService extends ServiceImpl<NoteMapper, Note> {
         Note note = getById(msgId);
         NoteDTO noteDTO = new NoteDTO();
         NoteContent noteContent = noteContentService.getById(msgId);
+        if(ObjectUtil.isNull(noteContent))
+            noteDTO.setContent(null);
+        else
+            noteDTO.setContent(noteContent.getMessage());
         BeanUtil.copyProperties(note,noteDTO);
-        noteDTO.setContent(noteContent.getMessage());
         return noteDTO;
     }
 

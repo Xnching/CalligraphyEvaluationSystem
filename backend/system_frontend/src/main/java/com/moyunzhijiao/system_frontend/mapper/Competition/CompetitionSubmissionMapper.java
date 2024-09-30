@@ -21,4 +21,5 @@ public interface CompetitionSubmissionMapper extends BaseMapper<CompetitionSubmi
             "        LEFT JOIN final_rank fr ON cs.id = fr.submission_id " +
             "        WHERE cs.author_id = #{stuId} AND cs.division_id = #{divId} " )
     public CompetitionDetailDTO selectCompetitionDetail(Integer divId,Integer stuId);
+
 }

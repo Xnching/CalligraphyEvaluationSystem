@@ -178,28 +178,12 @@ public class TemplateController {
         }
         //获取用于给前端展示的三维数组模板字的id
         List<List<List<TemplateWord>>> list = pictureService.getPictureOfComprehensive(textContent,fontId,composing);
-        List<List<List<Integer>>> idList = list.stream()
-                .map(innerList -> innerList.stream()
-                        .map(innerInnerList -> innerInnerList.stream()
-                                .map(TemplateWord::getId)
-                                .collect(Collectors.toList()))
-                        .collect(Collectors.toList()))
-                .toList();
+        List<List<List<Integer>>> idList = pictureService.getIdArray(list);
         Integer wordCount = customTemplateService.countIntegers(idList);
         //根据id拼图片
         List<BufferedImage> imageList = pictureService.gatherImagesOfComprehensive(idList,composing);
         //把图片准备好发给前端
-        List<String> resources = imageList.stream()
-                .map(image -> {
-                    ByteArrayOutputStream os = new ByteArrayOutputStream();
-                    try {
-                        ImageIO.write(image, "jpeg", os);
-                        return "data:image/png;base64,"+Base64.getEncoder().encodeToString(os.toByteArray());
-                    } catch (IOException e) {
-                        throw new RuntimeException("发送失败！", e);
-                    }
-                })
-                .collect(Collectors.toList());
+        List<String> resources = pictureService.exchangeImageToBase64(imageList);
         Map<String,Object> result = new HashMap<>();
         result.put("resource",resources);
         result.put("wordCount",wordCount);
@@ -226,18 +210,7 @@ public class TemplateController {
         // 从载荷中获取用户 ID
         Integer userId = Integer.valueOf(jwt.getAudience().get(0));
         String userType = JWT.decode(token).getClaim("userType").asString();
-        List<BufferedImage> imageList = templateDTO.getContentList().stream().map(content->{
-            String temp = content.replaceFirst("^data:image/[^;]+;base64,", "");;
-            BufferedImage image;
-            byte[] imageBytes = Base64.getDecoder().decode(temp);
-            ByteArrayInputStream bis = new ByteArrayInputStream(imageBytes);
-            try {
-                image = ImageIO.read(bis);
-            } catch (IOException e) {
-                throw new ServiceException(Constants.CODE_500,"系统错误");
-            }
-            return image;
-        }).toList();
+        List<BufferedImage> imageList = pictureService.exchangeBase64ToImage(templateDTO.getContentList());
         System.out.println("让我看下"+templateDTO);
         //保存图片
         customTemplateService.addComprehensiveTemplate(imageList,templateDTO,userId,userType);

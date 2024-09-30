@@ -28,15 +28,14 @@ public class CompetitionSubmissionService {
     CsubmissionImageMapper csubmissionImageMapper;
 
     public CompetitionDetailDTO getCompetitionDetail(Integer comId,Integer stuNo){
-
         Integer stuId=studentService.getStuIdByStuNo(stuNo);
         return getDetail(comId,stuId);
     }
 
     public CompetitionDetailDTO getOutstandingDetail(Integer submissionId){
-        Integer comId=competitionSubmissionMapper.selectById(submissionId).getCompetitionId();
+        Integer divId=competitionSubmissionMapper.selectById(submissionId).getDivisionId();
         Integer stuId=competitionSubmissionMapper.selectById(submissionId).getAuthorId();
-        return getDetail(comId,stuId);
+        return getDetail(divId,stuId);
     }
 
     public CompetitionDetailDTO getDetail(Integer divId,Integer stuId){
@@ -53,4 +52,6 @@ public class CompetitionSubmissionService {
         competitionDetailDTO.setPictureUrl(pictureUrls);
         return competitionDetailDTO;
     }
+
+
 }

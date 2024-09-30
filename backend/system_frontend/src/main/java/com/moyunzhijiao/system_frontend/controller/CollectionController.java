@@ -9,11 +9,15 @@ import com.moyunzhijiao.system_frontend.controller.dto.ArticleDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.HomeworkCollectionDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.KnowledgeCollectionDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.VideoCollectionDTO;
+import com.moyunzhijiao.system_frontend.entity.collection.TeaWorksCollection;
 import com.moyunzhijiao.system_frontend.entity.homework.Homework;
 import com.moyunzhijiao.system_frontend.service.collection.StuCollectionService;
 import com.moyunzhijiao.system_frontend.service.collection.TeaWorksCollectionService;
+import com.moyunzhijiao.system_frontend.service.outstanding.UnreviewedOutstandingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 public class CollectionController {
@@ -21,6 +25,8 @@ public class CollectionController {
     StuCollectionService stuCollectionService;
     @Autowired
     TeaWorksCollectionService teaWorksCollectionService;
+    @Autowired
+    UnreviewedOutstandingService unreviewedOutstandingService;
 
     @PostMapping("/cieps/knowledge-collection")
     public Result addKnowledgeCollection(@RequestHeader("authorization") String token,
@@ -168,7 +174,7 @@ public class CollectionController {
     /*
     * 教师获取关于作品的收藏
     * */
-    @GetMapping("")
+    @GetMapping("/ciep/collection")
     public Result findTeaCollectionPage(@RequestHeader("authorization") String token,
                                         @RequestParam Integer currentPage,
                                         @RequestParam Integer pageSize){
@@ -178,4 +184,63 @@ public class CollectionController {
         collectionPage = teaWorksCollectionService.getHomeworkOfTeacher(collectionPage,teacherId);
         return Result.success(collectionPage);
     }
+
+
+    @PostMapping("/ciep/collection")
+    public Result addTeaCollection(@RequestHeader("authorization") String token,
+                                   @RequestBody Map<String,Object> params){
+        System.out.println("rangwokanxia"+params);
+        Integer id = (Integer) params.get("id");
+        String type = (String) params.get("type");
+        DecodedJWT jwt = JWT.decode(token);
+        Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
+        TeaWorksCollection teaWorksCollection = new TeaWorksCollection();
+        teaWorksCollection.setSubmissionId(id);
+        teaWorksCollection.setTeacherId(teacherId);
+        teaWorksCollection.setType(type);
+        if(teaWorksCollectionService.save(teaWorksCollection)){
+            return Result.success();
+        }else{
+            return Result.error();
+        }
+    }
+
+    @DeleteMapping("/ciep/collection")
+    public Result deleteTeaCollection(@RequestHeader("authorization") String token,
+                                      @RequestBody Map<String,Object> params){
+        Integer id = (Integer) params.get("id");
+        String type = (String) params.get("type");
+        DecodedJWT jwt = JWT.decode(token);
+        Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
+        teaWorksCollectionService.deleteTeaCollection(teacherId,id,type);
+        return Result.success();
+    }
+
+
+    @GetMapping("/ciep/collection-status")
+    public Result querySubmissionStatus(@RequestHeader("authorization") String token,
+                                      @RequestParam Integer id,
+                                      @RequestParam String type){
+        DecodedJWT jwt = JWT.decode(token);
+        Integer teaId = Integer.valueOf(jwt.getAudience().get(0));
+        if(teaWorksCollectionService.queryHomeworkCollection(teaId,id,type)){
+            Boolean flag=true;
+            return Result.success(flag);
+        }else{
+            Boolean flag=false;
+            return Result.success(flag);
+        }
+    }
+
+    @PostMapping("/ciep/recommend")
+    public Result addReviewed(@RequestHeader("authorization") String token,
+                                   @RequestBody Map<String,Object> params){
+
+        Integer id = (Integer) params.get("id");
+        DecodedJWT jwt = JWT.decode(token);
+        Integer teacherId = Integer.valueOf(jwt.getAudience().get(0));
+        unreviewedOutstandingService.addUnReviewed(teacherId,id);
+        return Result.success();
+    }
+
 }

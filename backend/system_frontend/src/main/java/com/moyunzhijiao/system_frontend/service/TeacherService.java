@@ -101,6 +101,8 @@ public class TeacherService extends ServiceImpl<TeacherMapper, Teacher> {
         //首先验证验证码
         String uuid = teacherDTO.getUuid();
         String code = teacherDTO.getCode();
+        System.out.println(captchaManager.getCaptchaMap());
+        System.out.println("uuid"+uuid+"code"+code);
         if(!captchaManager.validateCaptcha(uuid,code)){
             throw new ServiceException(Constants.CODE_400,"验证码错误！");
         }

@@ -125,9 +125,11 @@ public class StuCollectionService {
         }
     }
 
+
+
     public IPage<HomeworkCollectionDTO> getHomeworkCollection(Integer stuId,Integer currentPage,Integer pageSize){
         IPage<HomeworkCollectionDTO> page=new Page<HomeworkCollectionDTO>(currentPage,pageSize);
-        Integer total;
+        int total;
         List<HomeworkCollectionDTO> combinedList=Stream.concat(homeworkCollectionMapper.getHomeworkCollection(page,stuId).getRecords().stream(), homeworkCollectionMapper.getHomeworkCollection_(page,stuId).getRecords().stream())
                 .collect(Collectors.toList());
         page.setRecords(combinedList);

@@ -375,7 +375,7 @@ create table teacher(
 # alter table teacher
 #     add column school_id int UNSIGNED not null comment '所属学校id';
 INSERT INTO teacher
-(name, workno, password, id_number, gender, phone, email, school_id, region_id, picture_url, delete_flag)
+(name, workno, password, id_number, gender, phone, email, school_id, region_id,avatar, delete_flag)
 VALUES
 ('教师1', '111', '111', '身份证号1', '男', '电话1', '邮箱1', 2, 3, '头像url1', 0),
 ('教师2', '112', '112', '身份证号2', '女', '电话2', '邮箱2', 2, 3, '头像url2', 0),
@@ -1128,15 +1128,16 @@ create table klass_note_receive(
 create table tea_works_collection(
     teacher_id int UNSIGNED not null comment '教师id',
     submission_id int UNSIGNED not null comment '作品id',
-    submission_type enum('作业作品','优秀竞赛作品','优秀作业作品'),
+    type enum('作业作品','竞赛作品'),
     created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间',
-    primary key (teacher_id,submission_id,submission_type)
+    primary key (teacher_id,submission_id,type)
 )comment '教师的作品收藏';
 
 create table stu_submission_collection(
     student_id int UNSIGNED not null comment '学生id',
     submission_id int UNSIGNED not null comment '作品id',
     type enum('学校练习','自我练习','优秀作业作品','优秀竞赛作品') comment '收藏的类型',
+    created_time datetime DEFAULT CURRENT_TIMESTAMP comment'创建时间',
     primary key (student_id,submission_id,type)
 )comment '学生的关于作品的收藏';
 #

@@ -11,7 +11,6 @@ import com.moyunzhijiao.system_frontend.controller.dto.StudentDTO;
 import com.moyunzhijiao.system_frontend.entity.Grade;
 import com.moyunzhijiao.system_frontend.entity.Student;
 import com.moyunzhijiao.system_frontend.entity.competition.Competition;
-import com.moyunzhijiao.system_frontend.entity.competition.CompetitionSubmission;
 import com.moyunzhijiao.system_frontend.entity.competition.Division;
 import com.moyunzhijiao.system_frontend.entity.competition.Participant;
 import com.moyunzhijiao.system_frontend.exception.ServiceException;
@@ -24,6 +23,7 @@ import com.moyunzhijiao.system_frontend.service.KlassService;
 import com.moyunzhijiao.system_frontend.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -92,29 +92,34 @@ public class CompetitionService extends ServiceImpl<CompetitionMapper, Competiti
     * @param participantDTO  里面存储了报名信息
     *        isKlass         如果是的话就不抛出已报名异常
     * */
-    public void applyCompetition(ParticipantDTO participantDTO,boolean isKlass){
+    @Transactional
+    public int applyCompetition(ParticipantDTO participantDTO, boolean isKlass){
         QueryWrapper<Participant> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("division_id", participantDTO.getDivision_id())
                 .eq("student_id", participantDTO.getStudent_id());
-
         long count = participantMapper.selectCount(queryWrapper);
-        if(!isKlass)
+        if(!isKlass){
             if (count > 0) {
                 throw new ServiceException(600,"已报名该比赛！"); // 或其他处理方式
             }
+        }
+        else {
+            if (count != 0) {
+                System.out.println("是不是0");
+                return 0;
+            }
+        }
         if (!isParticipantEligible(participantDTO)) {
             throw new ServiceException(600,"不符合该比赛的参赛资格！");
         }
-
         // 创建 Participtant 实体类
         Participant participant = new Participant();
         participant.setDivision_id(participantDTO.getDivision_id());
         participant.setStudent_id(participantDTO.getStudent_id());
         participant.setCompetition_id(participantDTO.getCompetition_id());
         participant.setSubmission_id(participantDTO.getSubmission_id()); // 如果 submission_id 允许为空，可以不设置
-
         // 使用 MyBatis Plus 插入数据
-        participantMapper.insert(participant);
+        return participantMapper.insert(participant);
     }
 
     public boolean isParticipantEligible(ParticipantDTO participantDTO) {

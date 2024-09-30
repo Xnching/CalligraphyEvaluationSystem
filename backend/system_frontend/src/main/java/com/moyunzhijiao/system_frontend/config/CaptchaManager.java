@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class CaptchaManager {
 
-    private final Map<String, Captcha> captchaMap = new ConcurrentHashMap<>();
+    public final Map<String, Captcha> captchaMap = new ConcurrentHashMap<>();
 
     public void addCaptcha(String uuid, String captchaContent) {
         captchaMap.put(uuid, new Captcha(captchaContent, System.currentTimeMillis()));
@@ -31,9 +31,12 @@ public class CaptchaManager {
         // 5分钟过期时间
         captchaMap.entrySet().removeIf(entry -> now - entry.getValue().getTimestamp() > 300000);
     }
+    public Map<String, Captcha> getCaptchaMap(){
+        return captchaMap;
+    }
 
     @Getter
-    private static class Captcha {
+    public static class Captcha {
         private final String content;
         private final long timestamp;
 

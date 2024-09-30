@@ -15,7 +15,6 @@ public class TeaWorksCollection {
     @TableField("submission_id")
     Integer submissionId;
     @MppMultiId
-    @TableField("submission_type")
-    String submissionType;
+    String type;
     String createdTime;
 }

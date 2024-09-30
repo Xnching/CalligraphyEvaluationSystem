@@ -12,31 +12,20 @@ public interface TeaWorksCollectionMapper extends BaseMapper<TeaWorksCollection>
 
     @Select("SELECT " +
             "    twc.submission_id AS id, " +
-            "    twc.submission_type as source ," +
+            "    twc.type as type ," +
             "    twc.created_time as created_time ," +
             "    CASE  " +
-            "        WHEN twc.submission_type = '作业作品' THEN hw.name " +
-            "        WHEN twc.submission_type = '优秀竞赛作品' THEN oc.name " +
-            "        WHEN twc.submission_type = '优秀作业作品' THEN oh.name " +
-            "    END AS name ," +
-            "    CASE  " +
-            "         WHEN twc.submission_type = '作业作品' THEN hw.type " +
-            "         WHEN twc.submission_type = '优秀作业作品' THEN ( SELECT hw.type FROM homework hw WHERE hw.id = oh.submissions_id )" +
-            "     END AS type ," +
-            "    case " +
-            "         when twc.submission_type = '作业作品' THEN hw.detail_type " +
-            "         WHEN twc.submission_type = '优秀作业作品' THEN ( SELECT hw.detail_type FROM homework hw WHERE hw.id = oh.submissions_id )" +
-            "     end as detail_type " +
+            "        WHEN twc.type = '作业作品' THEN hw.name " +
+            "        WHEN twc.type = '竞赛作品' THEN cs.name " +
+            "    END AS name " +
             "FROM  " +
             "    tea_works_collection twc " +
             "LEFT JOIN  " +
-            "    homework hw ON twc.submission_id = hw.id AND twc.submission_type = '作业作品' " +
+            "    homework hw ON twc.submission_id = hw.id AND twc.type = '作业作品' " +
             "LEFT JOIN  " +
-            "    outstanding_competition oc ON twc.submission_id = oc.submissions_id AND twc.submission_type = '优秀竞赛作品' " +
-            "LEFT JOIN  " +
-            "    outstanding_homework oh ON twc.submission_id = oh.submissions_id AND twc.submission_type = '优秀作业作品' " +
+            "    competition_submissions cs ON twc.submission_id = cs.id AND twc.type = '竞赛作品' " +
             "WHERE  " +
-            "    twc.teacher_id = #{teacherId}; ")
+            "    twc.teacher_id = #{teacherId} ")
     IPage<Homework> selectHomeworkOfTeacher(IPage<Homework> page, @Param("teacherId") Integer teacherId);
 
     @Select("SELECT " +
@@ -44,6 +33,6 @@ public interface TeaWorksCollectionMapper extends BaseMapper<TeaWorksCollection>
             "FROM  " +
             "    tea_works_collection twc " +
             "WHERE  " +
-            "    twc.teacher_id = #{teacherId}; ")
+            "    twc.teacher_id = #{teacherId} ")
     Integer countHomeworkOfTeacher(@Param("teacherId") Integer teacherId);
 }

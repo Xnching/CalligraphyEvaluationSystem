@@ -6,6 +6,7 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_frontend.common.Constants;
+import com.moyunzhijiao.system_frontend.config.CaptchaManager;
 import com.moyunzhijiao.system_frontend.controller.dto.StudentDTO;
 import com.moyunzhijiao.system_frontend.entity.Region;
 import com.moyunzhijiao.system_frontend.entity.Student;
@@ -33,7 +34,18 @@ public class StudentService extends ServiceImpl<StudentMapper, Student> {
 
     @Autowired
     RegionMapper regionMapper;
+    @Autowired
+    CaptchaManager captchaManager;
     public StudentDTO login(StudentDTO studentDTO){
+        //首先验证验证码
+        String uuid = studentDTO.getUuid();
+        String code = studentDTO.getCode();
+        System.out.println(captchaManager.getCaptchaMap());
+        System.out.println("uuid"+uuid+"code"+code);
+        if(!captchaManager.validateCaptcha(uuid,code)){
+            throw new ServiceException(Constants.CODE_400,"验证码错误！");
+        }
+
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("student_number",studentDTO.getStuno());
         queryWrapper.eq("password",studentDTO.getPassword());
@@ -82,6 +94,7 @@ public class StudentService extends ServiceImpl<StudentMapper, Student> {
         List<Student> students;
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("klass_id", klassIdList);
+        queryWrapper.select("id");
         students = studentMapper.selectList(queryWrapper);
 
         // 提取学生的 ID 列表

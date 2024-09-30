@@ -48,7 +48,7 @@ public class ArticleController {
     @GetMapping("/page")
     public Result findPage(@RequestParam Integer pageNum, @RequestParam Integer pageSize,
                            @RequestParam(defaultValue = "")String str,@RequestParam(required = false)Integer secondTypeId,
-                           @RequestParam(required = false)boolean isRecommended){
+                           @RequestParam(required = false)Boolean isRecommended){
         IPage<ArticleDTO> page = new Page<>(pageNum,pageSize);
         page = articleService.selectPage(page,str,secondTypeId,isRecommended);
         return Result.success(page);

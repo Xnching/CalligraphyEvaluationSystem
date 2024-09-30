@@ -1,6 +1,8 @@
 package com.moyunzhijiao.system_backend.service.resource;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moyunzhijiao.system_backend.common.Constants;
@@ -46,9 +48,12 @@ public class ArticleService extends ServiceImpl<ArticleMapper, Article> {
         }
     }
 
-    public IPage<ArticleDTO> selectPage(IPage<ArticleDTO> page, String str, Integer secondTypeId, boolean isRecommended) {
-        page = articleMapper.selectPage(page,str,secondTypeId,isRecommended);
-        Integer count = articleMapper.countPage(page,str,secondTypeId,isRecommended);
+    public IPage<ArticleDTO> selectPage(IPage<ArticleDTO> page, String str, Integer secondTypeId, Boolean isRecommended) {
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(secondTypeId != null,Article::getSecondTypeId,secondTypeId);
+        queryWrapper.eq(isRecommended!=null,Article::isRecommended,isRecommended);
+        page = articleMapper.selectPage(page,str,queryWrapper);
+        Integer count = articleMapper.countPage(page,str,queryWrapper);
         if (count == null) {
             count = 0; // 确保count不为null
         }

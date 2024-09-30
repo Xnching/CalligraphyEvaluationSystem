@@ -29,9 +29,9 @@ public class NoteController {
     public Result findMessageOfTeacher(@RequestParam Integer type,
                                        @RequestParam Integer currentPage, @RequestParam Integer pageSize ){
         IPage<Note> noteIPage = new Page<>(currentPage,pageSize);
-        if(type==1){
+        if(type==0){
             noteIPage = noteService.getCommonMsg("竞赛消息",noteIPage);
-        }else if(type==0){
+        }else if(type==1){
             noteIPage = noteService.getCommonMsg("系统消息",noteIPage);
         }else {
             return Result.error(Constants.CODE_401,"type内容错误！");

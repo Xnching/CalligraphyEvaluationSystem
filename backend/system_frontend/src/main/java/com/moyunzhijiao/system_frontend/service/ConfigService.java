@@ -16,7 +16,7 @@ public class ConfigService {
     @Value("${server.ip}")
     private String serverIp;            //服务器ip地址
 
-    private String serverPort = "8084";          //端口
+    private final String serverPort = "8084";          //端口
 
     private static String baseUrl;
 
@@ -102,7 +102,7 @@ public class ConfigService {
         homeworkFilePath = projectRoot.getParentFile().getParent()+HOMEWORK_PATH;
         homeworkUrl = baseUrl+HOMEWORK_BASE_URL;
 
-        //作业图片的
+        //模板图片的
         customTemplateFilePath = projectRoot.getParentFile().getParent()+CUSTOM_TEMPLATE_PATH;
         customTemplateUrl = baseUrl+CUSTOM_TEMPLATE_BASE_URL;
     }

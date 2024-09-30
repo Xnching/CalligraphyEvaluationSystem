@@ -32,4 +32,11 @@ public class CompetitionSubmissionController {
         CompetitionDetailDTO competitionDetailDTO=competitionSubmissionService.getOutstandingDetail(submissionId);
         return Result.success(competitionDetailDTO);
     }
+
+    @GetMapping("/ciep/competition-submission")
+    public Result getCompetitionDetail(@RequestParam Integer submissionId){
+        CompetitionDetailDTO competitionDetailDTO=competitionSubmissionService.getOutstandingDetail(submissionId);
+        return Result.success(competitionDetailDTO);
+    }
+
 }

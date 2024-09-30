@@ -1,18 +1,22 @@
 package com.moyunzhijiao.system_frontend.controller;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.moyunzhijiao.system_frontend.common.Constants;
 import com.moyunzhijiao.system_frontend.common.Result;
 import com.moyunzhijiao.system_frontend.controller.dto.CompetitionDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.CompetitionDetailDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.ParticipantDTO;
 import com.moyunzhijiao.system_frontend.controller.dto.StudentDTO;
-import com.moyunzhijiao.system_frontend.entity.Student;
+import com.moyunzhijiao.system_frontend.entity.Announcement;
+import com.moyunzhijiao.system_frontend.entity.AnnouncementContent;
 import com.moyunzhijiao.system_frontend.entity.competition.Competition;
 import com.moyunzhijiao.system_frontend.entity.competition.CompetitionRequirements;
-import com.moyunzhijiao.system_frontend.entity.competition.CompetitionSubmission;
 import com.moyunzhijiao.system_frontend.mapper.Competition.CompetitionRequirementsMapper;
+import com.moyunzhijiao.system_frontend.service.AnnouncementContentService;
+import com.moyunzhijiao.system_frontend.service.AnnouncementService;
 import com.moyunzhijiao.system_frontend.service.KlassService;
 import com.moyunzhijiao.system_frontend.service.StudentService;
 import com.moyunzhijiao.system_frontend.service.competition.CompetitionService;
@@ -24,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 public class CompetitionController {
@@ -37,6 +42,10 @@ public class CompetitionController {
     StudentService studentService;
     @Autowired
     CompetitionRequirementsMapper competitionRequirementsMapper;
+    @Autowired
+    AnnouncementService announcementService;
+    @Autowired
+    AnnouncementContentService announcementContentService;
 
     @GetMapping("/cieps/existing-competition")
     public Result getExistingCompetition (@RequestHeader("authorization") String token,
@@ -79,7 +88,7 @@ public class CompetitionController {
     /*
     * 获取所有竞赛的列表
     * */
-    @GetMapping("/ciep/competition")
+    @GetMapping("/ciep/my-competition")
     public Result findAllList(){
         List<Competition> list = competitionService.getAllList();
         return Result.success(list);
@@ -113,24 +122,47 @@ public class CompetitionController {
     * 教师为一个班级的所有人报名参赛
     * */
     @PostMapping("/ciep/apply")
-    public Result applyOfKlass(Map<String,Integer> params){
+    public Result applyOfKlass(@RequestBody Map<String,Integer> params){
         Integer klassId = params.get("classId");
         Integer divisionId = params.get("divisionId");
         Integer competitionId = params.get("competitionId");
         // 创建 ArrayList 并添加 klassId
         List<Integer> klassIdList = new ArrayList<>();
         klassIdList.add(klassId);
+        System.out.println(klassIdList);
         // 获取学生 ID 列表
         List<Integer> studentIdList = studentService.getByKlassList(klassIdList);
+        System.out.println(studentIdList);
         ParticipantDTO participantDTO = new ParticipantDTO();
+        //计数
+        AtomicInteger total = new AtomicInteger();
         studentIdList.forEach(studentId->{
             participantDTO.setDivision_id(divisionId);
             participantDTO.setStudent_id(studentId);
             participantDTO.setCompetition_id(competitionId);
-            competitionService.applyCompetition(participantDTO,true);
+            total.addAndGet(competitionService.applyCompetition(participantDTO, true));
         });
+        if(total.get()==0){
+            return Result.error(Constants.CODE_400,"该班级已经全部报名！");
+        }
         return Result.success();
     }
 
+    @GetMapping("/ciep/other-competition")
+    public Result findOtherCompetition(){
+        List<Announcement> list = announcementService.findOtherCompetition();
+        return Result.success(list);
+    }
+
+    @GetMapping("/ciep/other-competition-detail")
+    public Result findOtherCompetition(@RequestParam Integer id){
+        AnnouncementContent announcementContent = announcementContentService.getById(id);
+        String content;
+        if(ObjectUtil.isNull(announcementContent)){
+            content = null;
+        }else
+            content = announcementContent.getMessage();
+        return Result.success(content);
+    }
 
 }
