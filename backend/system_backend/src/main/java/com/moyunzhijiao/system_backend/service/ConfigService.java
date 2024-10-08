@@ -112,6 +112,7 @@ public class ConfigService {
     private static final String ARTICLE_PICTURE_BASE_URL = "/upload/images/article-picture/";
     private static final String ARTICLE_PICTURE_PATH = "\\resources\\image\\articlePicture\\";
 
+
     @PostConstruct
     public void init() {
         baseUrl = serverProtocol + "://" + serverIp + ":" + serverPort;
@@ -219,6 +220,7 @@ public class ConfigService {
     public static String getCharacterFilePath(){
         return characterFilePath;
     }
+    public static String getCharacterUrl(){return characterUrl;}
 
     public static String getStrokeFilePath(){
         return strokeFilePath;
