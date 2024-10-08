@@ -105,4 +105,8 @@ public class FileService {
     public Resource loadSystemTemplateAsResource(String filename) {
         return loadResource(ConfigService.getSystemTemplateFilePath() + filename);
     }
+
+    public Resource loadArticlePictureAsResource(String filename) {
+        return loadResource(ConfigService.getArticlePictureFilePath() + filename);
+    }
 }

@@ -106,6 +106,12 @@ public class ConfigService {
     private static final String CUSTOM_TEMPLATE_BASE_URL = "/upload/images/custom-template/";
     private static final String CUSTOM_TEMPLATE_PATH = "\\resources\\image\\customTemplate\\";
 
+    //文章封面的图片
+    private static String articlePictureFilePath;
+    private static String articlePictureUrl;
+    private static final String ARTICLE_PICTURE_BASE_URL = "/upload/images/article-picture/";
+    private static final String ARTICLE_PICTURE_PATH = "\\resources\\image\\articlePicture\\";
+
     @PostConstruct
     public void init() {
         baseUrl = serverProtocol + "://" + serverIp + ":" + serverPort;
@@ -167,6 +173,9 @@ public class ConfigService {
         //作业图片的
         customTemplateFilePath = projectRoot.getParentFile().getParent()+CUSTOM_TEMPLATE_PATH;
         customTemplateUrl = baseUrl+CUSTOM_TEMPLATE_BASE_URL;
+        //文章封面的
+        articlePictureFilePath = projectRoot.getParentFile().getParent()+ARTICLE_PICTURE_PATH;
+        articlePictureUrl = baseUrl+ARTICLE_PICTURE_BASE_URL;
     }
     public static String getBaseUrl() {
         return baseUrl;
@@ -249,4 +258,7 @@ public class ConfigService {
         return customTemplateFilePath;
     }
     public static String getCustomTemplateUrl(){return customTemplateUrl;}
+
+    public static String getArticlePictureFilePath(){return articlePictureFilePath;}
+    public static String getArticlePictureUrl(){return articlePictureUrl;}
 }

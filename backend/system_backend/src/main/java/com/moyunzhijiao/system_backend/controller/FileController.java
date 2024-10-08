@@ -131,6 +131,12 @@ public class FileController {
         return serveResource(fileService.loadSystemTemplateAsResource(filename), MediaType.IMAGE_JPEG);
     }
 
+    @GetMapping("/images/article-picture/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> serveArticlePicture(@PathVariable String filename){
+        return serveResource(fileService.loadArticlePictureAsResource(filename), MediaType.IMAGE_JPEG);
+    }
+
     /*
     * 统一的处理方法
     * */

@@ -1,6 +1,7 @@
 package com.moyunzhijiao.system_backend.service.resource;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.lang.UUID;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -11,6 +12,7 @@ import com.moyunzhijiao.system_backend.entiy.resource.Article;
 import com.moyunzhijiao.system_backend.entiy.resource.ArticleContents;
 import com.moyunzhijiao.system_backend.exception.ServiceException;
 import com.moyunzhijiao.system_backend.mapper.resource.ArticleMapper;
+import com.moyunzhijiao.system_backend.service.ConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,14 +31,13 @@ public class ArticleService extends ServiceImpl<ArticleMapper, Article> {
 
     @Transactional
     public void addArticle(MultipartFile image, String htmlContent, Article article) {
-        File projectRoot = new File(System.getProperty("user.dir"));
-        String fileName = image.getOriginalFilename();
-        String filePath = projectRoot.getParentFile().getParent()+"/frontend/system_frontend/public/images/articlePicture/" + fileName;
-        String tempPath = "/images/articlePicture/"+fileName;
+        String fileName = UUID.randomUUID()+ "-" +image.getOriginalFilename();
+        String filePath = ConfigService.getArticlePictureFilePath()+ fileName;
+        String url = ConfigService.getArticlePictureUrl() +fileName;
         File dest = new File(filePath);
         try {
             image.transferTo(dest);
-            article.setPictureUrl(tempPath);
+            article.setPictureUrl(url);
             articleMapper.insert(article);
             ArticleContents articleContents = new ArticleContents();
             articleContents.setContent(htmlContent);
