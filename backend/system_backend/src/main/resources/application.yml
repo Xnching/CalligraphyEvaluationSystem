@@ -1,6 +1,6 @@
 server:
-  port: 8084
-  ip: localhost
+  port: 5999
+  ip: 47.120.39.45
   protocol: http
 spring:
   datasource:

@@ -1,6 +1,6 @@
 server:
-  port: 8085
-  ip: 192.168.43.250
+  port: 5998
+  ip: 47.120.39.45
   protocol: http
 spring:
   datasource:
