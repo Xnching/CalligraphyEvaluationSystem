@@ -7,6 +7,7 @@ import com.moyunzhijiao.system_app.controller.dto.fonted.analysis.ExerciseAnalys
 import com.moyunzhijiao.system_app.controller.dto.fonted.analysis.ExerciseWordRecordInfo;
 import com.moyunzhijiao.system_app.controller.dto.fonted.analysis.WordAnalysisInfo;
 import com.moyunzhijiao.system_app.controller.dto.fonted.analysis.WordAnalysisListInfo;
+import com.moyunzhijiao.system_app.controller.dto.fonted.video.StrokeInfo;
 import com.moyunzhijiao.system_app.entity.word.Radical;
 import com.moyunzhijiao.system_app.entity.word.Structure;
 import com.moyunzhijiao.system_app.entity.exercise.CharacterAnalysis;
@@ -219,9 +220,11 @@ public class AnalysisService {
             // 查询作业提交信息
             HomeworkSubmission submission = homeworkSubmissionMapper.selectById(analysis.getSubmissionId());
             if (submission != null) {
-                // 查询笔画信息
+            // 查询笔画信息
                 List<StrokeAnalysis> strokes = strokeAnalysisMapper.selectByCharacterAnalysisId(analysis.getId());
-                List<String> strokePictures = strokes.stream().map(StrokeAnalysis::getPicture).collect(Collectors.toList());
+                List<StrokeInfo> strokeInfos = strokes.stream()
+                        .map(stroke -> new StrokeInfo(stroke.getPicture(), stroke.getScore()))
+                        .collect(Collectors.toList());
 
                 ExerciseWordRecordInfo record = new ExerciseWordRecordInfo(
                         submission.getId(),
@@ -231,7 +234,7 @@ public class AnalysisService {
                         new WordInfo(
                                 analysis.getName(),
                                 analysis.getPicture(),
-                                strokePictures, // 设置笔画信息
+                                strokeInfos, // 设置笔画信息
                                 analysis.getScore(),
                                 template,
                                 analysis.getEvaluation()

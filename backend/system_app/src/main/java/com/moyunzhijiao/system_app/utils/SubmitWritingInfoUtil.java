@@ -3,6 +3,7 @@ package com.moyunzhijiao.system_app.utils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.moyunzhijiao.system_app.controller.dto.fonted.SubmitWritingInfo;
 import com.moyunzhijiao.system_app.controller.dto.fonted.WordInfo;
+import com.moyunzhijiao.system_app.controller.dto.fonted.video.StrokeInfo;
 import com.moyunzhijiao.system_app.entity.competition.CsubmissionImage;
 import com.moyunzhijiao.system_app.entity.exercise.HomeworkSubmission;
 import com.moyunzhijiao.system_app.entity.exercise.HsubmissionImage;
@@ -43,9 +44,9 @@ public class SubmitWritingInfoUtil {
     private SubmitWritingInfo createSubmitWritingInfo(Integer submissionId, String pictureUrl, List<WordInfo> wordInfos) {
         // 创建一个默认的 WordInfo 对象
         WordInfo defaultWordInfo = new WordInfo(
-                "",
+                "",  // 字的名称为空字符串
                 "default_word_url", // 默认的图片URL
-                Arrays.asList("default_stroke_url"), // 默认的笔画图片URL
+                List.of(new StrokeInfo("default_stroke_url", 0)), // 默认的笔画图片URL列表
                 0, // 默认的得分
                 "default_template_word", // 默认的模板字
                 "default_comment" // 默认的评论

@@ -1,6 +1,6 @@
 server:
   port: 8086
-  ip:  10.0.207.122
+  ip:  10.0.62.218
   protocol: http
 spring:
   datasource:

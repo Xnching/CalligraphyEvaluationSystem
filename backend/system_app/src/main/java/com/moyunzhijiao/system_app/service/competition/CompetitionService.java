@@ -8,6 +8,7 @@ import com.moyunzhijiao.system_app.controller.dto.fonted.SubmitWritingInfo;
 import com.moyunzhijiao.system_app.controller.dto.fonted.WordInfo;
 import com.moyunzhijiao.system_app.controller.dto.fonted.competition.CompetitionDetailInfo;
 import com.moyunzhijiao.system_app.controller.dto.fonted.competition.CompetitionInfo;
+import com.moyunzhijiao.system_app.controller.dto.fonted.video.StrokeInfo;
 import com.moyunzhijiao.system_app.entity.competition.*;
 import com.moyunzhijiao.system_app.entity.exercise.CharacterAnalysis;
 import com.moyunzhijiao.system_app.entity.exercise.StrokeAnalysis;
@@ -167,17 +168,23 @@ public class CompetitionService extends ServiceImpl<CompetitionMapper, Competiti
                         strokeQueryWrapper.eq("character_analysis_id", character.getId());
                         List<StrokeAnalysis> strokes = strokeAnalysisMapper.selectList(strokeQueryWrapper);
 
+                        // 将 StrokeAnalysis 转换为 StrokeInfo
+                        List<StrokeInfo> strokeInfos = strokes.stream()
+                                .map(stroke -> new StrokeInfo(stroke.getPicture(), stroke.getScore()))
+                                .collect(Collectors.toList());
+
                         // 构造 WordInfo 对象
                         WordInfo wordInfo = new WordInfo(
                                 character.getName(),
                                 character.getPicture(),
-                                strokes.stream().map(StrokeAnalysis::getPicture).collect(Collectors.toList()),
+                                strokeInfos, // 使用 StrokeInfo 对象列表
                                 character.getScore(),
                                 character.getName(),
                                 character.getEvaluation()
                         );
                         wordInfos.add(wordInfo);
                     }
+
 
                     // 构造 SubmitWritingInfo 对象列表
                     return images.stream()

@@ -11,6 +11,7 @@ import com.moyunzhijiao.system_app.controller.dto.fonted.excellent.ExcellentComp
 import com.moyunzhijiao.system_app.controller.dto.fonted.excellent.ExcellentHomeworkInfo;
 import com.moyunzhijiao.system_app.controller.dto.fonted.excellent.ExcellentWorkInfo;
 import com.moyunzhijiao.system_app.controller.dto.fonted.exercise.*;
+import com.moyunzhijiao.system_app.controller.dto.fonted.video.StrokeInfo;
 import com.moyunzhijiao.system_app.controller.dto.fonted.video.VideoContentInfo;
 import com.moyunzhijiao.system_app.entity.*;
 import com.moyunzhijiao.system_app.entity.collection.ExerciseCollection;
@@ -441,11 +442,15 @@ public class ExerciseService {
             strokeQueryWrapper.eq("character_analysis_id", character.getId());
             List<StrokeAnalysis> strokes = strokeAnalysisMapper.selectList(strokeQueryWrapper);
 
+            // 将 StrokeAnalysis 转换为 StrokeInfo
+            List<StrokeInfo> strokeInfos = strokes.stream()
+                    .map(stroke -> new StrokeInfo(stroke.getPicture(), stroke.getScore())) // 假设 StrokeAnalysis 有 getNumber 方法
+                    .collect(Collectors.toList());
+
             // 根据 character.getName() 从 template_word 表中查找对应的模板字
             QueryWrapper<TemplateWord> templateQueryWrapper = new QueryWrapper<>();
             templateQueryWrapper.eq("name", character.getName());
             TemplateWord templateWord = templateWordMapper.selectOne(templateQueryWrapper);
-
             // 获取模板字的图片 URL
             String templateWordContent = (templateWord != null) ? templateWord.getContent() : "default_template_word_url";
 
@@ -453,13 +458,14 @@ public class ExerciseService {
             WordInfo wordInfo = new WordInfo(
                     character.getName(),
                     character.getPicture(),
-                    strokes.stream().map(StrokeAnalysis::getPicture).collect(Collectors.toList()),
+                    strokeInfos, // 使用 StrokeInfo 列表
                     character.getScore(),
                     templateWordContent, // 使用模板字的图片 URL
                     character.getEvaluation()
             );
             wordInfos.add(wordInfo);
         }
+
 
         // 5. 构造 SubmitWritingInfo 对象
         List<SubmitWritingInfo> submitWritingInfo = submitWritingInfoUtil.createSubmitWritingInfo(submission, wordInfos);
@@ -611,17 +617,23 @@ public class ExerciseService {
             strokeQueryWrapper.eq("character_analysis_id", character.getId());
             List<StrokeAnalysis> strokes = strokeAnalysisMapper.selectList(strokeQueryWrapper);
 
+            // 将 StrokeAnalysis 转换为 StrokeInfo
+            List<StrokeInfo> strokeInfos = strokes.stream()
+                    .map(stroke -> new StrokeInfo(stroke.getPicture(), stroke.getScore())) // 假设 StrokeAnalysis 有 getNumber 方法
+                    .collect(Collectors.toList());
+
             // 构造 WordInfo 对象
             WordInfo wordInfo = new WordInfo(
                     character.getName(),
                     character.getPicture(),
-                    strokes.stream().map(StrokeAnalysis::getPicture).collect(Collectors.toList()),
+                    strokeInfos, // 使用 StrokeInfo 列表
                     character.getScore(),
                     character.getName(),
                     character.getEvaluation()
             );
             wordInfos.add(wordInfo);
         }
+
 
         // 5. 构造 SubmitWritingInfo 对象
         List<SubmitWritingInfo> submitWritingInfo = submitWritingInfoUtil.createSubmitWritingInfo(submission, wordInfos);
@@ -761,17 +773,23 @@ public class ExerciseService {
                     strokeQueryWrapper.eq("character_analysis_id", character.getId());
                     List<StrokeAnalysis> strokes = strokeAnalysisMapper.selectList(strokeQueryWrapper);
 
+                    // 将 StrokeAnalysis 转换为 StrokeInfo
+                    List<StrokeInfo> strokeInfos = strokes.stream()
+                            .map(stroke -> new StrokeInfo(stroke.getPicture(), stroke.getScore())) // 假设 StrokeAnalysis 有 getNumber 方法
+                            .collect(Collectors.toList());
+
                     // 构造 WordInfo 对象
                     WordInfo wordInfo = new WordInfo(
                             character.getName(),
                             character.getPicture(),
-                            strokes.stream().map(StrokeAnalysis::getPicture).collect(Collectors.toList()),
+                            strokeInfos, // 使用 StrokeInfo 列表
                             character.getScore(),
                             character.getName(),
                             character.getEvaluation()
                     );
                     wordInfos.add(wordInfo);
                 }
+
 
                 // 构造 SubmitWritingInfo 对象
                 List<SubmitWritingInfo> submitWritingInfo = submitWritingInfoUtil.createSubmitWritingInfo(homeworkSubmission, wordInfos);
@@ -843,17 +861,23 @@ public class ExerciseService {
                     strokeQueryWrapper.eq("character_analysis_id", character.getId());
                     List<StrokeAnalysis> strokes = strokeAnalysisMapper.selectList(strokeQueryWrapper);
 
+                    // 将 StrokeAnalysis 转换为 StrokeInfo
+                    List<StrokeInfo> strokeInfos = strokes.stream()
+                            .map(stroke -> new StrokeInfo(stroke.getPicture(), stroke.getScore())) // 假设 StrokeAnalysis 有 getNumber 方法
+                            .collect(Collectors.toList());
+
                     // 构造 WordInfo 对象
                     WordInfo wordInfo = new WordInfo(
                             character.getName(),
                             character.getPicture(),
-                            strokes.stream().map(StrokeAnalysis::getPicture).collect(Collectors.toList()),
+                            strokeInfos, // 使用 StrokeInfo 列表
                             character.getScore(),
                             character.getName(),
                             character.getEvaluation()
                     );
                     wordInfos.add(wordInfo);
                 }
+
 
                 // 构造 SubmitWritingInfo 对象列表
                 List<SubmitWritingInfo> submitWritingInfos = images.stream().map(image -> submitWritingInfoUtil.createSubmitWritingInfo(image, wordInfos)).collect(Collectors.toList());
