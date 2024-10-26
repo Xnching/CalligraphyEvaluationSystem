@@ -2,6 +2,7 @@ package com.moyunzhijiao.system_app.service.competition;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.moyunzhijiao.system_app.common.Constants;
 import com.moyunzhijiao.system_app.controller.dto.SignUpDTO;
 import com.moyunzhijiao.system_app.controller.dto.SubmitDTO;
 import com.moyunzhijiao.system_app.controller.dto.fonted.SubmitWritingInfo;
@@ -9,9 +10,11 @@ import com.moyunzhijiao.system_app.controller.dto.fonted.WordInfo;
 import com.moyunzhijiao.system_app.controller.dto.fonted.competition.CompetitionDetailInfo;
 import com.moyunzhijiao.system_app.controller.dto.fonted.competition.CompetitionInfo;
 import com.moyunzhijiao.system_app.controller.dto.fonted.video.StrokeInfo;
+import com.moyunzhijiao.system_app.entity.user.Student;
 import com.moyunzhijiao.system_app.entity.competition.*;
 import com.moyunzhijiao.system_app.entity.exercise.CharacterAnalysis;
 import com.moyunzhijiao.system_app.entity.exercise.StrokeAnalysis;
+import com.moyunzhijiao.system_app.exception.ServiceException;
 import com.moyunzhijiao.system_app.mapper.word.FontMapper;
 import com.moyunzhijiao.system_app.mapper.collection.CollectionMapper;
 import com.moyunzhijiao.system_app.mapper.competition.*;
@@ -20,6 +23,7 @@ import com.moyunzhijiao.system_app.mapper.exercise.StrokeAnalysisMapper;
 import com.moyunzhijiao.system_app.utils.SubmitWritingInfoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -70,7 +74,7 @@ public class CompetitionService extends ServiceImpl<CompetitionMapper, Competiti
                     String competitionType;
                     if ("已结束".equals(competition.getState())) {
                         competitionType = "结束";
-                    } else if ("评阅中".equals(competition.getState())) {
+                    } else if (competition.getState().contains("评阅")) {//"评阅中".equals(competition.getState())
                         competitionType = "已截止";
                     } else if ("准备报名中".equals(competition.getState())) {
                         competitionType = "未截止";
@@ -197,13 +201,12 @@ public class CompetitionService extends ServiceImpl<CompetitionMapper, Competiti
                 .collect(Collectors.toList());
 
         Integer divisionId = null;
-        if (submission != null) {
-            Participant participant = participantMapper.selectOne(
-                    new QueryWrapper<Participant>().eq("student_id", userId).eq("competition_id", competitionId)
-            );
-            if (participant != null) {
-                divisionId = participant.getDivisionId();
-            }
+        Participant participant = participantMapper.selectOne(
+                new QueryWrapper<Participant>().eq("student_id", userId).eq("competition_id", competitionId)
+        );
+        if (participant != null) {
+            System.out.println("看下participant:"+participant);
+            divisionId = participant.getDivisionId();
         }
 
 // 添加调试信息
@@ -251,16 +254,29 @@ public class CompetitionService extends ServiceImpl<CompetitionMapper, Competiti
 
 
     // 报名竞赛并存储数据
-    public Boolean signUpCompetition(SignUpDTO signUpDTO) {
+    public Boolean signUpCompetition(SignUpDTO signUpDTO, Student student) {
         // 通过competitionId找到组别
         QueryWrapper<Division> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("id").eq("competition_id", signUpDTO.getCompetitionId());
+        queryWrapper.eq("competition_id", signUpDTO.getCompetitionId()).eq("name",signUpDTO.getDivisionName());
 
         // 使用 DivisionMapper 查询 divisionId
         Division division = divisionMapper.selectOne(queryWrapper);
         Integer divisionId = (division != null) ? division.getId() : null;
 
+        //检查有没有报名过该竞赛其它组别，只能报名一个组别
+        QueryWrapper<Participant> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("student_id",signUpDTO.getUserId()).eq("competition_id", signUpDTO.getCompetitionId());
+        Participant participant = participantMapper.selectOne(queryWrapper1);
+        if(participant!=null){
+            throw new ServiceException(Constants.CODE_401,"已报名过该竞赛，且只能报名一个组别！");
+        }
+
         if (divisionId != null) {
+            String target = division.getTarget();
+            String grade = student.getGrade();
+            if(!isGradeValid(target,grade))
+                throw new ServiceException(Constants.CODE_401,"不符合参赛要求！");
+
             // 检查是否已经存在相同的记录
             QueryWrapper<Participant> participantQueryWrapper = new QueryWrapper<>();
             participantQueryWrapper.eq("division_id", divisionId)
@@ -274,21 +290,36 @@ public class CompetitionService extends ServiceImpl<CompetitionMapper, Competiti
             }
 
             // 插入新的 Participant 记录
-            Participant participant = new Participant();
-            participant.setDivisionId(divisionId);
-            participant.setStudentId(signUpDTO.getUserId());
-            participant.setSubmissionId(0); // 假设 submission 插入后会自动生成 ID
-            participant.setCompetitionId(signUpDTO.getCompetitionId());
-            participantMapper.insert(participant);
+            Participant participant2 = new Participant();
+            participant2.setDivisionId(divisionId);
+            participant2.setStudentId(signUpDTO.getUserId());
+            participant2.setCompetitionId(signUpDTO.getCompetitionId());
+            participantMapper.insert(participant2);
             return true;
         } else {
             return false;
         }
     }
 
+    /**
+     * 验证是否符合组别参赛要求
+     * @param target
+     * @param grade
+     * @return
+     */
+    public static boolean isGradeValid(String target, String grade) {
+        if ("小学".equals(target)) {
+            // 检查年级是否符合小学阶段
+            return grade.contains("小学") ;
+        } else if ("初中".equals(target)) {
+            // 检查年级是否符合初中阶段
+            return grade.contains("初中");
+        }
+        return true;
+    }
 
 
-
+    @Transactional
     //提交竞赛作品
     public boolean submitCompetition(SubmitDTO submitDTO) {
         // 根据用户 ID 和竞赛 ID 查找 divisionId
@@ -300,14 +331,14 @@ public class CompetitionService extends ServiceImpl<CompetitionMapper, Competiti
             submission.setCompetitionId(submitDTO.getCompetitionId());
             submission.setDivisionId(divisionId);
             submission.setAuthorId(submitDTO.getUserId());
-            submission.setInitialScore(0); // 初始分数
-            submission.setInitialEvaluation("");
-            submission.setSystemScore(0);
-            submission.setSystemEvaluation("");
-            submission.setAverageFinalScore(0.0);
-            submission.setCreated_time("2024-08-25 14:00:00"); // 示例时间
-            submission.setInitialRank(0);
-            submission.setName("示例名称");
+            submission.setInitialScore(-1); // 初始分数
+//            submission.setInitialEvaluation("");
+//            submission.setSystemScore(0);
+//            submission.setSystemEvaluation("");
+//            submission.setAverageFinalScore(0.0);
+//            submission.setCreated_time("2024-08-25 14:00:00"); // 示例时间
+//            submission.setInitialRank(0);
+//            submission.setName("示例名称");
 
             // 插入竞赛提交记录
             int submissionResult = competitionSubmissionMapper.insert(submission);
@@ -321,6 +352,13 @@ public class CompetitionService extends ServiceImpl<CompetitionMapper, Competiti
                      csubmissionImage.setPictureUrl(imageUrl);
                      csubmissionImageMapper.insert(csubmissionImage);
                  }
+                //获取参赛表，并更新作品
+                QueryWrapper<Participant> queryWrapper1 = new QueryWrapper<>();
+                queryWrapper1.eq("student_id",submitDTO.getUserId()).eq("competition_id", submitDTO.getCompetitionId());
+                Participant participant = participantMapper.selectOne(queryWrapper1);
+                participant.setSubmissionId(submission.getId());
+                participantMapper.updateById(participant);
+
                 return true;
             } else {
                 return false;
@@ -328,5 +366,21 @@ public class CompetitionService extends ServiceImpl<CompetitionMapper, Competiti
         } else {
             return false;
         }
+
+
+
+    }
+
+    /**
+     * 根据竞赛id返回组别
+     * @param competitionId
+     * @return
+     */
+    public List<String> getDivision(Integer competitionId){
+        QueryWrapper<Division> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("competition_id",competitionId);
+        queryWrapper.select("name");
+        List<String> nameList = divisionMapper.selectList(queryWrapper).stream().map(Division::getName).toList();
+        return nameList;
     }
 }

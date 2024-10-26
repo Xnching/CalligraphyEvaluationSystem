@@ -21,6 +21,8 @@ public class Student {
     Integer schoolId;
     @TableField("grade_id")
     Integer gradeId;
+    @TableField(exist = false)
+    String grade;
     String phone;
     String email;
     @TableField("region_id")

@@ -8,8 +8,13 @@ import com.moyunzhijiao.system_app.controller.dto.SignUpDTO;
 import com.moyunzhijiao.system_app.controller.dto.SubmitDTO;
 import com.moyunzhijiao.system_app.controller.dto.fonted.competition.CompetitionDetailInfo;
 import com.moyunzhijiao.system_app.controller.dto.fonted.competition.CompetitionInfo;
+import com.moyunzhijiao.system_app.entity.user.Grade;
+import com.moyunzhijiao.system_app.entity.user.Student;
+import com.moyunzhijiao.system_app.entity.competition.Division;
+import com.moyunzhijiao.system_app.mapper.user.GradeMapper;
 import com.moyunzhijiao.system_app.service.ConfigService;
 import com.moyunzhijiao.system_app.service.competition.CompetitionService;
+import com.moyunzhijiao.system_app.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +34,8 @@ import java.util.UUID;
 public class CompetitionController {
     @Autowired
     CompetitionService competitionService;
-
+    @Autowired
+    UserService userService;
 
     @Operation(summary = "获取竞赛信息（可提交的竞赛而非信息展示）")
     @GetMapping("/getCompetition")
@@ -63,6 +69,8 @@ public class CompetitionController {
     }
 
 
+    @Autowired
+    GradeMapper gradeMapper;
     @Operation(summary = "竞赛报名")
     @PostMapping("/signUpCompetition")
     public Result signUpCompetition(@RequestHeader("Authorization")String token, @RequestBody SignUpDTO signUpDTO){
@@ -72,10 +80,19 @@ public class CompetitionController {
         Integer userId = Integer.valueOf(jwt.getAudience().get(0));
         signUpDTO.setUserId(userId);
         System.out.println("竞赛报名"+signUpDTO);
-
-        Boolean ifSuccess = competitionService.signUpCompetition(signUpDTO);
+        Student student = userService.getById(userId);
+        Grade grade = gradeMapper.selectById(student.getGradeId());
+        student.setGender(grade.getName());
+        Boolean ifSuccess = competitionService.signUpCompetition(signUpDTO,student);
 
         return Result.success(ifSuccess);
+    }
+
+    @Operation(summary = "获取组别信息")
+    @GetMapping("/getDivision/{competitionId}")
+    public Result getDivision(@PathVariable("competitionId") Integer competitionId){
+        List<String> list = competitionService.getDivision(competitionId);
+        return Result.success(list);
     }
 
 

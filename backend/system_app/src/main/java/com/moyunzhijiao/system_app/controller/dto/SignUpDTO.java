@@ -6,4 +6,5 @@ import lombok.Data;
 public class SignUpDTO {
     Integer userId;
     Integer competitionId;
+    String divisionName;
 }
